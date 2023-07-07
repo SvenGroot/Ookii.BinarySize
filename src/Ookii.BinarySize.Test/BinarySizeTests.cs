@@ -106,6 +106,11 @@ public class BinarySizeTests
         Assert.AreEqual(expected, ((BinarySize)129499136).ToString(""));
         Assert.AreEqual(expected, ((BinarySize)129499136).ToString("", null));
 
+        // Case matching.
+        Assert.AreEqual("1kb", ((BinarySize)1024).ToString("kb"));
+        Assert.AreEqual("1kb", ((BinarySize)1024).ToString("ab"));
+        Assert.AreEqual("1.5kIb", ((BinarySize)1536).ToString("sIb"));
+
         // Test IFormattable
         Assert.AreEqual("test 109.7 PB test2", string.Format(CultureInfo.InvariantCulture, "test {0:0.# SB} test2", ((BinarySize)123456789012345678)));
     }
