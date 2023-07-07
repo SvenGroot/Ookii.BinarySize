@@ -144,6 +144,12 @@ partial struct BinarySize
     /// </returns>
     public static BinarySize operator -(BinarySize value) => -value.Value;
 
+    public static BinarySize operator +(BinarySize value) => value.Value;
+
+    public static BinarySize operator >>(BinarySize value, int shift) => value.Value >> shift;
+
+    public static BinarySize operator <<(BinarySize value, int shift) => value.Value << shift;
+
     /// <summary>
     /// Performs an explicit conversion from <see cref="Ookii.Jumbo.BinarySize"/> to <see cref="System.Int16"/>.
     /// </summary>
