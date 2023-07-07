@@ -1,0 +1,31 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.6.33801.468
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Ookii.BinarySize", "Ookii.BinarySize\Ookii.BinarySize.csproj", "{8F2DDEA0-361C-4F2A-A7A3-F5938275C6A0}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Ookii.BinarySize.Test", "Ookii.BinarySize.Test\Ookii.BinarySize.Test.csproj", "{3B34CE64-7043-4E51-8B7D-2FFCD46E212F}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{8F2DDEA0-361C-4F2A-A7A3-F5938275C6A0}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{8F2DDEA0-361C-4F2A-A7A3-F5938275C6A0}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{8F2DDEA0-361C-4F2A-A7A3-F5938275C6A0}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{8F2DDEA0-361C-4F2A-A7A3-F5938275C6A0}.Release|Any CPU.Build.0 = Release|Any CPU
+		{3B34CE64-7043-4E51-8B7D-2FFCD46E212F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{3B34CE64-7043-4E51-8B7D-2FFCD46E212F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{3B34CE64-7043-4E51-8B7D-2FFCD46E212F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{3B34CE64-7043-4E51-8B7D-2FFCD46E212F}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {9F37B80E-3D82-4597-BA38-9FF85B69D9A5}
+	EndGlobalSection
+EndGlobal
