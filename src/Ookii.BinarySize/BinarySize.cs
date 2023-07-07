@@ -340,53 +340,32 @@ public readonly partial struct BinarySize : IEquatable<BinarySize>, IComparable<
     /// </summary>
     /// <param name="obj">The object to compare to this instance.</param>
     /// <returns><see langword="true"/> if <paramref name="obj"/> has the same value as this instance; otherwise, <see langword="false"/>.</returns>
+#if NET6_0_OR_GREATER
+    public override bool Equals([NotNullWhen(true)] object? obj)
+#else
     public override bool Equals(object? obj)
-    {
-        if (obj is BinarySize)
-            return Equals((BinarySize)obj);
-        else
-            return false;
-    }
+#endif
+        => obj is BinarySize size && Equals(size);
 
     /// <summary>
     /// Returns the hash code for this <see cref="BinarySize"/>.
     /// </summary>
     /// <returns>The hash code for this <see cref="BinarySize"/>.</returns>
-    public override int GetHashCode()
-    {
-        return Value.GetHashCode();
-    }
-
-
-    #region IEquatable<ByteSize> Members
+    public override int GetHashCode() => Value.GetHashCode();
 
     /// <summary>
     /// Returns a value indicating whether this instance is equal to a specified <see cref="BinarySize"/> value.
     /// </summary>
     /// <param name="other">The <see cref="BinarySize"/> value to compare to this instance.</param>
     /// <returns><see langword="true"/> if <paramref name="other"/> has the same value as this instance; otherwise, <see langword="false"/>.</returns>
-    public bool Equals(BinarySize other)
-    {
-        return object.Equals(Value, other.Value);
-    }
-
-    #endregion
-
-    #region IComparable<ByteSize> Members
+    public bool Equals(BinarySize other) => Value.Equals(other.Value);
 
     /// <summary>
     /// Compares this instance to a specified <see cref="BinarySize"/> and returns an indication of their relative values.
     /// </summary>
     /// <param name="other">A <see cref="BinarySize"/> to compare.</param>
     /// <returns>Less than zero if this instance is less than <paramref name="other"/>, zero if this instance is equal to <paramref name="other"/>, or greater than zero if this instance is greater than <paramref name="other"/>.</returns>
-    public int CompareTo(BinarySize other)
-    {
-        return Value.CompareTo(other.Value);
-    }
-
-    #endregion
-
-    #region IComparable Members
+    public int CompareTo(BinarySize other) => Value.CompareTo(other.Value);
 
     /// <summary>
     /// Compares this instance to a specified object and returns an indication of their relative values.
@@ -396,27 +375,16 @@ public readonly partial struct BinarySize : IEquatable<BinarySize>, IComparable<
     public int CompareTo(object? obj)
     {
         if (obj == null)
-            return 1;
-        else if (obj is BinarySize)
-            return CompareTo((BinarySize)obj);
-        else
-            throw new ArgumentException("The specified value is not a ByteSize.", nameof(obj));
-    }
-
-    #endregion
-
-    internal static long GetUnitScalingFactor(string unit)
-    {
-        return unit.ToUpperInvariant() switch
         {
-            "B" => 1,
-            "KB" or "KIB" or "K" => Kibi,
-            "MB" or "MIB" or "M" => Mebi,
-            "GB" or "GIB" or "G" => Gibi,
-            "TB" or "TIB" or "T" => Tebi,
-            "PB" or "PIB" or "P" => Pebi,
-            _ => throw new ArgumentException(string.Format(System.Globalization.CultureInfo.CurrentCulture, "Unrecognized unit {0}.", unit), nameof(unit)),
-        };
+            return 1;
+        }
+
+        if (obj is BinarySize size)
+        {
+            return CompareTo(size);
+        }
+
+        throw new ArgumentException("The specified value is not a ByteSize.", nameof(obj));
     }
 
     private static SuffixInfo TrimSuffix(ReadOnlySpan<char> value, bool allowAuto)
