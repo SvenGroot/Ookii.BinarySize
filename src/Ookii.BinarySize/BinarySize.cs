@@ -1,4 +1,5 @@
 ﻿using System.ComponentModel;
+using System.Diagnostics.CodeAnalysis;
 using System.Globalization;
 
 namespace Ookii;
@@ -8,6 +9,9 @@ namespace Ookii;
 /// </summary>
 [TypeConverter(typeof(BinarySizeConverter))]
 public readonly struct BinarySize : IEquatable<BinarySize>, IComparable<BinarySize>, IComparable, IFormattable
+#if NET7_0_OR_GREATER
+    , ISpanParsable<BinarySize>
+#endif
 {
     /// <summary>
     /// The size of a kilobyte, 1024 bytes.
@@ -32,6 +36,9 @@ public readonly struct BinarySize : IEquatable<BinarySize>, IComparable<BinarySi
 
 
     private static readonly char[] _numbers = new[] { '0', '1', '2', '3', '4', '5', '6', '7', '8', '9' };
+    private static readonly char[] _scalingChars = new[] { 'A', 'K', 'M', 'G', 'T', 'P' };
+    private static readonly ReadOnlyMemory<char> _scalingCharsNoAuto = _scalingChars.AsMemory(1);
+    private static readonly long[] _scalingFactors = new[] { Kibi, Mebi, Gibi, Tebi, Pebi };
 
     /// <summary>
     /// Gets a zero-valued <see cref="BinarySize"/> instance.
@@ -146,6 +153,105 @@ public readonly struct BinarySize : IEquatable<BinarySize>, IComparable<BinarySi
         return -Value;
     }
 
+    public static BinarySize Parse(ReadOnlySpan<char> s, NumberStyles style = NumberStyles.Number, IFormatProvider? provider = null)
+    {
+        if (s.IsEmpty)
+        {
+            return Zero;
+        }
+
+        var factor = TrimSuffix(ref s);
+#if NET6_0_OR_GREATER
+        var size = decimal.Parse(s, style, provider);
+#else
+        var size = decimal.Parse(s.ToString(), style, provider);
+#endif
+
+        return new BinarySize(checked((long)(size * factor)));
+    }
+
+    public static BinarySize Parse(ReadOnlySpan<char> s, IFormatProvider? provider)
+        => Parse(s, NumberStyles.Number, provider);
+
+    public static bool TryParse(ReadOnlySpan<char> s, NumberStyles style, IFormatProvider? provider, out BinarySize result)
+    {
+        if (s.IsEmpty)
+        {
+            result = Zero;
+            return true;
+        }
+
+        var factor = TrimSuffix(ref s);
+#if NET6_0_OR_GREATER
+        var success = decimal.TryParse(s, NumberStyles.Number, provider, out var size);
+#else
+        var success = decimal.TryParse(s.ToString(), NumberStyles.Number, provider, out var size);
+#endif
+
+        if (!success)
+        {
+            result = default;
+            return false;
+        }
+
+        try
+        {
+            result = new BinarySize(checked((long)(size * factor)));
+            return true;
+        }
+        catch (OverflowException)
+        {
+            // I couldn't find a way to handle overflow without exceptions.
+            result = default;
+            return false;
+        }
+    }
+
+    public static bool TryParse(ReadOnlySpan<char> s, IFormatProvider? provider, out BinarySize result)
+        => TryParse(s, NumberStyles.Number, provider, out result);
+
+    public static bool TryParse(ReadOnlySpan<char> s, out BinarySize result)
+        => TryParse(s, NumberStyles.Number, null, out result);
+
+#if NET6_0_OR_GREATER
+    public static bool TryParse([NotNullWhen(true)] string? s, NumberStyles style, IFormatProvider? provider, out BinarySize result)
+#else
+    public static bool TryParse(string? s, NumberStyles style, IFormatProvider? provider, out BinarySize result)
+#endif
+    {
+        if (s == null)
+        {
+            result = default;
+            return false;
+        }
+
+        return TryParse(s.AsSpan(), style, provider, out result);
+    }
+
+#if NET6_0_OR_GREATER
+    public static bool TryParse([NotNullWhen(true)] string? s, IFormatProvider? provider, out BinarySize result)
+#else
+    public static bool TryParse(string? s, IFormatProvider? provider, out BinarySize result)
+#endif
+        => TryParse(s, NumberStyles.Number, provider, out result);
+
+#if NET6_0_OR_GREATER
+    public static bool TryParse([NotNullWhen(true)] string? s, out BinarySize result)
+#else
+    public static bool TryParse(string? s, out BinarySize result)
+#endif
+        => TryParse(s, NumberStyles.Number, null, out result);
+
+    public static BinarySize Parse(string value, NumberStyles style = NumberStyles.Number, IFormatProvider? provider = null)
+    {
+        if (value == null)
+        {
+            throw new ArgumentNullException(nameof(value));
+        }
+
+        return Parse(value.AsSpan(), style, provider);
+    }
+
     /// <summary>
     /// Converts the string representation of a byte size in a specified culture-specific format into a <see cref="BinarySize"/> structure.
     /// </summary>
@@ -153,35 +259,7 @@ public readonly struct BinarySize : IEquatable<BinarySize>, IComparable<BinarySi
     /// <param name="provider">An <see cref="IFormatProvider"/> that supplies culture-specific formatting information about <paramref name="value" />. May be <see langword="null"/> to use the current culture.</param>
     /// <returns>A <see cref="BinarySize"/> instance that is the equivalent of <paramref name="value"/>.</returns>
     public static BinarySize Parse(string value, IFormatProvider? provider)
-    {
-        if (value == null)
-        {
-            throw new ArgumentNullException(nameof(value));
-        }
-
-        if (value.Length == 0)
-            return new BinarySize();
-
-        var suffix = GetAndRemoveSuffix(ref value);
-        var size = Decimal.Parse(value, provider);
-        if (suffix != null)
-            size *= GetUnitScalingFactor(suffix);
-
-        checked
-        {
-            return new BinarySize((long)size);
-        }
-    }
-
-    /// <summary>
-    /// Converts the string representation of a byte size into a <see cref="BinarySize"/> structure.
-    /// </summary>
-    /// <param name="value">A string containing a number to convert. This string may use a suffix indicating a binary multiple (B, KB, KiB, K, MB, MiB, M, GB, GiB, G, TB, TiB, T, PB, PiB, or P).</param>
-    /// <returns>A <see cref="BinarySize"/> instance that is the equivalent of <paramref name="value"/>.</returns>
-    public static BinarySize Parse(string value)
-    {
-        return Parse(value, CultureInfo.CurrentCulture);
-    }
+        => Parse(value, NumberStyles.Number, provider);
 
     /// <summary>
     /// Returns a <see cref="System.String"/> that represents this instance.
@@ -492,16 +570,39 @@ public readonly struct BinarySize : IEquatable<BinarySize>, IComparable<BinarySi
         };
     }
 
-    private static string? GetAndRemoveSuffix(ref string value)
+    private static long TrimSuffix(ref ReadOnlySpan<char> value)
     {
-        var lastNumber = value.LastIndexOfAny(_numbers);
-        if (lastNumber == value.Length - 1)
-            return null;
-        else
+        value = value.TrimEnd();
+        if (value.Length == 0)
         {
-            var suffix = value.Substring(lastNumber + 1);
-            value = value.Substring(0, lastNumber + 1);
-            return suffix.Trim();
+            return 1;
         }
+
+        // Suffix can use B.
+        if (value[value.Length - 1] is 'B' or 'b')
+        {
+            value = value.Slice(0, value.Length - 1);
+        }
+
+        if (value.Length == 0)
+        {
+            return 1;
+        }
+
+        // Suffix can use I only if it's preceded by another character.
+        var index = value.Length - 1;
+        if (value.Length > 1 && value[index] is 'I' or 'i')
+        {
+            --index;
+        }
+
+        var scaleIndex = _scalingCharsNoAuto.Span.IndexOf(value[index]);
+        if (scaleIndex < 0)
+        {
+            return 1;
+        }
+
+        value = value.Slice(0, index);
+        return _scalingFactors[scaleIndex];
     }
 }
