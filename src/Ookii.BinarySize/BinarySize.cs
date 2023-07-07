@@ -1,5 +1,4 @@
-﻿// Copyright (c) Sven Groot (Ookii.org)
-using System.ComponentModel;
+﻿using System.ComponentModel;
 using System.Globalization;
 
 namespace Ookii;
@@ -153,7 +152,7 @@ public readonly struct BinarySize : IEquatable<BinarySize>, IComparable<BinarySi
     /// <param name="value">A string containing a number to convert. This string may use a suffix indicating a binary multiple (B, KB, KiB, K, MB, MiB, M, GB, GiB, G, TB, TiB, T, PB, PiB, or P).</param>
     /// <param name="provider">An <see cref="IFormatProvider"/> that supplies culture-specific formatting information about <paramref name="value" />. May be <see langword="null"/> to use the current culture.</param>
     /// <returns>A <see cref="BinarySize"/> instance that is the equivalent of <paramref name="value"/>.</returns>
-    public static BinarySize Parse(string value, IFormatProvider provider)
+    public static BinarySize Parse(string value, IFormatProvider? provider)
     {
         if (value == null)
         {
@@ -262,7 +261,7 @@ public readonly struct BinarySize : IEquatable<BinarySize>, IComparable<BinarySi
     /// </summary>
     /// <param name="obj">The object to compare to this instance.</param>
     /// <returns><see langword="true"/> if <paramref name="obj"/> has the same value as this instance; otherwise, <see langword="false"/>.</returns>
-    public override bool Equals(object obj)
+    public override bool Equals(object? obj)
     {
         if (obj is BinarySize)
             return Equals((BinarySize)obj);
@@ -467,7 +466,7 @@ public readonly struct BinarySize : IEquatable<BinarySize>, IComparable<BinarySi
     /// </summary>
     /// <param name="obj">An object to compare.</param>
     /// <returns>Less than zero if this instance is less than <paramref name="obj"/>, zero if this instance is equal to <paramref name="obj"/>, or greater than zero if this instance is greater than <paramref name="obj"/> or <paramref name="obj"/> is <see langword="null"/>.</returns>
-    public int CompareTo(object obj)
+    public int CompareTo(object? obj)
     {
         if (obj == null)
             return 1;

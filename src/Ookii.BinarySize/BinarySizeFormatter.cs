@@ -1,5 +1,4 @@
-﻿// Copyright (c) Sven Groot (Ookii.org)
-using System;
+﻿using System;
 using System.Globalization;
 using System.Text.RegularExpressions;
 
@@ -50,7 +49,7 @@ static class BinarySizeFormatter
                 factor = BinarySize.GetUnitScalingFactor(prefix);
             }
 
-            if (realPrefix != null && char.IsLower(prefix, 0))
+            if (realPrefix != null && char.IsLower(prefix!, 0))
                 realPrefix = realPrefix.ToLower(CultureInfo.CurrentCulture);
 
             if (factor > 1)

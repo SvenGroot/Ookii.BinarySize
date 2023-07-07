@@ -15,7 +15,7 @@ public class BinarySizeConverter : TypeConverter
     /// <param name="context">A formatter context. This object can be used to get additional information about the environment this converter is being called from. This may be <see langword="null"/>, so you should always check. Also, properties on the context object may also return <see langword="null"/>. </param>
     /// <param name="sourceType">The type you want to convert from.</param>
     /// <returns><see langword="true"/> if this object can perform the conversion; otherwise, <see langword="false"/>.</returns>
-    public override bool CanConvertFrom(ITypeDescriptorContext context, Type sourceType)
+    public override bool CanConvertFrom(ITypeDescriptorContext? context, Type sourceType)
         => sourceType == typeof(string) || base.CanConvertFrom(context, sourceType);
 
     /// <summary>
@@ -24,7 +24,7 @@ public class BinarySizeConverter : TypeConverter
     /// <param name="context">An <see cref="ITypeDescriptorContext"/> object that provides a format context.</param>
     /// <param name="destinationType">A <see cref="Type"/> object that represents the type you want to convert to.</param>
     /// <returns><see langword="true"/> if this object can perform the conversion; otherwise, <see langword="false"/>.</returns>
-    public override bool CanConvertTo(ITypeDescriptorContext context, Type destinationType)
+    public override bool CanConvertTo(ITypeDescriptorContext? context, Type? destinationType)
         => (destinationType != null && destinationType.IsPrimitive) || base.CanConvertTo(context, destinationType);
 
     /// <summary>
@@ -34,7 +34,7 @@ public class BinarySizeConverter : TypeConverter
     /// <param name="culture">An object that contains culture specific information, such as the language, calendar, and cultural conventions associated with a specific culture. It is based on the RFC 1766 standard.</param>
     /// <param name="value">The object to convert.</param>
     /// <returns>The converted object.</returns>
-    public override object ConvertFrom(ITypeDescriptorContext context, CultureInfo culture, object value)
+    public override object? ConvertFrom(ITypeDescriptorContext? context, CultureInfo? culture, object value)
     {
         if (value is string stringValue)
         {
@@ -52,7 +52,7 @@ public class BinarySizeConverter : TypeConverter
     /// <param name="value">The object to convert.</param>
     /// <param name="destinationType">The type to convert the object to.</param>
     /// <returns>The converted object.</returns>
-    public override object ConvertTo(ITypeDescriptorContext context, CultureInfo culture, object value, Type destinationType)
+    public override object? ConvertTo(ITypeDescriptorContext? context, CultureInfo? culture, object? value, Type destinationType)
     {
         if (value is BinarySize size)
         {
