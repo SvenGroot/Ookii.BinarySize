@@ -10,6 +10,9 @@ namespace Ookii;
 /// </summary>
 [TypeConverter(typeof(BinarySizeConverter))]
 public readonly partial struct BinarySize : IEquatable<BinarySize>, IComparable<BinarySize>, IComparable, IFormattable
+#if NET6_0_OR_GREATER
+    , ISpanFormattable
+#endif
 #if NET7_0_OR_GREATER
     , ISpanParsable<BinarySize>
 #endif
@@ -46,7 +49,6 @@ public readonly partial struct BinarySize : IEquatable<BinarySize>, IComparable<
 
     private const long AutoFactor = -1;
     private const long SmallestFactor = -2;
-
 
     private static readonly char[] _numbers = new[] { '0', '1', '2', '3', '4', '5', '6', '7', '8', '9' };
     private static readonly char[] _scalingChars =   new[] { 'P',  'T',  'G',  'M',  'K', 'A',        'S' };
@@ -220,6 +222,38 @@ public readonly partial struct BinarySize : IEquatable<BinarySize>, IComparable<
     public static BinarySize Parse(string value, IFormatProvider? provider)
         => Parse(value, NumberStyles.Number, provider);
 
+#if NET6_0_OR_GREATER
+
+    public bool TryFormat(Span<char> destination, out int charsWritten, ReadOnlySpan<char> format, IFormatProvider? provider)
+    {
+        var suffix = ParseFormat(format, out var scaledValue);
+        if (!scaledValue.TryFormat(destination, out charsWritten, suffix.Trimmed, provider))
+        {
+            return false;
+        }
+
+        if (suffix.ScaleChar != '\0')
+        {
+            if (destination.Length <= charsWritten)
+            {
+                return false;
+            }
+
+            destination[charsWritten] = suffix.ScaleChar;
+            ++charsWritten;
+        }
+
+        if (!suffix.Trailing.TryCopyTo(destination.Slice(charsWritten)))
+        {
+            return false;
+        }
+
+        charsWritten += suffix.Trailing.Length;
+        return true;
+    }
+
+#endif
+
     /// <summary>
     /// Returns a <see cref="System.String"/> that represents this instance.
     /// </summary>
@@ -248,35 +282,7 @@ public readonly partial struct BinarySize : IEquatable<BinarySize>, IComparable<
     /// </remarks>
     public string ToString(string? format, IFormatProvider? formatProvider)
     {
-        SuffixInfo suffix;
-        if (string.IsNullOrEmpty(format) || format == "G")
-        {
-            suffix = new()
-            {
-                Factor = AutoFactor,
-                Trailing = "B".AsSpan(),
-            };
-        }
-        else
-        {
-            suffix = TrimSuffix(format.AsSpan(), true);
-        }
-
-        if (suffix.Factor < 0)
-        {
-            var (factor, scaleChar) = DetermineAutomaticScalingFactor(suffix.Factor == SmallestFactor);
-            suffix.Factor = factor;
-            if (char.IsLower(suffix.ScaleChar))
-            {
-                suffix.ScaleChar = char.ToLowerInvariant(scaleChar);
-            }
-            else
-            {
-                suffix.ScaleChar = scaleChar;
-            }
-        }
-
-        var scaledValue = Value / (decimal)suffix.Factor;
+        var suffix = ParseFormat(format.AsSpan(), out var scaledValue);
         var result = new StringBuilder((format?.Length ?? 0) + 16);
         result.Append(scaledValue.ToString(suffix.Trimmed.ToString(), formatProvider));
         if (suffix.ScaleChar != '\0')
@@ -284,16 +290,10 @@ public readonly partial struct BinarySize : IEquatable<BinarySize>, IComparable<
             result.Append(suffix.ScaleChar);
         }
 
-        var trailing = suffix.Trailing;
-        if (suffix.Factor == 1 && suffix.HasIecChar)
-        {
-            trailing = trailing.Slice(1);
-        }
-
 #if NET6_0_OR_GREATER
-        result.Append(trailing);
+        result.Append(suffix.Trailing);
 #else
-        result.Append(trailing.ToString());
+        result.Append(suffix.Trailing.ToString());
 #endif
 
         return result.ToString();
@@ -491,5 +491,45 @@ public readonly partial struct BinarySize : IEquatable<BinarySize>, IComparable<
         }
 
         return (1, '\0');
+    }
+
+    private SuffixInfo ParseFormat(ReadOnlySpan<char> format, out decimal scaledValue)
+    {
+        SuffixInfo suffix;
+        if (format.IsEmpty || format == "G".AsSpan())
+        {
+            suffix = new()
+            {
+                Factor = AutoFactor,
+                Trailing = "B".AsSpan(),
+            };
+        }
+        else
+        {
+            suffix = TrimSuffix(format, true);
+        }
+
+        if (suffix.Factor < 0)
+        {
+            var (factor, scaleChar) = DetermineAutomaticScalingFactor(suffix.Factor == SmallestFactor);
+            suffix.Factor = factor;
+            if (char.IsLower(suffix.ScaleChar))
+            {
+                suffix.ScaleChar = char.ToLowerInvariant(scaleChar);
+            }
+            else
+            {
+                suffix.ScaleChar = scaleChar;
+            }
+        }
+
+        // Don't include the 'i' if there's no scale prefix.
+        if (suffix.Factor == 1 && suffix.HasIecChar)
+        {
+            suffix.Trailing = suffix.Trailing.Slice(1);
+        }
+
+        scaledValue = Value / (decimal)suffix.Factor;
+        return suffix;
     }
 }

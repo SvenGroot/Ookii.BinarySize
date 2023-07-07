@@ -90,6 +90,14 @@ public class BinarySizeTests
         Assert.AreEqual("126464B", ((BinarySize)126464).ToString("AiB", CultureInfo.InvariantCulture));
         Assert.AreEqual("123.5KiB", ((BinarySize)126464).ToString("SiB", CultureInfo.InvariantCulture));
 
+        // Smaller than unit.
+        Assert.AreEqual("0.5KB", ((BinarySize)512).ToString("KB", CultureInfo.InvariantCulture));
+
+        // Zero
+        Assert.AreEqual("0B", BinarySize.Zero.ToString(null, CultureInfo.InvariantCulture));
+        Assert.AreEqual("0B", BinarySize.Zero.ToString("SB", CultureInfo.InvariantCulture));
+        Assert.AreEqual("0KB", BinarySize.Zero.ToString("KB", CultureInfo.InvariantCulture));
+
         // Test defaults, should have same effect as AB.
         string expected = 126464.ToString() + "KB";
         Assert.AreEqual(expected, ((BinarySize)129499136).ToString());
@@ -102,6 +110,44 @@ public class BinarySizeTests
         Assert.AreEqual("test 109.7 PB test2", string.Format(CultureInfo.InvariantCulture, "test {0:0.# SB} test2", ((BinarySize)123456789012345678)));
     }
 
+    [TestMethod]
+    public void TestTryFormat()
+    {
+        var size = new BinarySize(126464);
+        var destination = new char[20];
+
+        // Plenty of room.
+        Assert.IsTrue(size.TryFormat(destination.AsSpan(), out int charsWritten, "SB".AsSpan(), CultureInfo.InvariantCulture));
+        Assert.AreEqual("123.5KB", destination.AsSpan(0, charsWritten).ToString());
+        Assert.IsTrue(size.TryFormat(destination.AsSpan(), out charsWritten, "0.00 SiB ".AsSpan(), CultureInfo.InvariantCulture));
+        Assert.AreEqual("123.50 KiB ", destination.AsSpan(0, charsWritten).ToString());
+        Assert.IsTrue(size.TryFormat(destination.AsSpan(), out charsWritten, "0".AsSpan(), CultureInfo.InvariantCulture));
+        Assert.AreEqual("126464", destination.AsSpan(0, charsWritten).ToString());
+        Assert.IsTrue(size.TryFormat(destination.AsSpan(), out charsWritten, "AiB".AsSpan(), CultureInfo.InvariantCulture));
+        Assert.AreEqual("126464B", destination.AsSpan(0, charsWritten).ToString());
+
+        // Exactly the right size.
+        Assert.IsTrue(size.TryFormat(destination.AsSpan(0, 7), out charsWritten, "SB".AsSpan(), CultureInfo.InvariantCulture));
+        Assert.AreEqual("123.5KB", destination.AsSpan(0, charsWritten).ToString());
+        Assert.IsTrue(size.TryFormat(destination.AsSpan(0, 11), out charsWritten, "0.00 SiB ".AsSpan(), CultureInfo.InvariantCulture));
+        Assert.AreEqual("123.50 KiB ", destination.AsSpan(0, charsWritten).ToString());
+        Assert.IsTrue(size.TryFormat(destination.AsSpan(0, 6), out charsWritten, "0".AsSpan(), CultureInfo.InvariantCulture));
+        Assert.AreEqual("126464", destination.AsSpan(0, charsWritten).ToString());
+        Assert.IsTrue(size.TryFormat(destination.AsSpan(0, 7), out charsWritten, "AiB".AsSpan(), CultureInfo.InvariantCulture));
+        Assert.AreEqual("126464B", destination.AsSpan(0, charsWritten).ToString());
+
+        // Just too small.
+        Assert.IsFalse(size.TryFormat(destination.AsSpan(0, 6), out _, "SB".AsSpan(), CultureInfo.InvariantCulture));
+        Assert.IsFalse(size.TryFormat(destination.AsSpan(0, 10), out _, "0.00 SiB ".AsSpan(), CultureInfo.InvariantCulture));
+        Assert.IsFalse(size.TryFormat(destination.AsSpan(0, 5), out _, "0".AsSpan(), CultureInfo.InvariantCulture));
+        Assert.IsFalse(size.TryFormat(destination.AsSpan(0, 6), out _, "AiB".AsSpan(), CultureInfo.InvariantCulture));
+
+        // Empty.
+        Assert.IsFalse(size.TryFormat(default, out _, "SB".AsSpan(), CultureInfo.InvariantCulture));
+        Assert.IsFalse(size.TryFormat(default, out _, "0.00 SiB ".AsSpan(), CultureInfo.InvariantCulture));
+        Assert.IsFalse(size.TryFormat(default, out _, "0".AsSpan(), CultureInfo.InvariantCulture));
+        Assert.IsFalse(size.TryFormat(default, out _, "AiB".AsSpan(), CultureInfo.InvariantCulture));
+    }
 
     [TestMethod]
     public void TestEquality()
