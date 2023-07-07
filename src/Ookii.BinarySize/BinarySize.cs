@@ -1,6 +1,7 @@
 ﻿using System.ComponentModel;
 using System.Diagnostics.CodeAnalysis;
 using System.Globalization;
+using System.Text;
 
 namespace Ookii;
 
@@ -13,6 +14,15 @@ public readonly partial struct BinarySize : IEquatable<BinarySize>, IComparable<
     , ISpanParsable<BinarySize>
 #endif
 {
+    private ref struct SuffixInfo
+    {
+        public ReadOnlySpan<char> Trimmed { get; set; }
+        public ReadOnlySpan<char> Trailing { get; set; }
+        public long Factor { get; set; }
+        public char ScaleChar { get; set; }
+        public bool HasIecChar { get; set; }
+    }
+
     /// <summary>
     /// The size of a kilobyte, 1024 bytes.
     /// </summary>
@@ -34,11 +44,13 @@ public readonly partial struct BinarySize : IEquatable<BinarySize>, IComparable<
     /// </summary>
     public const long Pebi = 1024L * 1024L * 1024L * 1024L * 1024L;
 
+    private const long AutoFactor = -1;
+    private const long SmallestFactor = -2;
+
 
     private static readonly char[] _numbers = new[] { '0', '1', '2', '3', '4', '5', '6', '7', '8', '9' };
-    private static readonly char[] _scalingChars = new[] { 'A', 'K', 'M', 'G', 'T', 'P' };
-    private static readonly ReadOnlyMemory<char> _scalingCharsNoAuto = _scalingChars.AsMemory(1);
-    private static readonly long[] _scalingFactors = new[] { Kibi, Mebi, Gibi, Tebi, Pebi };
+    private static readonly char[] _scalingChars =   new[] { 'P',  'T',  'G',  'M',  'K', 'A',        'S' };
+    private static readonly long[] _scalingFactors = new[] { Pebi, Tebi, Gibi, Mebi, Kibi, AutoFactor, SmallestFactor };
 
     /// <summary>
     /// Initializes a new instance of the <see cref="BinarySize"/> structure with the specified
@@ -107,14 +119,14 @@ public readonly partial struct BinarySize : IEquatable<BinarySize>, IComparable<
             return Zero;
         }
 
-        var factor = TrimSuffix(ref s);
+        var result = TrimSuffix(s, false);
 #if NET6_0_OR_GREATER
-        var size = decimal.Parse(s, style, provider);
+        var size = decimal.Parse(result.Trimmed, style, provider);
 #else
-        var size = decimal.Parse(s.ToString(), style, provider);
+        var size = decimal.Parse(result.Trimmed.ToString(), style, provider);
 #endif
 
-        return new BinarySize(checked((long)(size * factor)));
+        return new BinarySize(checked((long)(size * result.Factor)));
     }
 
     public static BinarySize Parse(ReadOnlySpan<char> s, IFormatProvider? provider)
@@ -128,11 +140,11 @@ public readonly partial struct BinarySize : IEquatable<BinarySize>, IComparable<
             return true;
         }
 
-        var factor = TrimSuffix(ref s);
+        var trim = TrimSuffix(s, false);
 #if NET6_0_OR_GREATER
-        var success = decimal.TryParse(s, NumberStyles.Number, provider, out var size);
+        var success = decimal.TryParse(trim.Trimmed, style, provider, out var size);
 #else
-        var success = decimal.TryParse(s.ToString(), NumberStyles.Number, provider, out var size);
+        var success = decimal.TryParse(trim.Trimmed.ToString(), style, provider, out var size);
 #endif
 
         if (!success)
@@ -143,12 +155,12 @@ public readonly partial struct BinarySize : IEquatable<BinarySize>, IComparable<
 
         try
         {
-            result = new BinarySize(checked((long)(size * factor)));
+            result = new BinarySize(checked((long)(size * trim.Factor)));
             return true;
         }
         catch (OverflowException)
         {
-            // I couldn't find a way to handle overflow without exceptions.
+            // I couldn't find a good way to handle overflow without exceptions.
             result = default;
             return false;
         }
@@ -236,7 +248,55 @@ public readonly partial struct BinarySize : IEquatable<BinarySize>, IComparable<
     /// </remarks>
     public string ToString(string? format, IFormatProvider? formatProvider)
     {
-        return BinarySizeFormatter.Format(this, format, formatProvider);
+        SuffixInfo suffix;
+        if (string.IsNullOrEmpty(format) || format == "G")
+        {
+            suffix = new()
+            {
+                Factor = AutoFactor,
+                Trailing = "B".AsSpan(),
+            };
+        }
+        else
+        {
+            suffix = TrimSuffix(format.AsSpan(), true);
+        }
+
+        if (suffix.Factor < 0)
+        {
+            var (factor, scaleChar) = DetermineAutomaticScalingFactor(suffix.Factor == SmallestFactor);
+            suffix.Factor = factor;
+            if (char.IsLower(suffix.ScaleChar))
+            {
+                suffix.ScaleChar = char.ToLowerInvariant(scaleChar);
+            }
+            else
+            {
+                suffix.ScaleChar = scaleChar;
+            }
+        }
+
+        var scaledValue = Value / (decimal)suffix.Factor;
+        var result = new StringBuilder((format?.Length ?? 0) + 16);
+        result.Append(scaledValue.ToString(suffix.Trimmed.ToString(), formatProvider));
+        if (suffix.ScaleChar != '\0')
+        {
+            result.Append(suffix.ScaleChar);
+        }
+
+        var trailing = suffix.Trailing;
+        if (suffix.Factor == 1 && suffix.HasIecChar)
+        {
+            trailing = trailing.Slice(1);
+        }
+
+#if NET6_0_OR_GREATER
+        result.Append(trailing);
+#else
+        result.Append(trailing.ToString());
+#endif
+
+        return result.ToString();
     }
 
     /// <summary>
@@ -264,10 +324,7 @@ public readonly partial struct BinarySize : IEquatable<BinarySize>, IComparable<
     ///   The casing of the binary unit will be preserved as in the format string. Any whitespace that surrounding the binary unit will be preserved.
     /// </para>
     /// </remarks>
-    public string ToString(string? format)
-    {
-        return BinarySizeFormatter.Format(this, format, null);
-    }
+    public string ToString(string? format) => ToString(format, null);
 
 
     /// <summary>
@@ -276,10 +333,7 @@ public readonly partial struct BinarySize : IEquatable<BinarySize>, IComparable<
     /// <returns>
     /// A <see cref="System.String"/> that represents this instance.
     /// </returns>
-    public override string ToString()
-    {
-        return BinarySizeFormatter.Format(this, null, null);
-    }
+    public override string ToString() => ToString(null, null);
 
     /// <summary>
     /// Returns a value indicating whether this instance is equal to a specified object.
@@ -365,39 +419,77 @@ public readonly partial struct BinarySize : IEquatable<BinarySize>, IComparable<
         };
     }
 
-    private static long TrimSuffix(ref ReadOnlySpan<char> value)
+    private static SuffixInfo TrimSuffix(ReadOnlySpan<char> value, bool allowAuto)
     {
-        value = value.TrimEnd();
-        if (value.Length == 0)
+        SuffixInfo result = new()
         {
-            return 1;
+            Trimmed = value.TrimEnd(),
+            Factor = 1,
+        };
+
+        result.Trailing = value.Slice(result.Trimmed.Length);
+        if (result.Trimmed.Length == 0)
+        {
+            return result;
         }
 
         // Suffix can use B.
-        if (value[value.Length - 1] is 'B' or 'b')
+        char ch = result.Trimmed[result.Trimmed.Length - 1];
+        if (ch is 'B' or 'b')
         {
-            value = value.Slice(0, value.Length - 1);
+            result.Trimmed = result.Trimmed.Slice(0, result.Trimmed.Length - 1);
+            result.Trailing = value.Slice(result.Trimmed.Length);
         }
 
-        if (value.Length == 0)
+        if (result.Trimmed.Length == 0)
         {
-            return 1;
+            return result;
         }
 
-        // Suffix can use I only if it's preceded by another character.
-        var index = value.Length - 1;
-        if (value.Length > 1 && value[index] is 'I' or 'i')
+        var index = result.Trimmed.Length - 1;
+        ch = result.Trimmed[index];
+
+        // The 'i' is only counted as an IEC char if there's a valid scale prefix before it.
+        if (result.Trimmed.Length > 1 && ch is 'I' or 'i')
         {
+            result.HasIecChar = true;
             --index;
         }
 
-        var scaleIndex = _scalingCharsNoAuto.Span.IndexOf(value[index]);
-        if (scaleIndex < 0)
+        ch = result.Trimmed[index];
+        var prefixes = _scalingChars.AsSpan();
+        if (!allowAuto)
         {
-            return 1;
+            prefixes = prefixes.Slice(0, prefixes.Length - 2);
         }
 
-        value = value.Slice(0, index);
-        return _scalingFactors[scaleIndex];
+        var scaleIndex = prefixes.IndexOf(char.ToUpperInvariant(ch));
+        if (scaleIndex < 0)
+        {
+            // No scale prefix before the 'i', so don't count it as an IEC char.
+            result.HasIecChar = false;
+            return result;
+        }
+
+        result.Trimmed = result.Trimmed.Slice(0, index);
+        result.Trailing = value.Slice(index + 1);
+        result.Factor = _scalingFactors[scaleIndex];
+        result.ScaleChar = ch;
+        return result;
+    }
+
+    private (long, char) DetermineAutomaticScalingFactor(bool allowRounding)
+    {
+        // Check all factors except the automatic ones.
+        for (int index = 0; index < _scalingFactors.Length - 2; ++index)
+        {
+            var factor = _scalingFactors[index];
+            if (Value >= factor && (allowRounding || Value % factor == 0))
+            {
+                return (factor, _scalingChars[index]);
+            }
+        }
+
+        return (1, '\0');
     }
 }

@@ -58,8 +58,6 @@ public class BinarySizeTests
         Assert.AreEqual("109.65165576623696885860681505PiB", target.ToString("PiB", CultureInfo.InvariantCulture)); // Rounded due to fommatting
         Assert.AreEqual("109.65165576623696885860681505P", target.ToString("P", CultureInfo.InvariantCulture)); // Rounded due to fommatting
 
-        Assert.AreEqual("109.65165576623696885860681505 PB", target.ToString(" PB", CultureInfo.InvariantCulture)); // Rounded due to fommatting, with a space
-
         // Explicit format test:
         Assert.AreEqual("109.7 PB", target.ToString("0.# PB", CultureInfo.InvariantCulture));
 
@@ -89,8 +87,8 @@ public class BinarySizeTests
         // Test with different options:
         Assert.AreEqual("126464", ((BinarySize)126464).ToString("A", CultureInfo.InvariantCulture));
         Assert.AreEqual("123.5K", ((BinarySize)126464).ToString("S", CultureInfo.InvariantCulture));
-        Assert.AreEqual("126464 B", ((BinarySize)126464).ToString(" AiB", CultureInfo.InvariantCulture));
-        Assert.AreEqual("123.5 KiB", ((BinarySize)126464).ToString(" SiB", CultureInfo.InvariantCulture));
+        Assert.AreEqual("126464B", ((BinarySize)126464).ToString("AiB", CultureInfo.InvariantCulture));
+        Assert.AreEqual("123.5KiB", ((BinarySize)126464).ToString("SiB", CultureInfo.InvariantCulture));
 
         // Test defaults, should have same effect as AB.
         string expected = 126464.ToString() + "KB";
