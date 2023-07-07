@@ -42,7 +42,7 @@ public class BinarySizeTests
     public void TestToString()
     {
         BinarySize target = new BinarySize(123456789012345678);
-        Assert.AreEqual("123456789012345678B", target.ToString(CultureInfo.InvariantCulture));
+        Assert.AreEqual("123456789012345678B", target.ToString(null, CultureInfo.InvariantCulture));
         Assert.AreEqual("120563270519868.826171875KB", target.ToString("KB", CultureInfo.InvariantCulture));
         Assert.AreEqual("120563270519868.826171875KiB", target.ToString("KiB", CultureInfo.InvariantCulture));
         Assert.AreEqual("120563270519868.826171875K", target.ToString("K", CultureInfo.InvariantCulture));
@@ -96,8 +96,7 @@ public class BinarySizeTests
         // Test defaults, should have same effect as AB.
         string expected = 126464.ToString() + "KB";
         Assert.AreEqual(expected, ((BinarySize)129499136).ToString());
-        Assert.AreEqual(expected, ((BinarySize)129499136).ToString((IFormatProvider)null));
-        Assert.AreEqual(expected, ((BinarySize)129499136).ToString(CultureInfo.CurrentCulture));
+        Assert.AreEqual(expected, ((BinarySize)129499136).ToString(null, CultureInfo.CurrentCulture));
         Assert.AreEqual(expected, ((BinarySize)129499136).ToString(null, null));
         Assert.AreEqual(expected, ((BinarySize)129499136).ToString(""));
         Assert.AreEqual(expected, ((BinarySize)129499136).ToString("", null));
