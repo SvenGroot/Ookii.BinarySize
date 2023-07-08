@@ -99,7 +99,7 @@ public class BinarySizeTests
         Assert.AreEqual("0KB", BinarySize.Zero.ToString("KB", CultureInfo.InvariantCulture));
 
         // Test defaults, should have same effect as AB.
-        string expected = 126464.ToString() + "KB";
+        string expected = 126464.ToString() + "KiB";
         Assert.AreEqual(expected, ((BinarySize)129499136).ToString());
         Assert.AreEqual(expected, ((BinarySize)129499136).ToString(null, CultureInfo.CurrentCulture));
         Assert.AreEqual(expected, ((BinarySize)129499136).ToString(null, null));
@@ -114,6 +114,8 @@ public class BinarySizeTests
         // Test IFormattable
         Assert.AreEqual("test 109.7 PB test2", string.Format(CultureInfo.InvariantCulture, "test {0:0.# SB} test2", ((BinarySize)123456789012345678)));
     }
+
+#if NET6_0_OR_GREATER
 
     [TestMethod]
     public void TestTryFormat()
@@ -154,6 +156,8 @@ public class BinarySizeTests
         Assert.IsFalse(size.TryFormat(default, out _, "AiB".AsSpan(), CultureInfo.InvariantCulture));
     }
 
+#endif
+
     [TestMethod]
     public void TestEquality()
     {
@@ -171,9 +175,9 @@ public class BinarySizeTests
         TypeConverter converter = TypeDescriptor.GetConverter(typeof(BinarySize));
         BinarySize target = new BinarySize(125952);
         Assert.AreEqual(target, converter.ConvertFrom(null, CultureInfo.InvariantCulture, "123KB"));
-        Assert.AreEqual("123KB", converter.ConvertTo(null, CultureInfo.InvariantCulture, target, typeof(string)));
+        Assert.AreEqual("123KiB", converter.ConvertTo(null, CultureInfo.InvariantCulture, target, typeof(string)));
         target = new BinarySize(129499136);
         Assert.AreEqual(target, converter.ConvertFrom(null, CultureInfo.InvariantCulture, "123.5MB"));
-        Assert.AreEqual("126464KB", converter.ConvertTo(null, CultureInfo.InvariantCulture, target, typeof(string)));
+        Assert.AreEqual("126464KiB", converter.ConvertTo(null, CultureInfo.InvariantCulture, target, typeof(string)));
     }
 }
