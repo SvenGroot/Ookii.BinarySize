@@ -6,8 +6,26 @@ using System.Text;
 namespace Ookii;
 
 /// <summary>
-/// Provides formatting, parsing and scaling for a value using binary units (e.g. MB).
+/// Represents a quantity of bytes, supporting formatting and parsing using units with binary
+/// prefixes such as "KB" or "KiB".
 /// </summary>
+/// <remarks>
+/// <para>
+///   The underlying value is stored as a <see cref="long"/>, as a whole number of bytes. Scaling
+///   is only used when formatting, such as when using the <see cref="ToString(string?, IFormatProvider?)"/>
+///   method.
+/// </para>
+/// <para>
+///   Instances of this structure can be created by parsing a string containing a unit with a
+///   binary prefix, such as "1.5 GiB".
+/// </para>
+/// <para>
+///   This structure uses the definition that "1 KB" == 1024 bytes, identical to "1 KiB", and "1 MB"
+///   == "1 MiB" == 1048576 bytes, and so forth. Treating the regular SI prefixes as decimal unit
+///   prefixes is not currently supported.
+/// </para>
+/// </remarks>
+/// <threadsafety instance="true" static="true"/>
 [TypeConverter(typeof(BinarySizeConverter))]
 public readonly partial struct BinarySize : IEquatable<BinarySize>, IComparable<BinarySize>, IComparable, IFormattable
 #if NET6_0_OR_GREATER
@@ -17,6 +35,8 @@ public readonly partial struct BinarySize : IEquatable<BinarySize>, IComparable<
     , ISpanParsable<BinarySize>
 #endif
 {
+    #region Nested types
+
     private ref struct SuffixInfo
     {
         public ReadOnlySpan<char> Trimmed { get; set; }
@@ -26,48 +46,55 @@ public readonly partial struct BinarySize : IEquatable<BinarySize>, IComparable<
         public bool HasIecChar { get; set; }
     }
 
+    #endregion
+
     /// <summary>
-    /// The size of a kilobyte, 1024 bytes.
+    /// The size of a kibibyte, 1024 bytes.
     /// </summary>
     public const long Kibi = 1024L;
     /// <summary>
-    /// The size of a megabyte, 1048576 bytes.
+    /// The size of a mebibyte, 1048576 bytes.
     /// </summary>
     public const long Mebi = 1024L * 1024L;
     /// <summary>
-    /// The size of a gigabyte, 1073741824 bytes.
+    /// The size of a gibibyte, 1073741824 bytes.
     /// </summary>
     public const long Gibi = 1024L * 1024L * 1024L;
     /// <summary>
-    /// The size of a TeraByte, 1099511627776 bytes.
+    /// The size of a tebibyte, 1099511627776 bytes.
     /// </summary>
     public const long Tebi = 1024L * 1024L * 1024L * 1024L;
     /// <summary>
-    /// The size of a PetaByte, 1125899906842624 bytes.
+    /// The size of a pebibyte, 1125899906842624 bytes.
     /// </summary>
     public const long Pebi = 1024L * 1024L * 1024L * 1024L * 1024L;
 
     private const long AutoFactor = -1;
-    private const long SmallestFactor = -2;
+    private const long ShortestFactor = -2;
 
-    private static readonly char[] _numbers = new[] { '0', '1', '2', '3', '4', '5', '6', '7', '8', '9' };
     private static readonly char[] _scalingChars =   new[] { 'P',  'T',  'G',  'M',  'K', 'A',        'S' };
-    private static readonly long[] _scalingFactors = new[] { Pebi, Tebi, Gibi, Mebi, Kibi, AutoFactor, SmallestFactor };
+    private static readonly long[] _scalingFactors = new[] { Pebi, Tebi, Gibi, Mebi, Kibi, AutoFactor, ShortestFactor };
 
     /// <summary>
     /// Initializes a new instance of the <see cref="BinarySize"/> structure with the specified
     /// value.
     /// </summary>
-    /// <param name="value">The size, in bytes.</param>
+    /// <param name="value">The size in bytes.</param>
     public BinarySize(long value)
     {
         Value = value;
     }
 
+    /// <summary>
+    /// Gets a <see cref="BinarySize"/> instance with a value of zero bytes.
+    /// </summary>
+    /// <value>
+    /// A <see cref="BinarySize"/> instance with a value of zero bytes.
+    /// </value>
     public static BinarySize Zero => default;
 
     /// <summary>
-    /// Gets the value of this instance, in bytes.
+    /// Gets the number of bytes represented by this instance.
     /// </summary>
     /// <value>
     /// The value of this instance, in bytes.
@@ -75,45 +102,79 @@ public readonly partial struct BinarySize : IEquatable<BinarySize>, IComparable<
     public long Value { get; }
 
     /// <summary>
-    /// Gets the value of this instance in kilobytes.
+    /// Gets the value of this instance in kibibytes.
     /// </summary>
     /// <value>
-    /// The value of this instance in whole and fractional kilobytes (<see cref="Value"/> / <see cref="Kibi"/>).
+    /// The value of this instance in whole and fractional kibibytes.
     /// </value>
     public double AsKibi => Value / (double)Kibi;
 
     /// <summary>
-    /// Gets the value of this instance in megabytes.
+    /// Gets the value of this instance in mebibytes.
     /// </summary>
     /// <value>
-    /// The value of this instance in whole and fractional megabytes (<see cref="Value"/> / <see cref="Mebi"/>)
+    /// The value of this instance in whole and fractional mebibytes.
     /// </value>
     public double AsMebi => Value / (double)Mebi;
 
     /// <summary>
-    /// Gets the value of this instance in gigabytes.
+    /// Gets the value of this instance in gibibytes.
     /// </summary>
     /// <value>
-    /// The value of this instance in whole and fractional gigabytes (<see cref="Value"/> / <see cref="Gibi"/>)
+    /// The value of this instance in whole and fractional gibibytes.
     /// </value>
     public double AsGibi => Value / (double)Gibi;
 
     /// <summary>
-    /// Gets the value of this instance in terabytes.
+    /// Gets the value of this instance in tebibytes.
     /// </summary>
     /// <value>
-    /// The value of this instance in whole and fractional terabytes (<see cref="Value"/> / <see cref="Tebi"/>)
+    /// The value of this instance in whole and fractional tebibytes.
     /// </value>
     public double AsTebi => Value / (double)Tebi;
 
     /// <summary>
-    /// Gets the value of this instance in petabytes.
+    /// Gets the value of this instance in pebibytes.
     /// </summary>
     /// <value>
-    /// The value of this instance in whole and fractional petabytes (<see cref="Value"/> / <see cref="Pebi"/>)
+    /// The value of this instance in whole and fractional pebibytes.
     /// </value>
     public double AsPebi => Value / (double)Pebi;
 
+    /// <summary>
+    /// Parses a span of characters into a <see cref="BinarySize"/> structure.
+    /// </summary>
+    /// <param name="s">The span of characters to parse.</param>
+    /// <param name="style">
+    /// A bitwise combination of <see cref="NumberStyles"/> values that indicates the style elements
+    /// that can be present in <paramref name="s"/>. A typical value is
+    /// <see cref="NumberStyles.Number" qualifyHint="true"/>.
+    /// </param>
+    /// <param name="provider">
+    /// An object that provides culture-specific formatting information about <paramref name="s"/>.
+    /// </param>
+    /// <returns>The result of parsing <paramref name="s"/>.</returns>
+    /// <exception cref="FormatException">
+    /// <paramref name="s"/> is not in the correct format.
+    /// </exception>
+    /// <exception cref="OverflowException">
+    /// <paramref name="s"/> is not representable as a <see cref="long"/>.
+    /// </exception>
+    /// <remarks>
+    /// <para>
+    ///   The input must contain a number, followed by one of the following units: "B", "KB", "MB",
+    ///   "GB", "TB", or "PB".
+    /// </para>
+    /// <para>
+    ///   The "B" itself is optional, and the input may also use IEC binary units such as "KiB" or
+    ///   "MiB", etc. The case of the units does not matter.
+    /// </para>
+    /// <para>
+    ///   This method uses the definition that "1 KB" == 1024 bytes, identical to "1 KiB", and "1
+    ///   MB" == "1 MiB" == 1048576 bytes, and so forth. Treating the regular SI prefixes as decimal
+    ///   unit prefixes is not currently supported.
+    /// </para>
+    /// </remarks>
     public static BinarySize Parse(ReadOnlySpan<char> s, NumberStyles style = NumberStyles.Number, IFormatProvider? provider = null)
     {
         if (s.IsEmpty)
@@ -131,9 +192,33 @@ public readonly partial struct BinarySize : IEquatable<BinarySize>, IComparable<
         return new BinarySize(checked((long)(size * result.Factor)));
     }
 
+    /// <inheritdoc cref="Parse(ReadOnlySpan{char}, NumberStyles, IFormatProvider?)"/>
     public static BinarySize Parse(ReadOnlySpan<char> s, IFormatProvider? provider)
         => Parse(s, NumberStyles.Number, provider);
 
+    /// <summary>
+    /// Tries to parse a span of characters into a <see cref="BinarySize"/> structure.
+    /// </summary>
+    /// <param name="s">The span of characters to parse.</param>
+    /// <param name="style">
+    /// A bitwise combination of <see cref="NumberStyles"/> values that indicates the style elements
+    /// that can be present in <paramref name="s"/>. A typical value is
+    /// <see cref="NumberStyles.Number" qualifyHint="true"/>.
+    /// </param>
+    /// <param name="provider">
+    /// An object that provides culture-specific formatting information about <paramref name="s"/>.
+    /// </param>
+    /// <param name="result">
+    /// When this method returns, contains the result of successfully parsing <paramref name="s"/>,
+    /// or an undefined value on failure.
+    /// </param>
+    /// <returns>
+    /// <see langword="true"/> if <paramref name="s"/> was successfully parsed; otherwise,
+    /// <see langword="false"/>.
+    /// </returns>
+    /// <remarks>
+    /// <inheritdoc cref="Parse(ReadOnlySpan{char}, NumberStyles, IFormatProvider?)"/>
+    /// </remarks>
     public static bool TryParse(ReadOnlySpan<char> s, NumberStyles style, IFormatProvider? provider, out BinarySize result)
     {
         if (s.IsEmpty)
@@ -168,12 +253,37 @@ public readonly partial struct BinarySize : IEquatable<BinarySize>, IComparable<
         }
     }
 
+    /// <inheritdoc cref="TryParse(ReadOnlySpan{char}, NumberStyles, IFormatProvider?, out BinarySize)"/>
     public static bool TryParse(ReadOnlySpan<char> s, IFormatProvider? provider, out BinarySize result)
         => TryParse(s, NumberStyles.Number, provider, out result);
 
+    /// <inheritdoc cref="TryParse(ReadOnlySpan{char}, NumberStyles, IFormatProvider?, out BinarySize)"/>
     public static bool TryParse(ReadOnlySpan<char> s, out BinarySize result)
         => TryParse(s, NumberStyles.Number, null, out result);
 
+    /// <summary>
+    /// Tries to parse a string into a <see cref="BinarySize"/> structure.
+    /// </summary>
+    /// <param name="s">The string to parse.</param>
+    /// <param name="style">
+    /// A bitwise combination of <see cref="NumberStyles"/> values that indicates the style elements
+    /// that can be present in <paramref name="s"/>. A typical value is
+    /// <see cref="NumberStyles.Number" qualifyHint="true"/>.
+    /// </param>
+    /// <param name="provider">
+    /// An object that provides culture-specific formatting information about <paramref name="s"/>.
+    /// </param>
+    /// <param name="result">
+    /// When this method returns, contains the result of successfully parsing <paramref name="s"/>,
+    /// or an undefined value on failure.
+    /// </param>
+    /// <returns>
+    /// <see langword="true"/> if <paramref name="s"/> was successfully parsed; otherwise,
+    /// <see langword="false"/>.
+    /// </returns>
+    /// <remarks>
+    /// <inheritdoc cref="Parse(ReadOnlySpan{char}, NumberStyles, IFormatProvider?)"/>
+    /// </remarks>
 #if NET6_0_OR_GREATER
     public static bool TryParse([NotNullWhen(true)] string? s, NumberStyles style, IFormatProvider? provider, out BinarySize result)
 #else
@@ -189,6 +299,7 @@ public readonly partial struct BinarySize : IEquatable<BinarySize>, IComparable<
         return TryParse(s.AsSpan(), style, provider, out result);
     }
 
+    /// <inheritdoc cref="TryParse(string?, NumberStyles, IFormatProvider?, out BinarySize)"/>
 #if NET6_0_OR_GREATER
     public static bool TryParse([NotNullWhen(true)] string? s, IFormatProvider? provider, out BinarySize result)
 #else
@@ -196,6 +307,7 @@ public readonly partial struct BinarySize : IEquatable<BinarySize>, IComparable<
 #endif
         => TryParse(s, NumberStyles.Number, provider, out result);
 
+    /// <inheritdoc cref="TryParse(string?, NumberStyles, IFormatProvider?, out BinarySize)"/>
 #if NET6_0_OR_GREATER
     public static bool TryParse([NotNullWhen(true)] string? s, out BinarySize result)
 #else
@@ -203,27 +315,51 @@ public readonly partial struct BinarySize : IEquatable<BinarySize>, IComparable<
 #endif
         => TryParse(s, NumberStyles.Number, null, out result);
 
-    public static BinarySize Parse(string value, NumberStyles style = NumberStyles.Number, IFormatProvider? provider = null)
+    /// <summary>
+    /// Parses a string into a <see cref="BinarySize"/> structure.
+    /// </summary>
+    /// <param name="s">The string to parse.</param>
+    /// <param name="style">
+    /// A bitwise combination of <see cref="NumberStyles"/> values that indicates the style elements
+    /// that can be present in <paramref name="s"/>. A typical value is
+    /// <see cref="NumberStyles.Number" qualifyHint="true"/>.
+    /// </param>
+    /// <param name="provider">
+    /// An object that provides culture-specific formatting information about <paramref name="s"/>.
+    /// </param>
+    /// <returns>The result of parsing <paramref name="s"/>.</returns>
+    /// <exception cref="ArgumentNullException">
+    /// <paramref name="s"/> is <see langword="null"/>.
+    /// </exception>
+    /// <exception cref="FormatException">
+    /// <paramref name="s"/> is not in the correct format.
+    /// </exception>
+    /// <exception cref="OverflowException">
+    /// <paramref name="s"/> is not representable as a <see cref="long"/>.
+    /// </exception>
+    /// <remarks>
+    /// <inheritdoc cref="Parse(ReadOnlySpan{char}, NumberStyles, IFormatProvider?)"/>
+    /// </remarks>
+    public static BinarySize Parse(string s, NumberStyles style = NumberStyles.Number, IFormatProvider? provider = null)
     {
-        if (value == null)
+        if (s == null)
         {
-            throw new ArgumentNullException(nameof(value));
+            throw new ArgumentNullException(nameof(s));
         }
 
-        return Parse(value.AsSpan(), style, provider);
+        return Parse(s.AsSpan(), style, provider);
     }
 
-    /// <summary>
-    /// Converts the string representation of a byte size in a specified culture-specific format into a <see cref="BinarySize"/> structure.
-    /// </summary>
-    /// <param name="value">A string containing a number to convert. This string may use a suffix indicating a binary multiple (B, KB, KiB, K, MB, MiB, M, GB, GiB, G, TB, TiB, T, PB, PiB, or P).</param>
-    /// <param name="provider">An <see cref="IFormatProvider"/> that supplies culture-specific formatting information about <paramref name="value" />. May be <see langword="null"/> to use the current culture.</param>
-    /// <returns>A <see cref="BinarySize"/> instance that is the equivalent of <paramref name="value"/>.</returns>
-    public static BinarySize Parse(string value, IFormatProvider? provider)
-        => Parse(value, NumberStyles.Number, provider);
+    /// <inheritdoc cref="Parse(string, NumberStyles, IFormatProvider?)"/>
+    public static BinarySize Parse(string s, IFormatProvider? provider)
+        => Parse(s, NumberStyles.Number, provider);
 
 #if NET6_0_OR_GREATER
 
+    /// <inheritdoc/>
+    /// <remarks>
+    /// <inheritdoc cref="ToString(string?, IFormatProvider?)"/>
+    /// </remarks>
     public bool TryFormat(Span<char> destination, out int charsWritten, ReadOnlySpan<char> format, IFormatProvider? provider)
     {
         var suffix = ParseFormat(format, out var scaledValue);
@@ -254,33 +390,59 @@ public readonly partial struct BinarySize : IEquatable<BinarySize>, IComparable<
 
 #endif
 
-    /// <summary>
-    /// Returns a <see cref="System.String"/> that represents this instance.
-    /// </summary>
-    /// <param name="format">The format.</param>
-    /// <param name="formatProvider">The format provider.</param>
-    /// <returns>
-    /// A <see cref="System.String"/> that represents this instance.
-    /// </returns>
+    /// <inheritdoc/>
+    /// <exception cref="FormatException">
+    /// <paramref name="format"/> is invalid.
+    /// </exception>
     /// <remarks>
     /// <para>
-    ///   The value of <paramref name="format"/> must be a string containing a numeric format string followed by a binary unit, or either one of both. If no numeric
-    ///   format is present, the default is used. If no binary unit is specified, the raw value in bytes is used.
+    ///   The value of <paramref name="format"/> must be either a byte unit, or a byte unit that follows either a
+    ///   <see href="https://learn.microsoft.com/dotnet/standard/base-types/standard-numeric-format-strings">standard numeric format string</see>
+    ///   or a <see href="https://learn.microsoft.com/dotnet/standard/base-types/custom-numeric-format-strings">custom numeric format string</see>.
     /// </para>
     /// <para>
-    ///   The first character of the binary suffix indicates the scaling factor. This can be one of the normal binary prefixes K, M, G, T, or P. The value A (auto) indicates that
-    ///   the scaling factor should be automatically determined as the largest factor in which this value can be precisely represented with no decimals. The value S (short)
-    ///   indicates that the scaling factor should be automatically determined as the largest possible scaling factor in which this value can be represented with the scaled
-    ///   value being at least 1. Using S may lead to rounding so while this is appropriate for some display scenarios, it is not appropriate if the precise value must be preserved.
+    ///   The byte unit is a binary or SI unit prefix, optionally followed by a "B". The prefix can
+    ///   be any of "K", "M", "G", "T", or "P", optionally followed by an "i" to use IEC prefixes.
+    ///   If any of these prefixes is present, the value will be shown using the appropriate
+    ///   quantity, possibly using a floating point value if the value is not a whole number of
+    ///   those units.
     /// </para>
     /// <para>
-    ///   The binary prefix can be followed by either B or iB, which will be included in the unit of the output.
+    ///   If the format is only a byte unit, the specified unit will be placed immediately after
+    ///   the number, without any spacing, which is formatted using default formatting.
     /// </para>
     /// <para>
-    ///   The casing of the binary unit will be preserved as in the format string. Any whitespace that surrounding the binary unit will be preserved.
+    ///   For example, "MB", "PiB", "0.0 K" and "#,###.# Ki" are all valid formats, as is any
+    ///   numeric format string by itself, such as "0.0", in which case the value is formatted as
+    ///   a plain number of bytes without a unit.
     /// </para>
+    /// <para>
+    ///   Instead of a regular unit prefix, you can also use the "A" and "S" prefixes to
+    ///   automatically determine the largest prefix that can be applied. With "A" (automatic),
+    ///   the largest prefix that can represent the value as a whole number is used. With "S"
+    ///   (shortest), the largest prefix where the quantity is at least one will be used, using
+    ///   floating-point representation is necessary.
+    /// </para>
+    /// <para>
+    ///   For example, a value of 1,572,864 with the format string "AB" would be formatted as
+    ///   "1536KB", and with the format string "SB" as "1.5MB".
+    /// </para>
+    /// <para>
+    ///   You can use "Ai" or "Si", optionally followed by a B, to use IEC binary prefixes while
+    ///   automatically choosing the prefix. The "i" character will not be present in the output
+    ///   if the chosen unit is bytes, without a prefix.
+    /// </para>
+    /// <para>
+    ///   The case of the characters in the byte unit of the format string will be preserved in
+    ///   the output.
+    /// </para>
+    /// <note>
+    ///   The general format specifier "G" is supported, as required by the <see cref="IFormattable"/>
+    ///   interface, and has the same effect as "AiB". To format a value using the byte unit "G",
+    ///   use the specifier "GG".
+    /// </note>
     /// </remarks>
-    public string ToString(string? format, IFormatProvider? formatProvider)
+    public string ToString(string? format, IFormatProvider? formatProvider = null)
     {
         var suffix = ParseFormat(format.AsSpan(), out var scaledValue);
         var result = new StringBuilder((format?.Length ?? 0) + 16);
@@ -300,46 +462,20 @@ public readonly partial struct BinarySize : IEquatable<BinarySize>, IComparable<
     }
 
     /// <summary>
-    /// Returns a <see cref="System.String"/> that represents this instance.
+    /// Returns a string representation of the current value, using default formatting.
     /// </summary>
-    /// <param name="format">The format.</param>
     /// <returns>
-    /// A <see cref="System.String"/> that represents this instance.
+    /// A <see cref="string"/> that represents this instance.
     /// </returns>
     /// <remarks>
     /// <para>
-    ///   The value of <paramref name="format"/> must be a string containing a numeric format string followed by a binary unit, or either one of both. If no numeric
-    ///   format is present, the default is used. If no binary unit is specified, the raw value in bytes is used.
-    /// </para>
-    /// <para>
-    ///   The first character of the binary suffix indicates the scaling factor. This can be one of the normal binary prefixes K, M, G, T, or P. The value A (auto) indicates that
-    ///   the scaling factor should be automatically determined as the largest factor in which this value can be precisely represented with no decimals. The value S (short)
-    ///   indicates that the scaling factor should be automatically determined as the largest possible scaling factor in which this value can be represented with the scaled
-    ///   value being at least 1. Using S may lead to rounding so while this is appropriate for some display scenarios, it is not appropriate if the precise value must be preserved.
-    /// </para>
-    /// <para>
-    ///   The binary prefix can be followed by either B or iB to indicate the the unit formatting.
-    /// </para>
-    /// <para>
-    ///   The casing of the binary unit will be preserved as in the format string. Any whitespace that surrounding the binary unit will be preserved.
+    ///   Default formatting is equivalent to using the "AiB" format string with the
+    ///   <see cref="ToString(string?, IFormatProvider?)"/> method.
     /// </para>
     /// </remarks>
-    public string ToString(string? format) => ToString(format, null);
-
-
-    /// <summary>
-    /// Returns a <see cref="System.String"/> that represents this instance.
-    /// </summary>
-    /// <returns>
-    /// A <see cref="System.String"/> that represents this instance.
-    /// </returns>
     public override string ToString() => ToString(null, null);
 
-    /// <summary>
-    /// Returns a value indicating whether this instance is equal to a specified object.
-    /// </summary>
-    /// <param name="obj">The object to compare to this instance.</param>
-    /// <returns><see langword="true"/> if <paramref name="obj"/> has the same value as this instance; otherwise, <see langword="false"/>.</returns>
+    /// <inheritdoc/>
 #if NET6_0_OR_GREATER
     public override bool Equals([NotNullWhen(true)] object? obj)
 #else
@@ -347,31 +483,33 @@ public readonly partial struct BinarySize : IEquatable<BinarySize>, IComparable<
 #endif
         => obj is BinarySize size && Equals(size);
 
-    /// <summary>
-    /// Returns the hash code for this <see cref="BinarySize"/>.
-    /// </summary>
-    /// <returns>The hash code for this <see cref="BinarySize"/>.</returns>
+    /// <inheritdoc/>
     public override int GetHashCode() => Value.GetHashCode();
 
     /// <summary>
-    /// Returns a value indicating whether this instance is equal to a specified <see cref="BinarySize"/> value.
+    /// Returns a value indicating whether this instance is equal to a specified
+    /// <see cref="BinarySize"/> value.
     /// </summary>
-    /// <param name="other">The <see cref="BinarySize"/> value to compare to this instance.</param>
-    /// <returns><see langword="true"/> if <paramref name="other"/> has the same value as this instance; otherwise, <see langword="false"/>.</returns>
+    /// <param name="other">
+    /// The <see cref="BinarySize"/> value to compare to this instance.
+    /// </param>
+    /// <returns>
+    /// <see langword="true"/> if <paramref name="other"/> has the same value as this instance;
+    /// otherwise, <see langword="false"/>.
+    /// </returns>
     public bool Equals(BinarySize other) => Value.Equals(other.Value);
 
     /// <summary>
-    /// Compares this instance to a specified <see cref="BinarySize"/> and returns an indication of their relative values.
+    /// Compares this instance to a specified <see cref="BinarySize"/> instance and returns an
+    /// indication of their relative values.
     /// </summary>
     /// <param name="other">A <see cref="BinarySize"/> to compare.</param>
-    /// <returns>Less than zero if this instance is less than <paramref name="other"/>, zero if this instance is equal to <paramref name="other"/>, or greater than zero if this instance is greater than <paramref name="other"/>.</returns>
+    /// <returns>
+    /// <inheritdoc/>
+    /// </returns>
     public int CompareTo(BinarySize other) => Value.CompareTo(other.Value);
 
-    /// <summary>
-    /// Compares this instance to a specified object and returns an indication of their relative values.
-    /// </summary>
-    /// <param name="obj">An object to compare.</param>
-    /// <returns>Less than zero if this instance is less than <paramref name="obj"/>, zero if this instance is equal to <paramref name="obj"/>, or greater than zero if this instance is greater than <paramref name="obj"/> or <paramref name="obj"/> is <see langword="null"/>.</returns>
+    /// <inheritdoc/>
     public int CompareTo(object? obj)
     {
         if (obj == null)
@@ -384,7 +522,7 @@ public readonly partial struct BinarySize : IEquatable<BinarySize>, IComparable<
             return CompareTo(size);
         }
 
-        throw new ArgumentException("The specified value is not a ByteSize.", nameof(obj));
+        throw new ArgumentException(Properties.Resources.ValueNotByteSize, nameof(obj));
     }
 
     private static SuffixInfo TrimSuffix(ReadOnlySpan<char> value, bool allowAuto)
@@ -469,7 +607,8 @@ public readonly partial struct BinarySize : IEquatable<BinarySize>, IComparable<
             suffix = new()
             {
                 Factor = AutoFactor,
-                Trailing = "B".AsSpan(),
+                Trailing = "iB".AsSpan(),
+                HasIecChar = true,
             };
         }
         else
@@ -479,7 +618,7 @@ public readonly partial struct BinarySize : IEquatable<BinarySize>, IComparable<
 
         if (suffix.Factor < 0)
         {
-            var (factor, scaleChar) = DetermineAutomaticScalingFactor(suffix.Factor == SmallestFactor);
+            var (factor, scaleChar) = DetermineAutomaticScalingFactor(suffix.Factor == ShortestFactor);
             suffix.Factor = factor;
             if (char.IsLower(suffix.ScaleChar))
             {
