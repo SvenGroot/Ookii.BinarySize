@@ -38,6 +38,10 @@ public class BinarySizeTests
         size = BinarySize.FromPebi(2.5);
         Assert.AreEqual(2_814_749_767_106_560, size.Value);
         Assert.AreEqual(2.5, size.AsPebi);
+
+        size = BinarySize.FromExbi(2.5);
+        Assert.AreEqual(2_882_303_761_517_117_440, size.Value);
+        Assert.AreEqual(2.5, size.AsExbi);
     }
 
     [TestMethod]

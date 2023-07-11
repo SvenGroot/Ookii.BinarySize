@@ -53,22 +53,31 @@ public readonly partial struct BinarySize : IEquatable<BinarySize>, IComparable<
     /// The size of a kibibyte, 1024 bytes.
     /// </summary>
     public const long Kibi = 1024L;
+
     /// <summary>
-    /// The size of a mebibyte, 1048576 bytes.
+    /// The size of a mebibyte, 1,048,576 bytes.
     /// </summary>
-    public const long Mebi = 1024L * 1024L;
+    public const long Mebi = 1024L * Kibi;
+
     /// <summary>
-    /// The size of a gibibyte, 1073741824 bytes.
+    /// The size of a gibibyte, 1,073,741,824 bytes.
     /// </summary>
-    public const long Gibi = 1024L * 1024L * 1024L;
+    public const long Gibi = 1024L * Mebi;
+
     /// <summary>
-    /// The size of a tebibyte, 1099511627776 bytes.
+    /// The size of a tebibyte, 1,099,511,627,776 bytes.
     /// </summary>
-    public const long Tebi = 1024L * 1024L * 1024L * 1024L;
+    public const long Tebi = 1024L * Gibi;
+
     /// <summary>
-    /// The size of a pebibyte, 1125899906842624 bytes.
+    /// The size of a pebibyte, 1,125,899,906,842,624 bytes.
     /// </summary>
-    public const long Pebi = 1024L * 1024L * 1024L * 1024L * 1024L;
+    public const long Pebi = 1024L * Tebi;
+
+    /// <summary>
+    /// The size of an exbibyte, 1,152,921,504,606,846,976 bytes.
+    /// </summary>
+    public const long Exbi = 1024L * Pebi;
 
     private const long AutoFactor = -1;
     private const long ShortestFactor = -2;
@@ -150,6 +159,14 @@ public readonly partial struct BinarySize : IEquatable<BinarySize>, IComparable<
     public double AsPebi => Value / (double)Pebi;
 
     /// <summary>
+    /// Gets the value of this instance in exbibytes.
+    /// </summary>
+    /// <value>
+    /// The value of this instance in whole and fractional exbibytes.
+    /// </value>
+    public double AsExbi => Value / (double)Exbi;
+
+    /// <summary>
     /// Returns a <see cref="BinarySize"/> that represents the specified number of kibibytes.
     /// </summary>
     /// <param name="value">A number of kibibytes.</param>
@@ -218,6 +235,20 @@ public readonly partial struct BinarySize : IEquatable<BinarySize>, IComparable<
     /// <paramref name="value"/> is <see cref="double.NaN" qualifyHint="true"/>.
     /// </exception>
     public static BinarySize FromPebi(double value) => FromScale(value, Pebi);
+
+    /// <summary>
+    /// Returns a <see cref="BinarySize"/> that represents the specified number of exbibytes.
+    /// </summary>
+    /// <param name="value">A number of exbibytes.</param>
+    /// <returns>An object that represents <paramref name="value"/>.</returns>
+    /// <exception cref="OverflowException">
+    /// <paramref name="value"/> is greater than <see cref="MaxValue"/> or less than
+    /// <see cref="MinValue"/>.
+    /// </exception>
+    /// <exception cref="ArgumentException">
+    /// <paramref name="value"/> is <see cref="double.NaN" qualifyHint="true"/>.
+    /// </exception>
+    public static BinarySize FromExbi(double value) => FromScale(value, Exbi);
 
     /// <summary>
     /// Parses a span of characters into a <see cref="BinarySize"/> structure.
