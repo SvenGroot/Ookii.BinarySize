@@ -40,6 +40,7 @@ public readonly partial struct BinarySize : IEquatable<BinarySize>, IComparable<
     private ref struct SuffixInfo
     {
         public ReadOnlySpan<char> Trimmed { get; set; }
+        public ReadOnlySpan<char> Whitespace { get; set; }
         public ReadOnlySpan<char> Trailing { get; set; }
         public long Factor { get; set; }
         public char ScaleChar { get; set; }
@@ -368,6 +369,12 @@ public readonly partial struct BinarySize : IEquatable<BinarySize>, IComparable<
             return false;
         }
 
+        if (!suffix.Whitespace.TryCopyTo(destination.Slice(charsWritten)))
+        {
+            return false;
+        }
+
+        charsWritten += suffix.Whitespace.Length;
         if (suffix.ScaleChar != '\0')
         {
             if (destination.Length <= charsWritten)
@@ -408,11 +415,12 @@ public readonly partial struct BinarySize : IEquatable<BinarySize>, IComparable<
     ///   those units.
     /// </para>
     /// <para>
-    ///   If the format is only a byte unit, the specified unit will be placed immediately after
-    ///   the number, without any spacing, which is formatted using default formatting.
+    ///   If the format is only a byte unit, it can be preceded by white space which will be
+    ///   preserved in the output. If there is no white space before the unit, the unit is placed
+    ///   immediately after the number.
     /// </para>
     /// <para>
-    ///   For example, "MB", "PiB", "0.0 K" and "#,###.# Ki" are all valid formats, as is any
+    ///   For example, "MB", "PiB", " GB", "0.0 K" and "#,###.# Ki" are all valid formats, as is any
     ///   numeric format string by itself, such as "0.0", in which case the value is formatted as
     ///   a plain number of bytes without a unit.
     /// </para>
@@ -438,7 +446,7 @@ public readonly partial struct BinarySize : IEquatable<BinarySize>, IComparable<
     /// </para>
     /// <note>
     ///   The general format specifier "G" is supported, as required by the <see cref="IFormattable"/>
-    ///   interface, and has the same effect as "AiB". To format a value using the byte unit "G",
+    ///   interface, and has the same effect as " AiB". To format a value using the byte unit "G",
     ///   use the specifier "GG".
     /// </note>
     /// </remarks>
@@ -447,17 +455,13 @@ public readonly partial struct BinarySize : IEquatable<BinarySize>, IComparable<
         var suffix = ParseFormat(format.AsSpan(), out var scaledValue);
         var result = new StringBuilder((format?.Length ?? 0) + 16);
         result.Append(scaledValue.ToString(suffix.Trimmed.ToString(), formatProvider));
+        result.Append(suffix.Whitespace);
         if (suffix.ScaleChar != '\0')
         {
             result.Append(suffix.ScaleChar);
         }
 
-#if NET6_0_OR_GREATER
         result.Append(suffix.Trailing);
-#else
-        result.Append(suffix.Trailing.ToString());
-#endif
-
         return result.ToString();
     }
 
@@ -581,6 +585,11 @@ public readonly partial struct BinarySize : IEquatable<BinarySize>, IComparable<
         result.Trailing = value.Slice(index + 1);
         result.Factor = _scalingFactors[scaleIndex];
         result.ScaleChar = ch;
+
+        // Remove any whitespace between the number and the unit.
+        var trimmed = result.Trimmed.TrimEnd();
+        result.Whitespace = result.Trimmed.Slice(trimmed.Length);
+        result.Trimmed = trimmed;
         return result;
     }
 
@@ -607,6 +616,7 @@ public readonly partial struct BinarySize : IEquatable<BinarySize>, IComparable<
             suffix = new()
             {
                 Factor = AutoFactor,
+                Whitespace = " ".AsSpan(),
                 Trailing = "iB".AsSpan(),
                 HasIecChar = true,
             };
