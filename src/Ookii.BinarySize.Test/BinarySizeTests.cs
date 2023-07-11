@@ -65,6 +65,10 @@ public class BinarySizeTests
         Assert.AreEqual(new BinarySize(138485688541642752), BinarySize.Parse("123PiB", CultureInfo.InvariantCulture));
         Assert.AreEqual(new BinarySize(138485688541642752), BinarySize.Parse("123P", CultureInfo.InvariantCulture));
         Assert.AreEqual(new BinarySize(138485688541642752), BinarySize.Parse("123 PB ", CultureInfo.InvariantCulture)); // with some spaces.
+        Assert.AreEqual(new BinarySize(6341068275337658368), BinarySize.Parse("5.5EB", CultureInfo.InvariantCulture));
+        Assert.AreEqual(new BinarySize(6341068275337658368), BinarySize.Parse("5.5EiB", CultureInfo.InvariantCulture));
+        Assert.AreEqual(new BinarySize(6341068275337658368), BinarySize.Parse("5.5E", CultureInfo.InvariantCulture));
+        Assert.AreEqual(new BinarySize(6341068275337658368), BinarySize.Parse("5.5 EB ", CultureInfo.InvariantCulture)); // with some spaces.
 
         // Explicit culture test:
         Assert.AreEqual(new BinarySize(126464), BinarySize.Parse("123.5KB", CultureInfo.InvariantCulture));
@@ -95,6 +99,9 @@ public class BinarySizeTests
         Assert.AreEqual("109.65165576623696885860681505PiB", target.ToString("PiB", CultureInfo.InvariantCulture));
         Assert.AreEqual("109.65165576623696885860681505P", target.ToString("P", CultureInfo.InvariantCulture));
         Assert.AreEqual("109.65165576623696885860681505  PB  ", target.ToString("  PB  ", CultureInfo.InvariantCulture)); // With whitespace
+        Assert.AreEqual("0.1070816950842157899009832178EB", target.ToString("EB", CultureInfo.InvariantCulture));
+        Assert.AreEqual("0.1070816950842157899009832178EiB", target.ToString("EiB", CultureInfo.InvariantCulture));
+        Assert.AreEqual("0.1070816950842157899009832178E", target.ToString("E", CultureInfo.InvariantCulture));
 
         // General format specifier
         Assert.AreEqual("123456789012345678 B", target.ToString("G", CultureInfo.InvariantCulture));

@@ -82,8 +82,8 @@ public readonly partial struct BinarySize : IEquatable<BinarySize>, IComparable<
     private const long AutoFactor = -1;
     private const long ShortestFactor = -2;
 
-    private static readonly char[] _scalingChars =   new[] { 'P',  'T',  'G',  'M',  'K', 'A',        'S' };
-    private static readonly long[] _scalingFactors = new[] { Pebi, Tebi, Gibi, Mebi, Kibi, AutoFactor, ShortestFactor };
+    private static readonly char[] _scalingChars =   new[] { 'E', 'P',  'T',  'G',  'M',  'K', 'A',        'S' };
+    private static readonly long[] _scalingFactors = new[] { Exbi, Pebi, Tebi, Gibi, Mebi, Kibi, AutoFactor, ShortestFactor };
 
     /// <summary>
     /// Initializes a new instance of the <see cref="BinarySize"/> structure with the specified
