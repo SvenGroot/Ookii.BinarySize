@@ -154,10 +154,10 @@ public class BinarySizeTests
         Assert.AreEqual(expected, ((BinarySize)129499136).ToString(""));
         Assert.AreEqual(expected, ((BinarySize)129499136).ToString("", null));
 
-        // Case matching.
-        Assert.AreEqual("1kb", ((BinarySize)1024).ToString("kb"));
-        Assert.AreEqual("1kb", ((BinarySize)1024).ToString("ab"));
-        Assert.AreEqual("1.5kIb", ((BinarySize)1536).ToString("sIb"));
+        // Case correction.
+        Assert.AreEqual("1KB", ((BinarySize)1024).ToString("kb"));
+        Assert.AreEqual("1KB", ((BinarySize)1024).ToString("ab"));
+        Assert.AreEqual("1.5KiB", ((BinarySize)1536).ToString("sIb"));
 
         // Test IFormattable
         Assert.AreEqual("test 109.7 PB test2", string.Format(CultureInfo.InvariantCulture, "test {0:0.# SB} test2", ((BinarySize)123456789012345678)));
@@ -208,6 +208,10 @@ public class BinarySizeTests
         Assert.IsFalse(size.TryFormat(default, out _, "0".AsSpan(), CultureInfo.InvariantCulture));
         Assert.IsFalse(size.TryFormat(default, out _, "AiB".AsSpan(), CultureInfo.InvariantCulture));
         Assert.IsFalse(size.TryFormat(default, out _, "  KB  ".AsSpan(), CultureInfo.InvariantCulture));
+
+        // Case correction.
+        Assert.IsTrue(size.TryFormat(destination.AsSpan(), out charsWritten, "kIb".AsSpan(), CultureInfo.InvariantCulture));
+        Assert.AreEqual("123.5KiB", destination.AsSpan(0, charsWritten).ToString());
     }
 
 #endif

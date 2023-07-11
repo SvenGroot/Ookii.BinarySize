@@ -45,6 +45,7 @@ public readonly partial struct BinarySize : IEquatable<BinarySize>, IComparable<
         public long Factor { get; set; }
         public char ScaleChar { get; set; }
         public bool HasIecChar { get; set; }
+        public bool HasByteChar { get; set; }
     }
 
     #endregion
@@ -81,6 +82,8 @@ public readonly partial struct BinarySize : IEquatable<BinarySize>, IComparable<
 
     private const long AutoFactor = -1;
     private const long ShortestFactor = -2;
+    private const char IecChar = 'i';
+    private const char ByteChar = 'B';
 
     private static readonly char[] _scalingChars =   new[] { 'E', 'P',  'T',  'G',  'M',  'K', 'A',        'S' };
     private static readonly long[] _scalingFactors = new[] { Exbi, Pebi, Tebi, Gibi, Mebi, Kibi, AutoFactor, ShortestFactor };
@@ -477,30 +480,11 @@ public readonly partial struct BinarySize : IEquatable<BinarySize>, IComparable<
             return false;
         }
 
-        if (!suffix.Whitespace.TryCopyTo(destination.Slice(charsWritten)))
-        {
-            return false;
-        }
-
-        charsWritten += suffix.Whitespace.Length;
-        if (suffix.ScaleChar != '\0')
-        {
-            if (destination.Length <= charsWritten)
-            {
-                return false;
-            }
-
-            destination[charsWritten] = suffix.ScaleChar;
-            ++charsWritten;
-        }
-
-        if (!suffix.Trailing.TryCopyTo(destination.Slice(charsWritten)))
-        {
-            return false;
-        }
-
-        charsWritten += suffix.Trailing.Length;
-        return true;
+        return destination.TryAppend(ref charsWritten, suffix.Whitespace) &&
+            (suffix.ScaleChar == '\0' || destination.TryAppend(ref charsWritten, suffix.ScaleChar)) &&
+            (!suffix.HasIecChar || destination.TryAppend(ref charsWritten, IecChar)) &&
+            (!suffix.HasByteChar || destination.TryAppend(ref charsWritten, ByteChar)) &&
+            destination.TryAppend(ref charsWritten, suffix.Trailing);
     }
 
 #endif
@@ -567,6 +551,15 @@ public readonly partial struct BinarySize : IEquatable<BinarySize>, IComparable<
         if (suffix.ScaleChar != '\0')
         {
             result.Append(suffix.ScaleChar);
+            if (suffix.HasIecChar)
+            {
+                result.Append(IecChar);
+            }
+        }
+
+        if (suffix.HasByteChar)
+        {
+            result.Append(ByteChar);
         }
 
         result.Append(suffix.Trailing);
@@ -656,7 +649,7 @@ public readonly partial struct BinarySize : IEquatable<BinarySize>, IComparable<
         if (ch is 'B' or 'b')
         {
             result.Trimmed = result.Trimmed.Slice(0, result.Trimmed.Length - 1);
-            result.Trailing = value.Slice(result.Trimmed.Length);
+            result.HasByteChar = true;
         }
 
         if (result.Trimmed.Length == 0)
@@ -690,9 +683,8 @@ public readonly partial struct BinarySize : IEquatable<BinarySize>, IComparable<
         }
 
         result.Trimmed = result.Trimmed.Slice(0, index);
-        result.Trailing = value.Slice(index + 1);
         result.Factor = _scalingFactors[scaleIndex];
-        result.ScaleChar = ch;
+        result.ScaleChar = prefixes[scaleIndex];
 
         // Remove any whitespace between the number and the unit.
         var trimmed = result.Trimmed.TrimEnd();
@@ -725,8 +717,8 @@ public readonly partial struct BinarySize : IEquatable<BinarySize>, IComparable<
             {
                 Factor = AutoFactor,
                 Whitespace = " ".AsSpan(),
-                Trailing = "iB".AsSpan(),
                 HasIecChar = true,
+                HasByteChar = true,
             };
         }
         else
@@ -749,11 +741,7 @@ public readonly partial struct BinarySize : IEquatable<BinarySize>, IComparable<
         }
 
         // Don't include the 'i' if there's no scale prefix.
-        if (suffix.Factor == 1 && suffix.HasIecChar)
-        {
-            suffix.Trailing = suffix.Trailing.Slice(1);
-        }
-
+        suffix.HasIecChar = suffix.HasIecChar && suffix.Factor > 1;
         scaledValue = Value / (decimal)suffix.Factor;
         return suffix;
     }
