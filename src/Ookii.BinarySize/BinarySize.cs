@@ -89,10 +89,17 @@ public readonly partial struct BinarySize : IEquatable<BinarySize>, IComparable<
     /// <summary>
     /// Gets a <see cref="BinarySize"/> instance with a value of zero bytes.
     /// </summary>
-    /// <value>
-    /// A <see cref="BinarySize"/> instance with a value of zero bytes.
-    /// </value>
-    public static BinarySize Zero => default;
+    public static readonly BinarySize Zero = default;
+
+    /// <summary>
+    /// Represents the minimum <see cref="BinarySize"/> value.
+    /// </summary>
+    public static readonly BinarySize MinValue = long.MinValue;
+
+    /// <summary>
+    /// Represents the maximum <see cref="BinarySize"/> value.
+    /// </summary>
+    public static readonly BinarySize MaxValue = long.MaxValue;
 
     /// <summary>
     /// Gets the number of bytes represented by this instance.
@@ -141,6 +148,76 @@ public readonly partial struct BinarySize : IEquatable<BinarySize>, IComparable<
     /// The value of this instance in whole and fractional pebibytes.
     /// </value>
     public double AsPebi => Value / (double)Pebi;
+
+    /// <summary>
+    /// Returns a <see cref="BinarySize"/> that represents the specified number of kibibytes.
+    /// </summary>
+    /// <param name="value">A number of kibibytes.</param>
+    /// <returns>An object that represents <paramref name="value"/>.</returns>
+    /// <exception cref="OverflowException">
+    /// <paramref name="value"/> is greater than <see cref="MaxValue"/> or less than
+    /// <see cref="MinValue"/>.
+    /// </exception>
+    /// <exception cref="ArgumentException">
+    /// <paramref name="value"/> is <see cref="double.NaN" qualifyHint="true"/>.
+    /// </exception>
+    public static BinarySize FromKibi(double value) => FromScale(value, Kibi);
+
+    /// <summary>
+    /// Returns a <see cref="BinarySize"/> that represents the specified number of mebibytes.
+    /// </summary>
+    /// <param name="value">A number of mebibytes.</param>
+    /// <returns>An object that represents <paramref name="value"/>.</returns>
+    /// <exception cref="OverflowException">
+    /// <paramref name="value"/> is greater than <see cref="MaxValue"/> or less than
+    /// <see cref="MinValue"/>.
+    /// </exception>
+    /// <exception cref="ArgumentException">
+    /// <paramref name="value"/> is <see cref="double.NaN" qualifyHint="true"/>.
+    /// </exception>
+    public static BinarySize FromMebi(double value) => FromScale(value, Mebi);
+
+    /// <summary>
+    /// Returns a <see cref="BinarySize"/> that represents the specified number of gibibytes.
+    /// </summary>
+    /// <param name="value">A number of gibibytes.</param>
+    /// <returns>An object that represents <paramref name="value"/>.</returns>
+    /// <exception cref="OverflowException">
+    /// <paramref name="value"/> is greater than <see cref="MaxValue"/> or less than
+    /// <see cref="MinValue"/>.
+    /// </exception>
+    /// <exception cref="ArgumentException">
+    /// <paramref name="value"/> is <see cref="double.NaN" qualifyHint="true"/>.
+    /// </exception>
+    public static BinarySize FromGibi(double value) => FromScale(value, Gibi);
+
+    /// <summary>
+    /// Returns a <see cref="BinarySize"/> that represents the specified number of tebibytes.
+    /// </summary>
+    /// <param name="value">A number of tebibytes.</param>
+    /// <returns>An object that represents <paramref name="value"/>.</returns>
+    /// <exception cref="OverflowException">
+    /// <paramref name="value"/> is greater than <see cref="MaxValue"/> or less than
+    /// <see cref="MinValue"/>.
+    /// </exception>
+    /// <exception cref="ArgumentException">
+    /// <paramref name="value"/> is <see cref="double.NaN" qualifyHint="true"/>.
+    /// </exception>
+    public static BinarySize FromTebi(double value) => FromScale(value, Tebi);
+
+    /// <summary>
+    /// Returns a <see cref="BinarySize"/> that represents the specified number of pebibytes.
+    /// </summary>
+    /// <param name="value">A number of pebibytes.</param>
+    /// <returns>An object that represents <paramref name="value"/>.</returns>
+    /// <exception cref="OverflowException">
+    /// <paramref name="value"/> is greater than <see cref="MaxValue"/> or less than
+    /// <see cref="MinValue"/>.
+    /// </exception>
+    /// <exception cref="ArgumentException">
+    /// <paramref name="value"/> is <see cref="double.NaN" qualifyHint="true"/>.
+    /// </exception>
+    public static BinarySize FromPebi(double value) => FromScale(value, Pebi);
 
     /// <summary>
     /// Parses a span of characters into a <see cref="BinarySize"/> structure.
@@ -648,5 +725,15 @@ public readonly partial struct BinarySize : IEquatable<BinarySize>, IComparable<
 
         scaledValue = Value / (decimal)suffix.Factor;
         return suffix;
+    }
+
+    private static BinarySize FromScale(double value, long scale)
+    {
+        if (double.IsNaN(value))
+        {
+            throw new ArgumentException(Properties.Resources.ValueIsNaN, nameof(value));
+        }
+
+        return checked((long)(value * scale));
     }
 }

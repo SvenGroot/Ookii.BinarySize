@@ -61,7 +61,16 @@ namespace Ookii.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to &quot;The value must be a ByteSize.&quot;.
+        ///   Looks up a localized string similar to BinarySize does not accept not-a-number values..
+        /// </summary>
+        internal static string ValueIsNaN {
+            get {
+                return ResourceManager.GetString("ValueIsNaN", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The value must be a ByteSize..
         /// </summary>
         internal static string ValueNotByteSize {
             get {

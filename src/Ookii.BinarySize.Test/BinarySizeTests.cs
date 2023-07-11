@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
+using System;
 using System.ComponentModel;
 using System.Globalization;
 
@@ -7,6 +8,38 @@ namespace Ookii.Test;
 [TestClass]
 public class BinarySizeTests
 {
+    [TestMethod]
+    public void TestValue()
+    {
+        Assert.AreEqual(0, BinarySize.Zero.Value);
+        Assert.AreEqual(long.MinValue, BinarySize.MinValue.Value);
+        Assert.AreEqual(long.MaxValue, BinarySize.MaxValue.Value);
+
+        var size = new BinarySize(512);
+        Assert.AreEqual(512, size.Value);
+        Assert.AreEqual(0.5, size.AsKibi);
+
+        size = BinarySize.FromKibi(2.5);
+        Assert.AreEqual(2_560, size.Value);
+        Assert.AreEqual(2.5, size.AsKibi);
+
+        size = BinarySize.FromMebi(2.5);
+        Assert.AreEqual(2_621_440, size.Value);
+        Assert.AreEqual(2.5, size.AsMebi);
+
+        size = BinarySize.FromGibi(2.5);
+        Assert.AreEqual(2_684_354_560, size.Value);
+        Assert.AreEqual(2.5, size.AsGibi);
+
+        size = BinarySize.FromTebi(2.5);
+        Assert.AreEqual(2_748_779_069_440, size.Value);
+        Assert.AreEqual(2.5, size.AsTebi);
+
+        size = BinarySize.FromPebi(2.5);
+        Assert.AreEqual(2_814_749_767_106_560, size.Value);
+        Assert.AreEqual(2.5, size.AsPebi);
+    }
+
     [TestMethod]
     public void TestParse()
     {
