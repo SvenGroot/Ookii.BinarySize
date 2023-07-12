@@ -215,6 +215,17 @@ partial struct BinarySize
     public static BinarySize operator >>(BinarySize value, int shift) => value.Value >> shift;
 
     /// <summary>
+    /// Shifts the bits of a <see cref="BinarySize"/> to the right in an unsigned manner.
+    /// </summary>
+    /// <param name="value">The value to shift.</param>
+    /// <param name="shift">The number of bits to shift by.</param>
+    /// <returns>
+    /// The result of shifting <paramref name="value"/> right by <paramref name="shift"/> bits
+    /// without considering the sign.
+    /// </returns>
+    public static BinarySize operator >>>(BinarySize value, int shift) => value.Value >>> shift;
+
+    /// <summary>
     /// Shifts the bits of a <see cref="BinarySize"/> to the left.
     /// </summary>
     /// <param name="value">The value to shift.</param>
