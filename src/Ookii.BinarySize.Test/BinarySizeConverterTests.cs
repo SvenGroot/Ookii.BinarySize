@@ -45,4 +45,17 @@ public class BinarySizeConverterTests
         Assert.AreEqual(target, converter.ConvertFrom(null, CultureInfo.InvariantCulture, "123KiB"));
         Assert.AreEqual("123 KiB", converter.ConvertTo(null, CultureInfo.InvariantCulture, target, typeof(string)));
     }
+
+    [TestMethod]
+    public void TestIecBinarySizeConverter()
+    {
+        var converter = TypeDescriptor.GetConverter(typeof(IecBinarySize));
+        Assert.IsInstanceOfType(converter, typeof(IecBinarySizeConverter));
+        var target = new IecBinarySize(123000);
+        Assert.AreEqual(target, converter.ConvertFrom(null, CultureInfo.InvariantCulture, "123KB"));
+        Assert.AreEqual("123000 B", converter.ConvertTo(null, CultureInfo.InvariantCulture, target, typeof(string)));
+        target = new(125952);
+        Assert.AreEqual(target, converter.ConvertFrom(null, CultureInfo.InvariantCulture, "123KiB"));
+        Assert.AreEqual("123 KiB", converter.ConvertTo(null, CultureInfo.InvariantCulture, target, typeof(string)));
+    }
 }
