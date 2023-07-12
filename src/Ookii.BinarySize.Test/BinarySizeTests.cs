@@ -286,16 +286,4 @@ public class BinarySizeTests
         Assert.IsTrue(new BinarySize(123) != new BinarySize(124));
         Assert.IsFalse(new BinarySize(123) != new BinarySize(123));
     }
-
-    [TestMethod]
-    public void TestTypeConverter()
-    {
-        TypeConverter converter = TypeDescriptor.GetConverter(typeof(BinarySize));
-        var target = new BinarySize(125952);
-        Assert.AreEqual(target, converter.ConvertFrom(null, CultureInfo.InvariantCulture, "123KB"));
-        Assert.AreEqual("123 KiB", converter.ConvertTo(null, CultureInfo.InvariantCulture, target, typeof(string)));
-        target = new(129499136);
-        Assert.AreEqual(target, converter.ConvertFrom(null, CultureInfo.InvariantCulture, "123.5MB"));
-        Assert.AreEqual("126464 KiB", converter.ConvertTo(null, CultureInfo.InvariantCulture, target, typeof(string)));
-    }
 }

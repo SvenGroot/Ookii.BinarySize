@@ -23,6 +23,41 @@ namespace Ookii;
 /// <threadsafety instance="true" static="true"/>
 public class BinarySizeConverter : TypeConverter
 {
+    /// <summary>
+    /// Initializes a new instance of the <see cref="BinarySizeConverter"/> class.
+    /// </summary>
+    public BinarySizeConverter()
+    { 
+    }
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="BinarySizeConverter"/> class with the specified
+    /// options.
+    /// </summary>
+    /// <param name="options">
+    /// A bitwise combination of <see cref="BinarySizeOptions"/> values that indicates how units
+    /// are interpreted when converting from a string.
+    /// </param>
+    /// <remarks>
+    /// <para>
+    ///   When converting from a string, the <paramref name="options"/> will be passed to the
+    ///   <see cref="BinarySize.Parse(ReadOnlySpan{char}, BinarySizeOptions, NumberStyles, IFormatProvider?)" qualifyHint="true"/>
+    ///   method.
+    /// </para>
+    /// </remarks>
+    public BinarySizeConverter(BinarySizeOptions options)
+    {
+        Options = options;
+    }
+
+    /// <summary>
+    /// Gets a value that indicates how units are interpreted when converting from a string.
+    /// </summary>
+    /// <value>
+    /// A bitwise combination of <see cref="BinarySizeOptions"/> values.
+    /// </value>
+    public BinarySizeOptions Options { get; }
+
     /// <inheritdoc/>
     public override bool CanConvertFrom(ITypeDescriptorContext? context, Type sourceType)
         => sourceType == typeof(string) || base.CanConvertFrom(context, sourceType);
@@ -36,7 +71,7 @@ public class BinarySizeConverter : TypeConverter
     {
         if (value is string stringValue)
         {
-            return BinarySize.Parse(stringValue, culture);
+            return BinarySize.Parse(stringValue, Options, NumberStyles.Number, culture);
         }
 
         return base.ConvertFrom(context, culture, value);

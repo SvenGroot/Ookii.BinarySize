@@ -614,19 +614,13 @@ public readonly partial struct BinarySize : IEquatable<BinarySize>, IComparable<
     ///     <description>Description</description>
     ///   </listheader>
     ///   <item>
-    ///     <term><em>empty</em></term>
-    ///     <description>
-    ///       The output will be formatted as raw bytes, with no unit suffix, e.g. "512".
-    ///     </description>
-    ///   </item>
-    ///   <item>
     ///     <term>B</term>
     ///     <description>
     ///       The output will be formatted as raw bytes, with the suffix "B", e.g. "512B".
     ///     </description>
     ///   </item>
     ///   <item>
-    ///     <term>G</term>
+    ///     <term><em>empty</em>, or G</term>
     ///     <description>
     ///       This is the general format specifier. The value will be formatted using the largest
     ///       binary prefix in which it can be represented without fractions, the suffix "iB", and a
@@ -675,16 +669,16 @@ public readonly partial struct BinarySize : IEquatable<BinarySize>, IComparable<
     ///   </item>
     /// </list>
     /// <para>
-    ///   Any of the above unit formats can be combined with a numeric format string; for example,
-    ///   "#,##0.# SiB".
+    ///   Any of the above unit formats, except the general format specified, can be combined with a
+    ///   numeric format string; for example, "#,##0.# SiB".
     /// </para>
     /// <para>
-    ///   If a unit preceded by white space, this will be preserved in the output. For example,
+    ///   If a unit is preceded by white space, this will be preserved in the output. For example,
     ///   " KB" can be used to format the value 512 as "0.5 KB".
     /// </para>
     /// <note>
     ///   Since "G" by itself is the general format specifier, it cannot be used to format as
-    ///   gibibytes by itself; use "GG" instead for this purpose. Using "G" with leading space or a
+    ///   gibibytes; use "GG" instead for this purpose. Using "G" with leading white space or a
     ///   number format will work correctly.
     /// </note>
     /// </remarks>
