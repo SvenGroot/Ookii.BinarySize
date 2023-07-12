@@ -39,7 +39,8 @@ public readonly partial struct BinarySize : IEquatable<BinarySize>, IComparable<
     IMultiplyOperators<BinarySize, BinarySize, BinarySize>, IDivisionOperators<BinarySize, BinarySize, BinarySize>,
     IModulusOperators<BinarySize, BinarySize, BinarySize>, IShiftOperators<BinarySize, int, BinarySize>,
     IUnaryNegationOperators<BinarySize, BinarySize>, IUnaryPlusOperators<BinarySize, BinarySize>,
-    IComparisonOperators<BinarySize, BinarySize, bool>, IEqualityOperators<BinarySize, BinarySize, bool>
+    IComparisonOperators<BinarySize, BinarySize, bool>, IEqualityOperators<BinarySize, BinarySize, bool>,
+    IMinMaxValue<BinarySize>
 #endif
 {
     #region Nested types
@@ -193,6 +194,10 @@ public readonly partial struct BinarySize : IEquatable<BinarySize>, IComparable<
     static BinarySize IAdditiveIdentity<BinarySize, BinarySize>.AdditiveIdentity => Zero;
 
     static BinarySize IMultiplicativeIdentity<BinarySize, BinarySize>.MultiplicativeIdentity => 1;
+
+    static BinarySize IMinMaxValue<BinarySize>.MaxValue => MaxValue;
+
+    static BinarySize IMinMaxValue<BinarySize>.MinValue => MinValue;
 
 #endif
 

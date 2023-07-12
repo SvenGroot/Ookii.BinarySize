@@ -285,4 +285,24 @@ public class BinarySizeTests
         Assert.IsTrue(new BinarySize(123) != new BinarySize(124));
         Assert.IsFalse(new BinarySize(123) != new BinarySize(123));
     }
+
+    [TestMethod]
+    public void TestSum()
+    {
+        var values = new BinarySize[] { 5, 6, 7, 8 };
+        var sum = values.Sum();
+        Assert.AreEqual(26, sum);
+    }
+
+#if NET6_0_OR_GREATER
+
+    [TestMethod]
+    public async Task TestSumAsync()
+    {
+        var values = new BinarySize[] { 5, 6, 7, 8 }.ToAsyncEnumerable();
+        var sum = await values.SumAsync();
+        Assert.AreEqual(26, sum);
+    }
+
+#endif
 }
