@@ -7,6 +7,8 @@
     <ImplicitUsings>enable</ImplicitUsings>
     <GenerateDocumentationFile>True</GenerateDocumentationFile>
     <RootNamespace>Ookii</RootNamespace>
+    <SignAssembly>True</SignAssembly>
+    <AssemblyOriginatorKeyFile>ookii.snk</AssemblyOriginatorKeyFile>
   </PropertyGroup>
 
   <ItemGroup>
