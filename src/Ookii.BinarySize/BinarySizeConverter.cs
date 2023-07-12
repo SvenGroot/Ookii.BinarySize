@@ -74,6 +74,11 @@ public class BinarySizeConverter : TypeConverter
             return BinarySize.Parse(stringValue, Options, NumberStyles.Number, culture);
         }
 
+        if (value is IecBinarySize sizeValue)
+        {
+            return sizeValue.Value;
+        }
+
         return base.ConvertFrom(context, culture, value);
     }
 
@@ -85,6 +90,11 @@ public class BinarySizeConverter : TypeConverter
             if (destinationType == typeof(string))
             {
                 return size.ToString(null, culture);
+            }
+
+            if (destinationType == typeof(IecBinarySize))
+            {
+                return new IecBinarySize(size);
             }
 
             if (destinationType == typeof(long))

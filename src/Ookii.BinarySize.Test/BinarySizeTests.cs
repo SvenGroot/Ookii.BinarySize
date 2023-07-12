@@ -81,7 +81,6 @@ public class BinarySizeTests
     [TestMethod]
     public void TestParseDecimal()
     { 
-        // Decimal
         Assert.AreEqual(new BinarySize(123), BinarySize.Parse("123", BinarySizeOptions.UseIecStandard, NumberStyles.Number, CultureInfo.InvariantCulture));
         Assert.AreEqual(new BinarySize(123), BinarySize.Parse("123B", BinarySizeOptions.UseIecStandard, NumberStyles.Number, CultureInfo.InvariantCulture));
         Assert.AreEqual(new BinarySize(123000), BinarySize.Parse("123KB", BinarySizeOptions.UseIecStandard, NumberStyles.Number, CultureInfo.InvariantCulture));

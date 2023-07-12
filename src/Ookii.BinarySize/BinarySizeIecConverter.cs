@@ -15,7 +15,8 @@ namespace Ookii;
 /// </para>
 /// <para>
 ///   Use the <see cref="TypeConverterAttribute"/> attribute on an individual property to use this
-///   converter instead of the default one.
+///   converter instead of the default one in contexts that support that, such as properties used in
+///   XAML.
 /// </para>
 /// </remarks>
 public class BinarySizeIecConverter : BinarySizeConverter
