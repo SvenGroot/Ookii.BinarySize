@@ -79,9 +79,37 @@ public class BinarySizeTests
     }
 
     [TestMethod]
+    public void TestParseDecimal()
+    { 
+        // Decimal
+        Assert.AreEqual(new BinarySize(123), BinarySize.Parse("123", BinarySizeOptions.UseIecStandard, NumberStyles.Number, CultureInfo.InvariantCulture));
+        Assert.AreEqual(new BinarySize(123), BinarySize.Parse("123B", BinarySizeOptions.UseIecStandard, NumberStyles.Number, CultureInfo.InvariantCulture));
+        Assert.AreEqual(new BinarySize(123000), BinarySize.Parse("123KB", BinarySizeOptions.UseIecStandard, NumberStyles.Number, CultureInfo.InvariantCulture));
+        Assert.AreEqual(new BinarySize(125952), BinarySize.Parse("123KiB", BinarySizeOptions.UseIecStandard, NumberStyles.Number, CultureInfo.InvariantCulture));
+        Assert.AreEqual(new BinarySize(123000), BinarySize.Parse("123K", BinarySizeOptions.UseIecStandard, NumberStyles.Number, CultureInfo.InvariantCulture));
+        Assert.AreEqual(new BinarySize(123000000), BinarySize.Parse("123MB", BinarySizeOptions.UseIecStandard, NumberStyles.Number, CultureInfo.InvariantCulture));
+        Assert.AreEqual(new BinarySize(128974848), BinarySize.Parse("123MiB", BinarySizeOptions.UseIecStandard, NumberStyles.Number, CultureInfo.InvariantCulture));
+        Assert.AreEqual(new BinarySize(123000000), BinarySize.Parse("123M", BinarySizeOptions.UseIecStandard, NumberStyles.Number, CultureInfo.InvariantCulture));
+        Assert.AreEqual(new BinarySize(123000000000), BinarySize.Parse("123GB", BinarySizeOptions.UseIecStandard, NumberStyles.Number, CultureInfo.InvariantCulture));
+        Assert.AreEqual(new BinarySize(132070244352), BinarySize.Parse("123GiB", BinarySizeOptions.UseIecStandard, NumberStyles.Number, CultureInfo.InvariantCulture));
+        Assert.AreEqual(new BinarySize(123000000000), BinarySize.Parse("123G", BinarySizeOptions.UseIecStandard, NumberStyles.Number, CultureInfo.InvariantCulture));
+        Assert.AreEqual(new BinarySize(123000000000000), BinarySize.Parse("123TB", BinarySizeOptions.UseIecStandard, NumberStyles.Number, CultureInfo.InvariantCulture));
+        Assert.AreEqual(new BinarySize(135239930216448), BinarySize.Parse("123TiB", BinarySizeOptions.UseIecStandard, NumberStyles.Number, CultureInfo.InvariantCulture));
+        Assert.AreEqual(new BinarySize(123000000000000), BinarySize.Parse("123T", BinarySizeOptions.UseIecStandard, NumberStyles.Number, CultureInfo.InvariantCulture));
+        Assert.AreEqual(new BinarySize(123000000000000000), BinarySize.Parse("123PB", BinarySizeOptions.UseIecStandard, NumberStyles.Number, CultureInfo.InvariantCulture));
+        Assert.AreEqual(new BinarySize(138485688541642752), BinarySize.Parse("123PiB", BinarySizeOptions.UseIecStandard, NumberStyles.Number, CultureInfo.InvariantCulture));
+        Assert.AreEqual(new BinarySize(123000000000000000), BinarySize.Parse("123P", BinarySizeOptions.UseIecStandard, NumberStyles.Number, CultureInfo.InvariantCulture));
+        Assert.AreEqual(new BinarySize(123000000000000000), BinarySize.Parse("123 PB ", BinarySizeOptions.UseIecStandard, NumberStyles.Number, CultureInfo.InvariantCulture)); // with some spaces.
+        Assert.AreEqual(new BinarySize(5500000000000000000), BinarySize.Parse("5.5EB", BinarySizeOptions.UseIecStandard, NumberStyles.Number, CultureInfo.InvariantCulture));
+        Assert.AreEqual(new BinarySize(6341068275337658368), BinarySize.Parse("5.5EiB", BinarySizeOptions.UseIecStandard, NumberStyles.Number, CultureInfo.InvariantCulture));
+        Assert.AreEqual(new BinarySize(5500000000000000000), BinarySize.Parse("5.5E", BinarySizeOptions.UseIecStandard, NumberStyles.Number, CultureInfo.InvariantCulture));
+        Assert.AreEqual(new BinarySize(5500000000000000000), BinarySize.Parse("5.5 EB ", BinarySizeOptions.UseIecStandard, NumberStyles.Number, CultureInfo.InvariantCulture)); // with some spaces.
+    }
+
+    [TestMethod]
     public void TestToString()
     {
-        BinarySize target = new BinarySize(123456789012345678);
+        var target = new BinarySize(123456789012345678);
         Assert.AreEqual("123456789012345678 B", target.ToString(null, CultureInfo.InvariantCulture));
         Assert.AreEqual("120563270519868.826171875KB", target.ToString("KB", CultureInfo.InvariantCulture));
         Assert.AreEqual("120563270519868.826171875KiB", target.ToString("KiB", CultureInfo.InvariantCulture));
@@ -155,17 +183,45 @@ public class BinarySizeTests
         Assert.AreEqual(expected, ((BinarySize)129499136).ToString("", null));
 
         // Case correction.
-        Assert.AreEqual("1KB", ((BinarySize)1024).ToString("kb"));
-        Assert.AreEqual("1KB", ((BinarySize)1024).ToString("ab"));
+        Assert.AreEqual("1KB", ((BinarySize)1024).ToString("Kb"));
+        Assert.AreEqual("1KiB", ((BinarySize)1024).ToString("kIb"));
+        Assert.AreEqual("1KB", ((BinarySize)1024).ToString("Ab"));
         Assert.AreEqual("1.5KiB", ((BinarySize)1536).ToString("sIb"));
 
         // Test IFormattable
         Assert.AreEqual("test 109.7 PB test2", string.Format(CultureInfo.InvariantCulture, "test {0:0.# SB} test2", ((BinarySize)123456789012345678)));
     }
 
+    [TestMethod]
+    public void TestToStringDecimal()
+    {
+        // Lowercase means decimal unless 'i' is present.
+        var target = new BinarySize(123456789012345678);
+        Assert.AreEqual("123456789012345678 B", target.ToString(null, CultureInfo.InvariantCulture));
+        Assert.AreEqual("123456789012345.678kB", target.ToString("kB", CultureInfo.InvariantCulture));
+        Assert.AreEqual("120563270519868.826171875KiB", target.ToString("kiB", CultureInfo.InvariantCulture));
+        Assert.AreEqual("123456789012345.678k", target.ToString("k", CultureInfo.InvariantCulture));
+        Assert.AreEqual("123456789012.345678MB", target.ToString("mB", CultureInfo.InvariantCulture));
+        Assert.AreEqual("117737568867.05940055847167969MiB", target.ToString("miB", CultureInfo.InvariantCulture));
+        Assert.AreEqual("123456789012.345678M", target.ToString("m", CultureInfo.InvariantCulture));
+        Assert.AreEqual("123456789.012345678GB", target.ToString("gB", CultureInfo.InvariantCulture));
+        Assert.AreEqual("114978094.59673769585788249969GiB", target.ToString("giB", CultureInfo.InvariantCulture));
+        Assert.AreEqual("123456789.012345678G", target.ToString("g", CultureInfo.InvariantCulture));
+        Assert.AreEqual("123456.789012345678TB", target.ToString("tB", CultureInfo.InvariantCulture));
+        Assert.AreEqual("112283.29550462665611121337861TiB", target.ToString("tiB", CultureInfo.InvariantCulture));
+        Assert.AreEqual("123456.789012345678T", target.ToString("t", CultureInfo.InvariantCulture));
+        Assert.AreEqual("123.456789012345678PB", target.ToString("pB", CultureInfo.InvariantCulture));
+        Assert.AreEqual("109.65165576623696885860681505PiB", target.ToString("piB", CultureInfo.InvariantCulture));
+        Assert.AreEqual("123.456789012345678P", target.ToString("p", CultureInfo.InvariantCulture));
+        Assert.AreEqual("123.456789012345678  PB  ", target.ToString("  pB  ", CultureInfo.InvariantCulture)); // With whitespace
+        Assert.AreEqual("0.123456789012345678EB", target.ToString("eB", CultureInfo.InvariantCulture));
+        Assert.AreEqual("0.1070816950842157899009832178EiB", target.ToString("eiB", CultureInfo.InvariantCulture));
+        Assert.AreEqual("0.123456789012345678E", target.ToString("e", CultureInfo.InvariantCulture));
+    }
+
 #if NET6_0_OR_GREATER
 
-    [TestMethod]
+        [TestMethod]
     public void TestTryFormat()
     {
         var size = new BinarySize(126464);
@@ -212,6 +268,10 @@ public class BinarySizeTests
         // Case correction.
         Assert.IsTrue(size.TryFormat(destination.AsSpan(), out charsWritten, "kIb".AsSpan(), CultureInfo.InvariantCulture));
         Assert.AreEqual("123.5KiB", destination.AsSpan(0, charsWritten).ToString());
+
+        // Decimal
+        Assert.IsTrue(size.TryFormat(destination.AsSpan(), out charsWritten, "kb".AsSpan(), CultureInfo.InvariantCulture));
+        Assert.AreEqual("126.464kB", destination.AsSpan(0, charsWritten).ToString());
     }
 
 #endif
@@ -231,10 +291,10 @@ public class BinarySizeTests
     public void TestTypeConverter()
     {
         TypeConverter converter = TypeDescriptor.GetConverter(typeof(BinarySize));
-        BinarySize target = new BinarySize(125952);
+        var target = new BinarySize(125952);
         Assert.AreEqual(target, converter.ConvertFrom(null, CultureInfo.InvariantCulture, "123KB"));
         Assert.AreEqual("123 KiB", converter.ConvertTo(null, CultureInfo.InvariantCulture, target, typeof(string)));
-        target = new BinarySize(129499136);
+        target = new(129499136);
         Assert.AreEqual(target, converter.ConvertFrom(null, CultureInfo.InvariantCulture, "123.5MB"));
         Assert.AreEqual("126464 KiB", converter.ConvertTo(null, CultureInfo.InvariantCulture, target, typeof(string)));
     }
