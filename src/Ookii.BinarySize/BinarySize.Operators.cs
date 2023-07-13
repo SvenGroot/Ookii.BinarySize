@@ -147,6 +147,16 @@ partial struct BinarySize
     public static BinarySize operator +(BinarySize left, BinarySize right) => left.Value + right.Value;
 
     /// <summary>
+    /// Adds two <see cref="BinarySize"/> values in a checked context.
+    /// </summary>
+    /// <param name="left">The left operand.</param>
+    /// <param name="right">The right operand.</param>
+    /// <returns>
+    /// The result of adding <paramref name="left"/> and <paramref name="right"/>.
+    /// </returns>
+    public static BinarySize operator checked +(BinarySize left, BinarySize right) => checked(left.Value + right.Value);
+
+    /// <summary>
     /// Subtracts two <see cref="BinarySize"/> values.
     /// </summary>
     /// <param name="left">The left operand.</param>
@@ -157,6 +167,16 @@ partial struct BinarySize
     public static BinarySize operator -(BinarySize left, BinarySize right) => left.Value - right.Value;
 
     /// <summary>
+    /// Subtracts two <see cref="BinarySize"/> values in a checked context.
+    /// </summary>
+    /// <param name="left">The left operand.</param>
+    /// <param name="right">The right operand.</param>
+    /// <returns>
+    /// The result of subtracting <paramref name="right"/> from <paramref name="left"/>.
+    /// </returns>
+    public static BinarySize operator checked -(BinarySize left, BinarySize right) => checked(left.Value - right.Value);
+
+    /// <summary>
     /// Multiplies two <see cref="BinarySize"/> values.
     /// </summary>
     /// <param name="left">The left operand.</param>
@@ -165,6 +185,16 @@ partial struct BinarySize
     /// The result of multiplying <paramref name="left"/> and <paramref name="right"/>.
     /// </returns>
     public static BinarySize operator *(BinarySize left, BinarySize right) => left.Value * right.Value;
+
+    /// <summary>
+    /// Multiplies two <see cref="BinarySize"/> values in a checked context.
+    /// </summary>
+    /// <param name="left">The left operand.</param>
+    /// <param name="right">The right operand.</param>
+    /// <returns>
+    /// The result of multiplying <paramref name="left"/> and <paramref name="right"/>.
+    /// </returns>
+    public static BinarySize operator checked *(BinarySize left, BinarySize right) => checked(left.Value * right.Value);
 
     /// <summary>
     /// Divides two <see cref="BinarySize"/> values.
@@ -234,6 +264,75 @@ partial struct BinarySize
     /// The result of shifting <paramref name="value"/> left by <paramref name="shift"/> bits.
     /// </returns>
     public static BinarySize operator <<(BinarySize value, int shift) => value.Value << shift;
+
+    /// <summary>
+    /// Computes the ones-complement representation of a <see cref="BinarySize"/>.
+    /// </summary>
+    /// <param name="value">The value for which to compute the ones-complement.</param>
+    /// <returns>
+    /// The ones-complement of <paramref name="value"/>.
+    /// </returns>
+    public static BinarySize operator ~(BinarySize value) => ~value.Value;
+
+    /// <summary>
+    /// Increments a <see cref="BinarySize"/>.
+    /// </summary>
+    /// <param name="value">The value to increment.</param>
+    /// <returns>
+    /// The result of incrementing <paramref name="value"/>.
+    /// </returns>
+    public static BinarySize operator ++(BinarySize value) => value.Value + 1;
+
+    /// <summary>
+    /// Increments a <see cref="BinarySize"/> in a checked context.
+    /// </summary>
+    /// <param name="value">The value to increment.</param>
+    /// <returns>
+    /// The result of incrementing <paramref name="value"/>.
+    /// </returns>
+    public static BinarySize operator checked ++(BinarySize value) => checked(value.Value + 1);
+
+    /// <summary>
+    /// Decrements a <see cref="BinarySize"/>.
+    /// </summary>
+    /// <param name="value">The value to decrement.</param>
+    /// <returns>
+    /// The result of decrementing <paramref name="value"/>.
+    /// </returns>
+    public static BinarySize operator --(BinarySize value) => value.Value - 1;
+
+    /// <summary>
+    /// Decrements a <see cref="BinarySize"/> in a checked context.
+    /// </summary>
+    /// <param name="value">The value to decrement.</param>
+    /// <returns>
+    /// The result of decrementing <paramref name="value"/>.
+    /// </returns>
+    public static BinarySize operator checked --(BinarySize value) => checked(value.Value - 1);
+
+    /// <summary>
+    /// Computes the bitwise-and of two <see cref="BinarySize"/> values.
+    /// </summary>
+    /// <param name="left">The value to <c>and</c> with <paramref name="right"/>.</param>
+    /// <param name="right">The value to <c>and</c> with <paramref name="left"/>.</param>
+    /// <returns>The bitwise-and of <paramref name="left"/> and <paramref name="right"/>.</returns>
+    public static BinarySize operator &(BinarySize left, BinarySize right) => left.Value & right.Value;
+
+    /// <summary>
+    /// Computes the bitwise-or of two <see cref="BinarySize"/> values.
+    /// </summary>
+    /// <param name="left">The value to <c>or</c> with <paramref name="right"/>.</param>
+    /// <param name="right">The value to <c>or</c> with <paramref name="left"/>.</param>
+    /// <returns>The bitwise-or of <paramref name="left"/> and <paramref name="right"/>.</returns>
+    public static BinarySize operator |(BinarySize left, BinarySize right) => left.Value | right.Value;
+
+    /// <summary>
+    /// Computes the exclusive-or of two <see cref="BinarySize"/> values.
+    /// </summary>
+    /// <param name="left">The value to <c>xor</c> with <paramref name="right"/>.</param>
+    /// <param name="right">The value to <c>xor</c> with <paramref name="left"/>.</param>
+    /// <returns>The exclusive-or of <paramref name="left"/> and <paramref name="right"/>.</returns>
+    public static BinarySize operator ^(BinarySize left, BinarySize right) => left.Value ^ right.Value;
 
     /// <summary>
     /// Performs an explicit conversion from <see cref="BinarySize"/> to <see cref="long"/>.

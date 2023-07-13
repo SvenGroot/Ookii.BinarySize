@@ -34,13 +34,7 @@ public readonly partial struct BinarySize : IEquatable<BinarySize>, IComparable<
     , ISpanFormattable
 #endif
 #if NET7_0_OR_GREATER
-    , ISpanParsable<BinarySize>, IAdditiveIdentity<BinarySize, BinarySize>, IAdditionOperators<BinarySize, BinarySize, BinarySize>,
-    ISubtractionOperators<BinarySize, BinarySize, BinarySize>, IMultiplicativeIdentity<BinarySize, BinarySize>,
-    IMultiplyOperators<BinarySize, BinarySize, BinarySize>, IDivisionOperators<BinarySize, BinarySize, BinarySize>,
-    IModulusOperators<BinarySize, BinarySize, BinarySize>, IShiftOperators<BinarySize, int, BinarySize>,
-    IUnaryNegationOperators<BinarySize, BinarySize>, IUnaryPlusOperators<BinarySize, BinarySize>,
-    IComparisonOperators<BinarySize, BinarySize, bool>, IEqualityOperators<BinarySize, BinarySize, bool>,
-    IMinMaxValue<BinarySize>
+    , ISpanParsable<BinarySize>
 #endif
 {
     #region Nested types
@@ -188,18 +182,6 @@ public readonly partial struct BinarySize : IEquatable<BinarySize>, IComparable<
     /// The value of this instance in whole and fractional exbibytes.
     /// </value>
     public double AsExbi => Value / (double)Exbi;
-
-#if NET7_0_OR_GREATER
-
-    static BinarySize IAdditiveIdentity<BinarySize, BinarySize>.AdditiveIdentity => Zero;
-
-    static BinarySize IMultiplicativeIdentity<BinarySize, BinarySize>.MultiplicativeIdentity => 1;
-
-    static BinarySize IMinMaxValue<BinarySize>.MaxValue => MaxValue;
-
-    static BinarySize IMinMaxValue<BinarySize>.MinValue => MinValue;
-
-#endif
 
     /// <summary>
     /// Returns a <see cref="BinarySize"/> that represents the specified number of kibibytes.
