@@ -307,15 +307,25 @@ public class BinarySizeTests
         Assert.AreEqual((BinarySize)26, sum4);
     }
 
-#if NET6_0_OR_GREATER
-
     [TestMethod]
     public async Task TestSumAsync()
     {
         var values = new[] { (BinarySize)5, (BinarySize)6, (BinarySize)7, (BinarySize)8 }.ToAsyncEnumerable();
         var sum = await values.SumAsync();
         Assert.AreEqual((BinarySize)26, sum);
-    }
 
-#endif
+        var values2 = new BinarySize?[] { (BinarySize)5, (BinarySize)6, null, (BinarySize)7, (BinarySize)8 }.ToAsyncEnumerable();
+        var sum2 = await values2.SumAsync();
+        Assert.AreEqual((BinarySize)26, sum2);
+
+        var values3 = new[] { "5", "6", "7", "8" }.ToAsyncEnumerable();
+        var sum3 = await values3.SumAsync(v => BinarySize.Parse(v));
+        Assert.AreEqual((BinarySize)26, sum3);
+
+        var converter = TypeDescriptor.GetConverter(typeof(BinarySize?));
+        var values4 = new[] { "5", "6", "", "7", "8" }.ToAsyncEnumerable();
+        var sum4 = await values4.SumAsync(v => (BinarySize?)converter.ConvertFromInvariantString(v));
+        Assert.AreEqual((BinarySize)26, sum4);
+
+    }
 }

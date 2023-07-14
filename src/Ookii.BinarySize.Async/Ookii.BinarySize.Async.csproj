@@ -17,17 +17,9 @@
     <RepositoryUrl>https://github.com/SvenGroot/Ookii.BinarySize</RepositoryUrl>
     <RepositoryType>git</RepositoryType>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
-    <Title>Ookii.BinarySize</Title>
-    <Description>Ookii.BinarySize provides parsing and formatting quantities of bytes using human-readable representation.
-
-- Supports SI (KB, MB, GB, etc.) and IEC (KiB, MiB, GiB) size prefixes.
-- Optionally use decimal SI prefixes.
-- Fully customizable formatting, with automatic size prefix selection.
-- Supports values up to approximately positive and negative 8 EiB, using Int64 (long) to store the value.
-- Supports math and binary operators, and .Net 7 generic math.
-- Supports .Net Standard 2.0, .Net Standard 2.1, and .Net 6.0 and up.
-- Trim-friendly.</Description>
-    <PackageTags>binary byte size byte-size bytesize human-readable format parse</PackageTags>
+    <Title>Ookii.BinarySize.Async</Title>
+    <Description>Provides extension methods for IAsyncEnumerable&lt;BinarySize&gt; for use with Ookii.BinarySize.</Description>
+    <PackageTags>binary byte size byte-size bytesize human-readable format parse async</PackageTags>
     <PackageReleaseNotes>For details, please view: https://www.ookii.org/Link/BinarySizeVersionHistory</PackageReleaseNotes>
     <IncludeSymbols>true</IncludeSymbols>
     <SymbolPackageFormat>snupkg</SymbolPackageFormat>
@@ -41,31 +33,19 @@
   <PropertyGroup Condition="'$(GITHUB_ACTIONS)' == 'true'">
     <ContinuousIntegrationBuild>true</ContinuousIntegrationBuild>
   </PropertyGroup>
-  
+
   <ItemGroup>
     <None Include="PackageReadme.md" Pack="True" PackagePath=""/>
     <None Include="../icon.png" Pack="True" PackagePath=""/>
   </ItemGroup>
 
   <ItemGroup>
+    <PackageReference Include="System.Linq.Async" Version="6.0.1" />
     <PackageReference Include="Microsoft.SourceLink.GitHub" Version="1.1.1" PrivateAssets="all" />
-    <PackageReference Include="System.Memory" Version="4.5.5" Condition="'$(TargetFramework)'=='netstandard2.0'"/>
   </ItemGroup>
 
   <ItemGroup>
-    <Compile Update="Properties\Resources.Designer.cs">
-      <DesignTime>True</DesignTime>
-      <AutoGen>True</AutoGen>
-      <DependentUpon>Resources.resx</DependentUpon>
-    </Compile>
-  </ItemGroup>
-
-  <ItemGroup>
-    <EmbeddedResource Update="Properties\Resources.resx">
-      <Generator>ResXFileCodeGenerator</Generator>
-      <LastGenOutput>Resources.Designer.cs</LastGenOutput>
-      <CustomToolNamespace>Ookii.Properties</CustomToolNamespace>
-    </EmbeddedResource>
+    <ProjectReference Include="..\Ookii.BinarySize\Ookii.BinarySize.csproj" />
   </ItemGroup>
 
 </Project>

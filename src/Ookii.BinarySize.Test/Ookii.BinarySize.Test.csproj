@@ -20,6 +20,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\Ookii.BinarySize.Async\Ookii.BinarySize.Async.csproj" />
     <ProjectReference Include="..\Ookii.BinarySize\Ookii.BinarySize.csproj" />
   </ItemGroup>
 
