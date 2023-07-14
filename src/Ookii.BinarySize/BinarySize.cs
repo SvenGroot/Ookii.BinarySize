@@ -120,12 +120,12 @@ public readonly partial struct BinarySize : IEquatable<BinarySize>, IComparable<
     /// <summary>
     /// Represents the minimum <see cref="BinarySize"/> value.
     /// </summary>
-    public static readonly BinarySize MinValue = long.MinValue;
+    public static readonly BinarySize MinValue = (BinarySize)long.MinValue;
 
     /// <summary>
     /// Represents the maximum <see cref="BinarySize"/> value.
     /// </summary>
-    public static readonly BinarySize MaxValue = long.MaxValue;
+    public static readonly BinarySize MaxValue = (BinarySize)long.MaxValue;
 
     /// <summary>
     /// Gets the number of bytes represented by this instance.
@@ -921,6 +921,6 @@ public readonly partial struct BinarySize : IEquatable<BinarySize>, IComparable<
             throw new ArgumentException(Properties.Resources.ValueIsNaN, nameof(value));
         }
 
-        return checked((long)(value * scale));
+        return (BinarySize)checked((long)(value * scale));
     }
 }

@@ -8,15 +8,15 @@ namespace Ookii;
 
 partial struct BinarySize : IBinaryNumber<BinarySize>, ISignedNumber<BinarySize>, IMinMaxValue<BinarySize>
 {
-    static BinarySize INumberBase<BinarySize>.One => 1;
+    static BinarySize INumberBase<BinarySize>.One => (BinarySize)1;
 
     static int INumberBase<BinarySize>.Radix => 2;
 
     static BinarySize INumberBase<BinarySize>.Zero => Zero;
 
-    static BinarySize ISignedNumber<BinarySize>.NegativeOne => -1;
+    static BinarySize ISignedNumber<BinarySize>.NegativeOne => (BinarySize)(-1);
 
-    static BinarySize INumberBase<BinarySize>.Abs(BinarySize value) => long.Abs(value.Value);
+    static BinarySize INumberBase<BinarySize>.Abs(BinarySize value) => (BinarySize)long.Abs(value.Value);
 
     static bool INumberBase<BinarySize>.IsCanonical(BinarySize value) => true;
 
@@ -54,17 +54,17 @@ partial struct BinarySize : IBinaryNumber<BinarySize>, ISignedNumber<BinarySize>
 
     static bool INumberBase<BinarySize>.IsZero(BinarySize value) => value.Value == 0;
 
-    static BinarySize IBinaryNumber<BinarySize>.Log2(BinarySize value) => long.Log2(value.Value);
+    static BinarySize IBinaryNumber<BinarySize>.Log2(BinarySize value) => (BinarySize)long.Log2(value.Value);
 
-    static BinarySize INumberBase<BinarySize>.MaxMagnitude(BinarySize x, BinarySize y) => long.MaxMagnitude(x.Value, y.Value);
+    static BinarySize INumberBase<BinarySize>.MaxMagnitude(BinarySize x, BinarySize y) => (BinarySize)long.MaxMagnitude(x.Value, y.Value);
 
     static BinarySize INumberBase<BinarySize>.MaxMagnitudeNumber(BinarySize x, BinarySize y)
-        => long.MaxMagnitude(x.Value, y.Value);
+        => (BinarySize)long.MaxMagnitude(x.Value, y.Value);
 
-    static BinarySize INumberBase<BinarySize>.MinMagnitude(BinarySize x, BinarySize y) => long.MinMagnitude(x.Value, y.Value);
+    static BinarySize INumberBase<BinarySize>.MinMagnitude(BinarySize x, BinarySize y) => (BinarySize)long.MinMagnitude(x.Value, y.Value);
 
     static BinarySize INumberBase<BinarySize>.MinMagnitudeNumber(BinarySize x, BinarySize y)
-        => long.MinMagnitude(x.Value, y.Value);
+        => (BinarySize)long.MinMagnitude(x.Value, y.Value);
 
     static BinarySize INumberBase<BinarySize>.Parse(ReadOnlySpan<char> s, NumberStyles style, IFormatProvider? provider)
         => Parse(s, BinarySizeOptions.Default, style, provider);
@@ -98,7 +98,7 @@ partial struct BinarySize : IBinaryNumber<BinarySize>, ISignedNumber<BinarySize>
 
     static BinarySize IAdditiveIdentity<BinarySize, BinarySize>.AdditiveIdentity => Zero;
 
-    static BinarySize IMultiplicativeIdentity<BinarySize, BinarySize>.MultiplicativeIdentity => 1;
+    static BinarySize IMultiplicativeIdentity<BinarySize, BinarySize>.MultiplicativeIdentity => (BinarySize)1;
 
     static BinarySize IMinMaxValue<BinarySize>.MaxValue => MaxValue;
 
@@ -112,7 +112,7 @@ partial struct BinarySize : IBinaryNumber<BinarySize>, ISignedNumber<BinarySize>
         //      protected so that's not possible.
         if (typeof(TOther) == typeof(long))
         {
-            result = (long)(object)value;
+            result = (BinarySize)(long)(object)value;
             return true;
         }
 

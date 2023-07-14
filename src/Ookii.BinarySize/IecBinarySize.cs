@@ -32,7 +32,16 @@ public readonly struct IecBinarySize : IFormattable
     /// <summary>
     /// Initializes a new instance of the <see cref="IecBinarySize"/> structure.
     /// </summary>
-    /// <param name="value">The value to convert.</param>
+    /// <param name="value">The size in bytes.</param>
+    public IecBinarySize(long value)
+    {
+        Value = (BinarySize)value;
+    }
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="IecBinarySize"/> structure.
+    /// </summary>
+    /// <param name="value">The size in bytes.</param>
     public IecBinarySize(BinarySize value)
     {
         Value = value;
