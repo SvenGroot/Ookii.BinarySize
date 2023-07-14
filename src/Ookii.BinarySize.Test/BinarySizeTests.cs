@@ -305,6 +305,9 @@ public class BinarySizeTests
         var values4 = new[] { "5", "6", "", "7", "8" };
         var sum4 = values4.Sum(v => (BinarySize?)converter.ConvertFromInvariantString(v));
         Assert.AreEqual((BinarySize)26, sum4);
+
+        Assert.AreEqual(BinarySize.Zero, Enumerable.Empty<BinarySize>().Sum());
+        Assert.AreEqual(BinarySize.Zero, new[] { (BinarySize?)null }.Sum());
     }
 
     [TestMethod]
@@ -327,5 +330,58 @@ public class BinarySizeTests
         var sum4 = await values4.SumAsync(v => (BinarySize?)converter.ConvertFromInvariantString(v));
         Assert.AreEqual((BinarySize)26, sum4);
 
+        Assert.AreEqual(BinarySize.Zero, await AsyncEnumerable.Empty<BinarySize>().SumAsync());
+        Assert.AreEqual(BinarySize.Zero, await new[] { (BinarySize?)null }.ToAsyncEnumerable().SumAsync());
     }
+
+    [TestMethod]
+    public void TestAverage()
+    {
+        // Average truncates, so the result is 6.
+        var values = new[] { (BinarySize)5, (BinarySize)6, (BinarySize)7, (BinarySize)8 };
+        var average = values.Average();
+        Assert.AreEqual((BinarySize)6, average);
+
+        var values2 = new BinarySize?[] { (BinarySize)5, (BinarySize)6, null, (BinarySize)7, (BinarySize)8 };
+        var average2 = values2.Average();
+        Assert.AreEqual((BinarySize)6, average2);
+
+        var values3 = new[] { "5", "6", "7", "8" };
+        var average3 = values3.Average(v => BinarySize.Parse(v));
+        Assert.AreEqual((BinarySize)6, average3);
+
+        var converter = TypeDescriptor.GetConverter(typeof(BinarySize?));
+        var values4 = new[] { "5", "6", "", "7", "8" };
+        var average4 = values4.Average(v => (BinarySize?)converter.ConvertFromInvariantString(v));
+        Assert.AreEqual((BinarySize)6, average4);
+
+        Assert.IsNull(Enumerable.Empty<BinarySize?>().Average());
+        Assert.IsNull(new[] { (BinarySize?)null }.Average());
+    }
+
+    [TestMethod]
+    public async Task TestAverageAsync()
+    {
+        // Average truncates, so the result is 6.
+        var values = new[] { (BinarySize)5, (BinarySize)6, (BinarySize)7, (BinarySize)8 }.ToAsyncEnumerable();
+        var average = await values.AverageAsync();
+        Assert.AreEqual((BinarySize)6, average);
+
+        var values2 = new BinarySize?[] { (BinarySize)5, (BinarySize)6, null, (BinarySize)7, (BinarySize)8 }.ToAsyncEnumerable();
+        var average2 = await values2.AverageAsync();
+        Assert.AreEqual((BinarySize)6, average2);
+
+        var values3 = new[] { "5", "6", "7", "8" }.ToAsyncEnumerable();
+        var average3 = await values3.AverageAsync(v => BinarySize.Parse(v));
+        Assert.AreEqual((BinarySize)6, average3);
+
+        var converter = TypeDescriptor.GetConverter(typeof(BinarySize?));
+        var values4 = new[] { "5", "6", "", "7", "8" }.ToAsyncEnumerable();
+        var average4 = await values4.AverageAsync(v => (BinarySize?)converter.ConvertFromInvariantString(v));
+        Assert.AreEqual((BinarySize)6, average4);
+
+        Assert.IsNull(await AsyncEnumerable.Empty<BinarySize?>().AverageAsync());
+        Assert.IsNull(await new[] { (BinarySize?)null }.ToAsyncEnumerable().AverageAsync());
+    }
+
 }

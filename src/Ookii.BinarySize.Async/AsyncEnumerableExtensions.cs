@@ -46,6 +46,10 @@ public static class AsyncEnumerableExtensions
     /// <param name="cancellationToken">
     /// The optional cancellation token to be used for canceling the sequence at any time.
     /// </param>
+    /// <returns>
+    /// A task that represents the asynchronous operation. The result of the task is the sum of the
+    /// values in the sequence.
+    /// </returns>
     /// <exception cref="ArgumentNullException">
     /// <paramref name="source"/> is <see langword="null"/>.
     /// </exception>
@@ -72,6 +76,10 @@ public static class AsyncEnumerableExtensions
     /// <param name="cancellationToken">
     /// The optional cancellation token to be used for canceling the sequence at any time.
     /// </param>
+    /// <returns>
+    /// A task that represents the asynchronous operation. The result of the task is the sum of the
+    /// values in the sequence.
+    /// </returns>
     /// <exception cref="ArgumentNullException">
     /// <paramref name="source"/> is <see langword="null"/>.
     /// </exception>
@@ -101,6 +109,10 @@ public static class AsyncEnumerableExtensions
     /// <param name="cancellationToken">
     /// The optional cancellation token to be used for canceling the sequence at any time.
     /// </param>
+    /// <returns>
+    /// A task that represents the asynchronous operation. The result of the task is the sum of the
+    /// values in the sequence.
+    /// </returns>
     /// <exception cref="ArgumentNullException">
     /// <paramref name="source"/> is <see langword="null"/>.
     /// </exception>
@@ -118,5 +130,103 @@ public static class AsyncEnumerableExtensions
     {
         var result = await source.SumAsync(s => selector(s)?.Value, cancellationToken);
         return (BinarySize?)result;
+    }
+
+    /// <summary>
+    /// Asynchronously computes the average of the sequence of <see cref="BinarySize"/> values.
+    /// </summary>
+    /// <param name="source">
+    /// A sequence of <see cref="BinarySize"/> values to calculate the average of.
+    /// </param>
+    /// <param name="cancellationToken">
+    /// The optional cancellation token to be used for canceling the sequence at any time.
+    /// </param>
+    /// <returns>
+    /// A task that represents the asynchronous operation. The result of the task is the average of the
+    /// values in the sequence.
+    /// </returns>
+    /// <exception cref="ArgumentNullException">
+    /// <paramref name="source"/> is <see langword="null"/>.
+    /// </exception>
+    /// <exception cref="InvalidOperationException">
+    /// <paramref name="source"/> contains no elements.
+    /// </exception>
+    public static async ValueTask<BinarySize> AverageAsync(this IAsyncEnumerable<BinarySize> source, CancellationToken cancellationToken = default)
+    {
+        var result = await source.AverageAsync(s => (decimal)s.Value, cancellationToken);
+        return (BinarySize)result;
+    }
+
+    /// <summary>
+    /// Asynchronously computes the average of the sequence of <see cref="BinarySize"/> values.
+    /// </summary>
+    /// <param name="source">
+    /// A sequence of <see cref="BinarySize"/> values to calculate the average of.
+    /// </param>
+    /// <param name="selector">A transform function to apply to each element.</param>
+    /// <param name="cancellationToken">
+    /// The optional cancellation token to be used for canceling the sequence at any time.
+    /// </param>
+    /// <returns>
+    /// A task that represents the asynchronous operation. The result of the task is the sum of the
+    /// values in the sequence.
+    /// </returns>
+    /// <exception cref="ArgumentNullException">
+    /// <paramref name="source"/> is <see langword="null"/>.
+    /// </exception>
+    /// <exception cref="InvalidOperationException">
+    /// <paramref name="source"/> contains no elements.
+    /// </exception>
+    public static async ValueTask<BinarySize> AverageAsync<TSource>(this IAsyncEnumerable<TSource> source, Func<TSource, BinarySize> selector, CancellationToken cancellationToken = default)
+    {
+        var result = await source.AverageAsync(s => (decimal)selector(s).Value, cancellationToken);
+        return (BinarySize)result;
+    }
+
+    /// <summary>
+    /// Asynchronously computes the average of the sequence of nullable <see cref="BinarySize"/> values.
+    /// </summary>
+    /// <param name="source">
+    /// A sequence of nullable <see cref="BinarySize"/> values to calculate the average of.
+    /// </param>
+    /// <param name="cancellationToken">
+    /// The optional cancellation token to be used for canceling the sequence at any time.
+    /// </param>
+    /// <returns>
+    /// A task that represents the asynchronous operation. The result of the task is the sum of the
+    /// values in the sequence, or <see langword="null"/> if <paramref name="source"/>. is empty or
+    /// contains only values that are <see langword="null"/>.
+    /// </returns>
+    /// <exception cref="ArgumentNullException">
+    /// <paramref name="source"/> is <see langword="null"/>.
+    /// </exception>
+    public static async ValueTask<BinarySize?> AverageAsync(this IAsyncEnumerable<BinarySize?> source, CancellationToken cancellationToken = default)
+    {
+        var result = await source.AverageAsync(s => (decimal?)s?.Value, cancellationToken);
+        return (BinarySize?)(long?)result;
+    }
+
+    /// <summary>
+    /// Asynchronously computes the average of the sequence of nullable <see cref="BinarySize"/> values.
+    /// </summary>
+    /// <param name="source">
+    /// A sequence of nullable <see cref="BinarySize"/> values to calculate the average of.
+    /// </param>
+    /// <param name="selector">A transform function to apply to each element.</param>
+    /// <param name="cancellationToken">
+    /// The optional cancellation token to be used for canceling the sequence at any time.
+    /// </param>
+    /// <returns>
+    /// A task that represents the asynchronous operation. The result of the task is the sum of the
+    /// values in the sequence, or <see langword="null"/> if <paramref name="source"/>. is empty or
+    /// contains only values that are <see langword="null"/>.
+    /// </returns>
+    /// <exception cref="ArgumentNullException">
+    /// <paramref name="source"/> is <see langword="null"/>.
+    /// </exception>
+    public static async ValueTask<BinarySize?> AverageAsync<TSource>(this IAsyncEnumerable<TSource> source, Func<TSource, BinarySize?> selector, CancellationToken cancellationToken = default)
+    {
+        var result = await source.AverageAsync(s => (decimal?)selector(s)?.Value, cancellationToken);
+        return (BinarySize?)(long?)result;
     }
 }
