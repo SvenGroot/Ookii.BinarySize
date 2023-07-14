@@ -18,7 +18,7 @@ foreach (var file in files)
     Console.WriteLine($"{file.Name}: {file.Size:0.# SiB}");
 }
 
-var total = files.Select(f => f.Size).Sum();
+var total = files.Sum(f => f.Size);
 Console.WriteLine();
 Console.WriteLine($"Total: {total:0.# SiB}");
 
