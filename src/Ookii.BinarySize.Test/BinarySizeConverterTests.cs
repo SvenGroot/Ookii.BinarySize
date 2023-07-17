@@ -57,6 +57,7 @@ public class BinarySizeConverterTests
         Assert.AreEqual(target, converter.ConvertFrom(null, CultureInfo.InvariantCulture, "123.5MB"));
         Assert.AreEqual("126464 KiB", converter.ConvertTo(null, CultureInfo.InvariantCulture, target, typeof(string)));
 
+        Assert.AreEqual(target, converter.ConvertFrom(null, CultureInfo.InvariantCulture, (IecBinarySize)129499136));
         Assert.AreEqual((IecBinarySize)129499136, converter.ConvertTo(null, CultureInfo.InvariantCulture, target, typeof(IecBinarySize)));
         Assert.AreEqual(129499136.0, converter.ConvertTo(null, CultureInfo.InvariantCulture, target, typeof(double)));
     }
@@ -99,6 +100,7 @@ public class BinarySizeConverterTests
         Assert.AreEqual(target, converter.ConvertFrom(null, CultureInfo.InvariantCulture, "123KiB"));
         Assert.AreEqual("123 KiB", converter.ConvertTo(null, CultureInfo.InvariantCulture, target, typeof(string)));
 
+        Assert.AreEqual(target, converter.ConvertFrom(null, CultureInfo.InvariantCulture, (BinarySize)125952));
         Assert.AreEqual((BinarySize)125952, converter.ConvertTo(null, CultureInfo.InvariantCulture, target, typeof(BinarySize)));
         Assert.AreEqual(125952.0, converter.ConvertTo(null, CultureInfo.InvariantCulture, target, typeof(double)));
     }
