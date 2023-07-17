@@ -843,12 +843,6 @@ public readonly partial struct BinarySize : IEquatable<BinarySize>, IComparable<
         result.Factor = _scalingFactors[scaleIndex];
         result.ScaleChar = prefixes[scaleIndex];
 
-        // Always use upper case prefix when formatting, except if decimal kilo.
-        if (options == null && result.Factor != Kilo)
-        {
-            result.ScaleChar = char.ToUpperInvariant(result.ScaleChar);
-        }
-
         // Remove any whitespace between the number and the unit.
         var trimmed = result.Trimmed.TrimEnd();
         result.Whitespace = result.Trimmed.Slice(trimmed.Length);
@@ -859,7 +853,6 @@ public readonly partial struct BinarySize : IEquatable<BinarySize>, IComparable<
     private (long, char) DetermineAutomaticScalingFactor(long autoFactor)
     {
         // Check all factors except the automatic ones.
-        var factors = _scalingChars.AsSpan(0, _scalingChars.Length - 4);
         var (allowRounding, useDecimal) = autoFactor switch
         {
             AutoFactor => (false, false),
@@ -869,16 +862,25 @@ public readonly partial struct BinarySize : IEquatable<BinarySize>, IComparable<
             _ => throw new ArgumentException(null, nameof(autoFactor)), // Should never be reached
         };
 
-        factors = useDecimal
-            ? factors.Slice(factors.Length / 2)
-            : factors.Slice(0, factors.Length / 2);
-
-        for (int index = 0; index < factors.Length; ++index)
+        var chars = _scalingChars.AsSpan(0, _scalingChars.Length - 4);
+        var factors = _scalingFactors.AsSpan(0, chars.Length);
+        if (useDecimal)
         {
-            var factor = _scalingFactors[index];
+            chars = chars.Slice(chars.Length / 2);
+            factors = factors.Slice(factors.Length / 2);
+        }
+        else
+        {
+            chars = chars.Slice(0, chars.Length / 2);
+            factors = factors.Slice(0, factors.Length / 2);
+        }
+
+        for (int index = 0; index < chars.Length; ++index)
+        {
+            var factor = factors[index];
             if (Value >= factor && (allowRounding || Value % factor == 0))
             {
-                return (factor, _scalingChars[index]);
+                return (factor, chars[index]);
             }
         }
 
@@ -906,6 +908,16 @@ public readonly partial struct BinarySize : IEquatable<BinarySize>, IComparable<
         if (suffix.Factor < 0)
         {
             (suffix.Factor, suffix.ScaleChar) = DetermineAutomaticScalingFactor(suffix.Factor);
+        }
+
+        // Always use upper case prefix when formatting, except if decimal kilo.
+        if (suffix.Factor == Kilo)
+        {
+            suffix.ScaleChar = char.ToLowerInvariant(suffix.ScaleChar);
+        }
+        else
+        {
+            suffix.ScaleChar = char.ToUpperInvariant(suffix.ScaleChar);
         }
 
         // Don't include the 'i' if there's no scale prefix.

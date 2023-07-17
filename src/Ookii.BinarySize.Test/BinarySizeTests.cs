@@ -76,6 +76,45 @@ public class BinarySizeTests
         // Test version without provider uses current culture (weak test but it'll do)
         string size = string.Format(CultureInfo.CurrentCulture, "{0:0.0}KB", 123.5);
         Assert.AreEqual(new BinarySize(126464), BinarySize.Parse(size));
+
+        // Empty span
+        Assert.AreEqual((BinarySize)0, BinarySize.Parse(ReadOnlySpan<char>.Empty, CultureInfo.InvariantCulture));
+    }
+
+    [TestMethod]
+    public void TestTryParse()
+    {
+        Assert.IsTrue(BinarySize.TryParse("123", CultureInfo.InvariantCulture, out var result));
+        Assert.AreEqual(new BinarySize(123), result);
+        Assert.IsTrue(BinarySize.TryParse("123B", CultureInfo.InvariantCulture, out result));
+        Assert.AreEqual(new BinarySize(123), result);
+        Assert.IsTrue(BinarySize.TryParse("123PB", CultureInfo.InvariantCulture, out result));
+        Assert.AreEqual(new BinarySize(138485688541642752), result);
+        Assert.IsTrue(BinarySize.TryParse("123PiB", CultureInfo.InvariantCulture, out result));
+        Assert.AreEqual(new BinarySize(138485688541642752), result);
+        Assert.IsTrue(BinarySize.TryParse("123P", CultureInfo.InvariantCulture, out result));
+        Assert.AreEqual(new BinarySize(138485688541642752), result);
+        Assert.IsTrue(BinarySize.TryParse(" 123 PB ", CultureInfo.InvariantCulture, out result));
+        Assert.AreEqual(new BinarySize(138485688541642752), result);
+
+        // Explicit culture test:
+        Assert.IsTrue(BinarySize.TryParse("123,5KB", new CultureInfo("nl-NL"), out result));
+        Assert.AreEqual(new BinarySize(126464), result);
+
+        // Test version without provider uses current culture (weak test but it'll do)
+        string size = string.Format(CultureInfo.CurrentCulture, "{0:0.0}KB", 123.5);
+        Assert.IsTrue(BinarySize.TryParse(size, out result));
+        Assert.AreEqual(new BinarySize(126464), result);
+
+        // Empty span
+        Assert.IsTrue(BinarySize.TryParse(ReadOnlySpan<char>.Empty, CultureInfo.InvariantCulture, out result));
+        Assert.AreEqual(new BinarySize(0), result);
+
+        // Invalid number.
+        Assert.IsFalse(BinarySize.TryParse("asdf", CultureInfo.InvariantCulture, out _));
+
+        // Overflow.
+        Assert.IsFalse(BinarySize.TryParse("1234EB", CultureInfo.InvariantCulture, out _));
     }
 
     [TestMethod]
@@ -216,11 +255,17 @@ public class BinarySizeTests
         Assert.AreEqual("0.123456789012345678EB", target.ToString("eB", CultureInfo.InvariantCulture));
         Assert.AreEqual("0.1070816950842157899009832178EiB", target.ToString("eiB", CultureInfo.InvariantCulture));
         Assert.AreEqual("0.123456789012345678E", target.ToString("e", CultureInfo.InvariantCulture));
+
+        target = new BinarySize(1234000);
+        Assert.AreEqual("1234kB", target.ToString("aB", CultureInfo.InvariantCulture));
+        Assert.AreEqual("1234000 B", target.ToString(" aiB", CultureInfo.InvariantCulture));
+        Assert.AreEqual("1.234MB", target.ToString("sB", CultureInfo.InvariantCulture));
+        Assert.AreEqual("1.1768341064453125MiB", target.ToString("siB", CultureInfo.InvariantCulture));
     }
 
 #if NET6_0_OR_GREATER
 
-        [TestMethod]
+    [TestMethod]
     public void TestTryFormat()
     {
         var size = new BinarySize(126464);
