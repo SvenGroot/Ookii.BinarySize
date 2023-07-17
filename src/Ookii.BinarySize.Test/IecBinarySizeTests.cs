@@ -14,6 +14,18 @@ public class IecIecBinarySizeTests
     }
 
     [TestMethod]
+    public void TestTryParse()
+    {
+        Assert.IsTrue(IecBinarySize.TryParse("123MB", CultureInfo.InvariantCulture, out var result));
+        Assert.AreEqual((IecBinarySize)123000000, result);
+        Assert.IsTrue(IecBinarySize.TryParse("123MiB", CultureInfo.InvariantCulture, out result));
+        Assert.AreEqual((IecBinarySize)128974848, result);
+        Assert.IsTrue(IecBinarySize.TryParse("123M", CultureInfo.InvariantCulture, out result));
+        Assert.AreEqual((IecBinarySize)123000000, result);
+        Assert.IsFalse(IecBinarySize.TryParse("asdf", CultureInfo.InvariantCulture, out _));
+    }
+
+    [TestMethod]
     public void TestToString()
     {
         var size = new IecBinarySize(BinarySize.FromMebi(123));

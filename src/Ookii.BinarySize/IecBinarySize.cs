@@ -137,4 +137,22 @@ public readonly struct IecBinarySize : IFormattable
     /// </returns>
     public static implicit operator IecBinarySize(BinarySize value) => new(value);
 
+    /// <summary>
+    /// Performs an explicit conversion from <see cref="IecBinarySize"/> to <see cref="long"/>.
+    /// </summary>
+    /// <param name="value">The value.</param>
+    /// <returns>
+    /// The value of the <see cref="Value"/> property.
+    /// </returns>
+    public static explicit operator long(IecBinarySize value) => value.Value.Value;
+
+    /// <summary>
+    /// Performs an implicit conversion from <see cref="long"/> to <see cref="IecBinarySize"/>.
+    /// </summary>
+    /// <param name="value">The value.</param>
+    /// <returns>
+    /// An <see cref="IecBinarySize"/> where the <see cref="Value"/> property equals
+    /// <paramref name="value"/>.
+    /// </returns>
+    public static implicit operator IecBinarySize(long value) => new(value);
 }

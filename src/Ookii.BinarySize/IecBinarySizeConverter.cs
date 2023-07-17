@@ -27,11 +27,12 @@ public class IecBinarySizeConverter : TypeConverter
 {
     /// <inheritdoc/>
     public override bool CanConvertFrom(ITypeDescriptorContext? context, Type sourceType)
-        => sourceType == typeof(string) || base.CanConvertFrom(context, sourceType);
+        => sourceType == typeof(string) || sourceType == typeof(BinarySize) || base.CanConvertFrom(context, sourceType);
 
     /// <inheritdoc/>
     public override bool CanConvertTo(ITypeDescriptorContext? context, Type? destinationType)
-        => (destinationType != null && destinationType.IsPrimitive) || base.CanConvertTo(context, destinationType);
+        => (destinationType != null && destinationType.IsPrimitive) || destinationType == typeof(BinarySize)
+            || base.CanConvertTo(context, destinationType);
 
     /// <inheritdoc/>
     public override object? ConvertFrom(ITypeDescriptorContext? context, CultureInfo? culture, object value)
