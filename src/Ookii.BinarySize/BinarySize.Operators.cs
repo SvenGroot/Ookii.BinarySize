@@ -10,61 +10,61 @@ namespace Ookii;
 partial struct BinarySize
 {
     /// <summary>
-    /// Returns a new <see cref="BinarySize"/> object whose value is the sum of the specified
-    /// <see cref="BinarySize"/> object and this instance.
+    /// Returns the sum of two <see cref="BinarySize"/> values.
     /// </summary>
-    /// <param name="value">The value to add.</param>
+    /// <param name="left">The first value to add.</param>
+    /// <param name="right">The second value to add.</param>
     /// <returns>
-    /// A new object that represents the value of this instance plus <paramref name="value"/>.
+    /// The sum of the <paramref name="left"/> and <paramref name="right"/> parameters.
     /// </returns>
-    public BinarySize Add(BinarySize value) => (BinarySize)checked(Value + value.Value);
+    public static BinarySize Add(BinarySize left, BinarySize right) => (BinarySize)checked(left.Value + right.Value);
 
     /// <summary>
-    /// Returns a new <see cref="BinarySize"/> object whose value is the difference of the specified
-    /// <see cref="BinarySize"/> object and this instance.
+    /// Subtracts one <see cref="BinarySize"/> value from another.
     /// </summary>
-    /// <param name="value">The value to subtract.</param>
+    /// <param name="left">The value to subtract from.</param>
+    /// <param name="right">The value to subtract.</param>
     /// <returns>
-    /// A new object that represents the value of this instance minus <paramref name="value"/>.
+    /// The result of subtracting <paramref name="right"/> from <paramref name="left"/>.
     /// </returns>
-    public BinarySize Subtract(BinarySize value) => (BinarySize)checked(Value - value.Value);
+    public static BinarySize Subtract(BinarySize left, BinarySize right) => (BinarySize)checked(left.Value - right.Value);
 
     /// <summary>
-    /// Returns a new <see cref="BinarySize"/> object whose value is the product of the specified
-    /// <see cref="long"/> object and this instance.
+    /// Returns the product of two <see cref="BinarySize"/> values.
     /// </summary>
-    /// <param name="value">The value to multiply by.</param>
+    /// <param name="left">The first value to multiply.</param>
+    /// <param name="right">The second value to multiply.</param>
     /// <returns>
-    /// A new object that represents the value of this instance times <paramref name="value"/>.
+    /// The product of the <paramref name="left"/> and <paramref name="right"/> parameters.
     /// </returns>
-    public BinarySize Multiply(long value) => (BinarySize)checked(Value * value);
+    public static BinarySize Multiply(BinarySize left, BinarySize right) => (BinarySize)checked(left.Value * right.Value);
 
     /// <summary>
-    /// Returns a new <see cref="BinarySize"/> object whose value is the division of the specified
-    /// <see cref="long"/> object and this instance.
+    /// Divides one <see cref="BinarySize"/> value by another.
     /// </summary>
-    /// <param name="value">The value to divide by.</param>
+    /// <param name="left">The value to be divided.</param>
+    /// <param name="right">The value to divide by.</param>
     /// <returns>
-    /// A new object that represents the value of this instance divided by <paramref name="value"/>.
+    /// The result of dividing <paramref name="left"/> by <paramref name="right"/>.
     /// </returns>
-    public BinarySize Divide(long value) => (BinarySize)checked(Value / value);
+    public static BinarySize Divide(BinarySize left, BinarySize right) => (BinarySize)checked(left.Value / right.Value);
 
     /// <summary>
-    /// Returns a new <see cref="BinarySize"/> object whose value is the remainder of the division
-    /// of the specified <see cref="long"/> object and this instance.
+    /// Returns the remainder of dividing one <see cref="BinarySize"/> value by another.
     /// </summary>
-    /// <param name="value">The value to divide by.</param>
+    /// <param name="left">The value to be divided.</param>
+    /// <param name="right">The value to divide by.</param>
     /// <returns>
-    /// A new object that represents the remainder of the value of this instance divided by
-    /// <paramref name="value"/>.
+    /// The remainder after dividing <paramref name="left"/> by <paramref name="right"/>.
     /// </returns>
-    public BinarySize Remainder(long value) => (BinarySize)checked(Value % value);
+    public static BinarySize Remainder(BinarySize left, BinarySize right) => (BinarySize)checked(left.Value % right.Value);
 
     /// <summary>
-    /// Returns a new <see cref="BinarySize"/> object whose value is the negation of this instance.
+    /// Returns the negation of a <see cref="BinarySize"/> value.
     /// </summary>
-    /// <returns>A new object that represents the negated value of this instance.</returns>
-    public static BinarySize Negate(BinarySize size) => (BinarySize)(-size.Value);
+    /// <param name="value">The value to negate.</param>
+    /// <returns>The negation of <paramref name="value"/>.</returns>
+    public static BinarySize Negate(BinarySize value) => (BinarySize)(-value.Value);
 
     /// <summary>
     /// Determines whether two specified <see cref="BinarySize"/> values are the same.
