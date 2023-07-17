@@ -168,7 +168,7 @@ public static class AsyncEnumerableExtensions
     /// The optional cancellation token to be used for canceling the sequence at any time.
     /// </param>
     /// <returns>
-    /// A task that represents the asynchronous operation. The result of the task is the sum of the
+    /// A task that represents the asynchronous operation. The result of the task is the average of the
     /// values in the sequence.
     /// </returns>
     /// <exception cref="ArgumentNullException">
@@ -193,7 +193,7 @@ public static class AsyncEnumerableExtensions
     /// The optional cancellation token to be used for canceling the sequence at any time.
     /// </param>
     /// <returns>
-    /// A task that represents the asynchronous operation. The result of the task is the sum of the
+    /// A task that represents the asynchronous operation. The result of the task is the average of the
     /// values in the sequence, or <see langword="null"/> if <paramref name="source"/>. is empty or
     /// contains only values that are <see langword="null"/>.
     /// </returns>
@@ -217,7 +217,7 @@ public static class AsyncEnumerableExtensions
     /// The optional cancellation token to be used for canceling the sequence at any time.
     /// </param>
     /// <returns>
-    /// A task that represents the asynchronous operation. The result of the task is the sum of the
+    /// A task that represents the asynchronous operation. The result of the task is the average of the
     /// values in the sequence, or <see langword="null"/> if <paramref name="source"/>. is empty or
     /// contains only values that are <see langword="null"/>.
     /// </returns>
