@@ -30,6 +30,7 @@ public static class EnumerableExtensions
     /// <summary>
     /// Computes the sum of the sequence of <see cref="BinarySize"/> values.
     /// </summary>
+    /// <typeparam name="TSource">The type of the elements of <paramref name="source"/>.</typeparam>
     /// <param name="source">
     /// A sequence of <see cref="BinarySize"/> values to calculate the sum of.
     /// </param>
@@ -75,6 +76,7 @@ public static class EnumerableExtensions
     /// <summary>
     /// Computes the sum of the sequence of nullable <see cref="BinarySize"/> values.
     /// </summary>
+    /// <typeparam name="TSource">The type of the elements of <paramref name="source"/>.</typeparam>
     /// <param name="source">
     /// A sequence of nullable <see cref="BinarySize"/> values to calculate the sum of.
     /// </param>
@@ -115,6 +117,7 @@ public static class EnumerableExtensions
     /// <summary>
     /// Computes the average of the sequence of <see cref="BinarySize"/> values.
     /// </summary>
+    /// <typeparam name="TSource">The type of the elements of <paramref name="source"/>.</typeparam>
     /// <param name="source">
     /// A sequence of <see cref="BinarySize"/> values to calculate the average of.
     /// </param>
@@ -148,6 +151,7 @@ public static class EnumerableExtensions
     /// <summary>
     /// Computes the average of the sequence of nullable <see cref="BinarySize"/> values.
     /// </summary>
+    /// <typeparam name="TSource">The type of the elements of <paramref name="source"/>.</typeparam>
     /// <param name="source">
     /// A sequence of nullable <see cref="BinarySize"/> values to calculate the average of.
     /// </param>

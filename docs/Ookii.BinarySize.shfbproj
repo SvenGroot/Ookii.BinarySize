@@ -1,0 +1,173 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="15.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <!-- Import the common properties to support NuGet restore -->
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <PropertyGroup>
+    <!-- A target framework version is required by Visual Studio.  It can be any version with a targeting pack installed. -->
+    <TargetFrameworkVersion>v4.7.2</TargetFrameworkVersion>
+    <!-- The configuration and platform will be used to determine which assemblies to include from solution and
+				 project documentation sources -->
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>9c0d59a7-f275-466e-86e8-b8dec5fac377</ProjectGuid>
+    <SHFBSchemaVersion>2017.9.26.0</SHFBSchemaVersion>
+    <!-- AssemblyName, Name, and RootNamespace are not used by SHFB but Visual Studio adds them anyway -->
+    <AssemblyName>Ookii.BinarySize</AssemblyName>
+    <RootNamespace>Ookii.BinarySize</RootNamespace>
+    <Name>Ookii.BinarySize</Name>
+    <!-- SHFB properties -->
+    <FrameworkVersion>.NET Core/.NET Standard/.NET 5.0+</FrameworkVersion>
+    <OutputPath>.\Help\</OutputPath>
+    <HtmlHelpName>Ookii.BinarySize</HtmlHelpName>
+    <Language>en-US</Language>
+    <TransformComponentArguments>
+      <Argument Key="RobotsMetadata" Value="" />
+      <Argument Key="BibliographyDataFile" Value="" />
+      <Argument Key="RootBreadcrumbTitleText" Value="Docs" />
+      <Argument Key="ResizableTocColumn" Value="False" />
+      <Argument Key="CollapsibleSections" Value="True" />
+      <Argument Key="LogoFile" Value="" />
+      <Argument Key="LogoHeight" Value="" />
+      <Argument Key="LogoWidth" Value="" />
+      <Argument Key="LogoAltText" Value="" />
+      <Argument Key="LogoPlacement" Value="" />
+      <Argument Key="LogoAlignment" Value="" />
+      <Argument Key="LogoUrl" Value="" />
+      <Argument Key="MaxVersionParts" Value="" />
+      <Argument Key="DefaultLanguage" Value="cs" />
+      <Argument Key="IncludeEnumValues" Value="True" />
+      <Argument Key="EnumMemberSortOrder" Value="Value" />
+      <Argument Key="FlagsEnumValueFormat" Value="IntegerValue" />
+      <Argument Key="FlagsEnumSeparatorSize" Value="0" />
+      <Argument Key="BaseSourceCodeUrl" Value="" />
+      <Argument Key="RequestExampleUrl" Value="" />
+    </TransformComponentArguments>
+    <DocumentationSources>
+      <DocumentationSource sourceFile="..\src\Ookii.BinarySize\Ookii.BinarySize.csproj" />
+      <DocumentationSource sourceFile="..\src\Ookii.BinarySize.Async\Ookii.BinarySize.Async.csproj" />
+    </DocumentationSources>
+    <HelpFileFormat>Website</HelpFileFormat>
+    <SyntaxFilters>Standard</SyntaxFilters>
+    <PresentationStyle>Default2022</PresentationStyle>
+    <CleanIntermediates>True</CleanIntermediates>
+    <KeepLogFile>True</KeepLogFile>
+    <DisableCodeBlockComponent>False</DisableCodeBlockComponent>
+    <IndentHtml>False</IndentHtml>
+    <BuildAssemblerVerbosity>OnlyWarningsAndErrors</BuildAssemblerVerbosity>
+    <SaveComponentCacheCapacity>100</SaveComponentCacheCapacity>
+    <!-- ApiFilter to work around https://github.com/EWSoftware/SHFB/issues/1010 -->
+    <ApiFilter>
+      <Filter entryType="Namespace" fullName="Ookii" isExposed="True">
+        <Filter entryType="Structure" fullName="Ookii.BinarySize" filterName="BinarySize" isExposed="True">
+          <Filter entryType="Property" fullName="Ookii.BinarySize.One" filterName="System.Numerics.INumberBase&lt;Ookii.BinarySize&gt;.One" isExposed="False" />
+          <Filter entryType="Property" fullName="Ookii.BinarySize.Radix" filterName="System.Numerics.INumberBase&lt;Ookii.BinarySize&gt;.Radix" isExposed="False" />
+          <Filter entryType="Property" fullName="Ookii.BinarySize.Zero" filterName="System.Numerics.INumberBase&lt;Ookii.BinarySize&gt;.Zero" isExposed="False" />
+          <Filter entryType="Property" fullName="Ookii.BinarySize.NegativeOne" filterName="System.Numerics.ISignedNumber&lt;Ookii.BinarySize&gt;.NegativeOne" isExposed="False" />
+          <Filter entryType="Method" fullName="Ookii.BinarySize.Abs" filterName="System.Numerics.INumberBase&lt;Ookii.BinarySize&gt;.Abs" isExposed="False" />
+          <Filter entryType="Method" fullName="Ookii.BinarySize.IsCanonical" filterName="System.Numerics.INumberBase&lt;Ookii.BinarySize&gt;.IsCanonical" isExposed="False" />
+          <Filter entryType="Method" fullName="Ookii.BinarySize.IsComplexNumber" filterName="System.Numerics.INumberBase&lt;Ookii.BinarySize&gt;.IsComplexNumber" isExposed="False" />
+          <Filter entryType="Method" fullName="Ookii.BinarySize.IsEvenInteger" filterName="System.Numerics.INumberBase&lt;Ookii.BinarySize&gt;.IsEvenInteger" isExposed="False" />
+          <Filter entryType="Method" fullName="Ookii.BinarySize.IsFinite" filterName="System.Numerics.INumberBase&lt;Ookii.BinarySize&gt;.IsFinite" isExposed="False" />
+          <Filter entryType="Method" fullName="Ookii.BinarySize.IsImaginaryNumber" filterName="System.Numerics.INumberBase&lt;Ookii.BinarySize&gt;.IsImaginaryNumber" isExposed="False" />
+          <Filter entryType="Method" fullName="Ookii.BinarySize.IsInfinity" filterName="System.Numerics.INumberBase&lt;Ookii.BinarySize&gt;.IsInfinity" isExposed="False" />
+          <Filter entryType="Method" fullName="Ookii.BinarySize.IsInteger" filterName="System.Numerics.INumberBase&lt;Ookii.BinarySize&gt;.IsInteger" isExposed="False" />
+          <Filter entryType="Method" fullName="Ookii.BinarySize.IsNaN" filterName="System.Numerics.INumberBase&lt;Ookii.BinarySize&gt;.IsNaN" isExposed="False" />
+          <Filter entryType="Method" fullName="Ookii.BinarySize.IsNegative" filterName="System.Numerics.INumberBase&lt;Ookii.BinarySize&gt;.IsNegative" isExposed="False" />
+          <Filter entryType="Method" fullName="Ookii.BinarySize.IsNegativeInfinity" filterName="System.Numerics.INumberBase&lt;Ookii.BinarySize&gt;.IsNegativeInfinity" isExposed="False" />
+          <Filter entryType="Method" fullName="Ookii.BinarySize.IsNormal" filterName="System.Numerics.INumberBase&lt;Ookii.BinarySize&gt;.IsNormal" isExposed="False" />
+          <Filter entryType="Method" fullName="Ookii.BinarySize.IsOddInteger" filterName="System.Numerics.INumberBase&lt;Ookii.BinarySize&gt;.IsOddInteger" isExposed="False" />
+          <Filter entryType="Method" fullName="Ookii.BinarySize.IsPositive" filterName="System.Numerics.INumberBase&lt;Ookii.BinarySize&gt;.IsPositive" isExposed="False" />
+          <Filter entryType="Method" fullName="Ookii.BinarySize.IsPositiveInfinity" filterName="System.Numerics.INumberBase&lt;Ookii.BinarySize&gt;.IsPositiveInfinity" isExposed="False" />
+          <Filter entryType="Method" fullName="Ookii.BinarySize.IsPow2" filterName="System.Numerics.IBinaryNumber&lt;Ookii.BinarySize&gt;.IsPow2" isExposed="False" />
+          <Filter entryType="Method" fullName="Ookii.BinarySize.IsRealNumber" filterName="System.Numerics.INumberBase&lt;Ookii.BinarySize&gt;.IsRealNumber" isExposed="False" />
+          <Filter entryType="Method" fullName="Ookii.BinarySize.IsSubnormal" filterName="System.Numerics.INumberBase&lt;Ookii.BinarySize&gt;.IsSubnormal" isExposed="False" />
+          <Filter entryType="Method" fullName="Ookii.BinarySize.IsZero" filterName="System.Numerics.INumberBase&lt;Ookii.BinarySize&gt;.IsZero" isExposed="False" />
+          <Filter entryType="Method" fullName="Ookii.BinarySize.Log2" filterName="System.Numerics.IBinaryNumber&lt;Ookii.BinarySize&gt;.Log2" isExposed="False" />
+          <Filter entryType="Method" fullName="Ookii.BinarySize.MaxMagnitude" filterName="System.Numerics.INumberBase&lt;Ookii.BinarySize&gt;.MaxMagnitude" isExposed="False" />
+          <Filter entryType="Method" fullName="Ookii.BinarySize.MaxMagnitudeNumber" filterName="System.Numerics.INumberBase&lt;Ookii.BinarySize&gt;.MaxMagnitudeNumber" isExposed="False" />
+          <Filter entryType="Method" fullName="Ookii.BinarySize.MinMagnitude" filterName="System.Numerics.INumberBase&lt;Ookii.BinarySize&gt;.MinMagnitude" isExposed="False" />
+          <Filter entryType="Method" fullName="Ookii.BinarySize.MinMagnitudeNumber" filterName="System.Numerics.INumberBase&lt;Ookii.BinarySize&gt;.MinMagnitudeNumber" isExposed="False" />
+          <Filter entryType="Method" fullName="Ookii.BinarySize.Parse" filterName="System.Numerics.INumberBase&lt;Ookii.BinarySize&gt;.Parse" isExposed="False" />
+          <Filter entryType="Method" fullName="Ookii.BinarySize.Parse" filterName="System.Numerics.INumberBase&lt;Ookii.BinarySize&gt;.Parse" isExposed="False" />
+          <Filter entryType="Method" fullName="Ookii.BinarySize.TryConvertFromChecked" filterName="System.Numerics.INumberBase&lt;Ookii.BinarySize&gt;.TryConvertFromChecked" isExposed="False" />
+          <Filter entryType="Method" fullName="Ookii.BinarySize.TryConvertFromSaturating" filterName="System.Numerics.INumberBase&lt;Ookii.BinarySize&gt;.TryConvertFromSaturating" isExposed="False" />
+          <Filter entryType="Method" fullName="Ookii.BinarySize.TryConvertFromTruncating" filterName="System.Numerics.INumberBase&lt;Ookii.BinarySize&gt;.TryConvertFromTruncating" isExposed="False" />
+          <Filter entryType="Method" fullName="Ookii.BinarySize.TryConvertToChecked" filterName="System.Numerics.INumberBase&lt;Ookii.BinarySize&gt;.TryConvertToChecked" isExposed="False" />
+          <Filter entryType="Method" fullName="Ookii.BinarySize.TryConvertToSaturating" filterName="System.Numerics.INumberBase&lt;Ookii.BinarySize&gt;.TryConvertToSaturating" isExposed="False" />
+          <Filter entryType="Method" fullName="Ookii.BinarySize.TryConvertToTruncating" filterName="System.Numerics.INumberBase&lt;Ookii.BinarySize&gt;.TryConvertToTruncating" isExposed="False" />
+          <Filter entryType="Method" fullName="Ookii.BinarySize.TryParse" filterName="System.Numerics.INumberBase&lt;Ookii.BinarySize&gt;.TryParse" isExposed="False" />
+          <Filter entryType="Method" fullName="Ookii.BinarySize.TryParse" filterName="System.Numerics.INumberBase&lt;Ookii.BinarySize&gt;.TryParse" isExposed="False" />
+          <Filter entryType="Property" fullName="Ookii.BinarySize.MaxValue" filterName="System.Numerics.IMinMaxValue&lt;Ookii.BinarySize&gt;.MaxValue" isExposed="False" />
+          <Filter entryType="Property" fullName="Ookii.BinarySize.MinValue" filterName="System.Numerics.IMinMaxValue&lt;Ookii.BinarySize&gt;.MinValue" isExposed="False" />
+          <Filter entryType="Property" fullName="Ookii.BinarySize.AdditiveIdentity" filterName="System.Numerics.IAdditiveIdentity&lt;Ookii.BinarySize,Ookii.BinarySize&gt;.AdditiveIdentity" isExposed="False" />
+          <Filter entryType="Property" fullName="Ookii.BinarySize.MultiplicativeIdentity" filterName="System.Numerics.IMultiplicativeIdentity&lt;Ookii.BinarySize,Ookii.BinarySize&gt;.MultiplicativeIdentity" isExposed="False" />
+        </Filter>
+      </Filter>
+    </ApiFilter>
+    <HelpTitle>Ookii.BinarySize 1.0 documentation</HelpTitle>
+    <HelpFileVersion>1.0.0.0</HelpFileVersion>
+    <NamingMethod>MemberName</NamingMethod>
+    <ContentPlacement>AboveNamespaces</ContentPlacement>
+    <RootNamespaceContainer>False</RootNamespaceContainer>
+    <NamespaceGrouping>False</NamespaceGrouping>
+    <MaximumGroupParts>2</MaximumGroupParts>
+    <Preliminary>False</Preliminary>
+    <CopyrightHref>https://github.com/SvenGroot/Ookii.BinarySize</CopyrightHref>
+    <CopyrightText>Copyright &amp;#169%3b Sven Groot %28Ookii.org%29</CopyrightText>
+    <SdkLinkTarget>Blank</SdkLinkTarget>
+    <ProjectSummary>&amp;lt%3bpara&amp;gt%3b
+  Ookii.BinarySize provides parsing and formatting quantities of bytes using human-readable representation, with binary prefixes such as &amp;quot%3bMB&amp;quot%3b, &amp;quot%3bGiB&amp;quot%3b, and so forth.
+&amp;lt%3b/para&amp;gt%3b
+&amp;lt%3bpara&amp;gt%3b
+  The &amp;lt%3bsee cref=&amp;quot%3bT:Ookii.BinarySize&amp;quot%3b/&amp;gt%3b structure provides most of the library&amp;#39%3bs functionality. The &amp;lt%3bsee cref=&amp;quot%3bT:Ookii.IecBinarySize&amp;quot%3b/&amp;gt%3b structure is a wrapper
+  that parses SI prefixes as decimal prefixes.
+&amp;lt%3b/para&amp;gt%3b
+&amp;lt%3bpara&amp;gt%3b
+  See the &amp;lt%3bsee href=&amp;quot%3bhttps://github.com/SvenGroot/Ookii.CommandLine&amp;quot%3b&amp;gt%3bGitHub project&amp;lt%3b/see&amp;gt%3b for more information.
+&amp;lt%3b/para&amp;gt%3b</ProjectSummary>
+    <NamespaceSummaries>
+      <NamespaceSummaryItem name="Ookii" isDocumented="True">&lt;para&gt;
+  Ookii.BinarySize provides parsing and formatting quantities of bytes using human-readable representation, with binary prefixes such as "MB", "GiB", and so forth.
+&lt;/para&gt;
+&lt;para&gt;
+  The &lt;see cref="T:Ookii.BinarySize"/&gt; structure provides most of the library's functionality. The &lt;see cref="T:Ookii.IecBinarySize"/&gt; structure serves as an
+  alternative that parses SI prefixes as decimal prefixes by default.
+&lt;/para&gt;
+&lt;para&gt;
+  See the &lt;see href="https://github.com/SvenGroot/Ookii.CommandLine"&gt;GitHub project&lt;/see&gt; for more information.
+&lt;/para&gt;</NamespaceSummaryItem>
+    </NamespaceSummaries>
+  </PropertyGroup>
+  <!-- There are no properties for these groups.  AnyCPU needs to appear in order for Visual Studio to perform
+			 the build.  The others are optional common platform types that may appear. -->
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|x86' ">
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|x86' ">
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|x64' ">
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|x64' ">
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|Win32' ">
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|Win32' ">
+  </PropertyGroup>
+  <!-- Import the common build targets during NuGet restore because before the packages are being installed, $(SHFBROOT) is not set yet -->
+  <Import Project="$(MSBuildToolsPath)\Microsoft.Common.targets" Condition="'$(MSBuildRestoreSessionId)' != ''" />
+  <!-- Import the SHFB build targets during build -->
+  <Import Project="$(SHFBROOT)\SandcastleHelpFileBuilder.targets" Condition="'$(MSBuildRestoreSessionId)' == ''" />
+  <!-- The pre-build and post-build event properties must appear *after* the targets file import in order to be
+			 evaluated correctly. -->
+  <PropertyGroup>
+    <PreBuildEvent>
+    </PreBuildEvent>
+    <PostBuildEvent>
+    </PostBuildEvent>
+    <RunPostBuildEvent>OnBuildSuccess</RunPostBuildEvent>
+  </PropertyGroup>
+</Project>
