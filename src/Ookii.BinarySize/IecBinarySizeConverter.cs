@@ -16,10 +16,8 @@ namespace Ookii;
 ///   <see cref="IecBinarySize"/> structure.
 /// </para>
 /// <para>
-///   Unlike the <see cref="BinarySizeIecConverter"/> class, which is intended for use with the
-///   <see cref="TypeConverterAttribute"/> on properties that use a <see cref="BinarySize"/>
-///   structure, this converter instead returns a <see cref="IecBinarySize"/> instance and is only
-///   intended for use with that type.
+///   This converter will interpret SI prefixes as based on powers of ten, so "1kB" equals 1000
+///   bytes, and so forth. IEC prefixes are still based on powers of two.
 /// </para>
 /// </remarks>
 /// <threadsafety instance="true" static="true"/>

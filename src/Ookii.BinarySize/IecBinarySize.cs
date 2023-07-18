@@ -15,9 +15,8 @@ namespace Ookii;
 /// </summary>
 /// <remarks>
 /// <para>
-///   Use this type if you need the default conversion behavior to be different, and cannot use a
-///   <see cref="TypeConverterAttribute"/> attribute to use the <see cref="BinarySizeIecConverter"/>
-///   class.
+///   Use this type if you need the default conversion behavior to be different, and cannot use
+///   a custom <see cref="BinarySizeOptions"/> value.
 /// </para>
 /// <para>
 ///   This structure only provides parsing and formatting functionality. For all other functions

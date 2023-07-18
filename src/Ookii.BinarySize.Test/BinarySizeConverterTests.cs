@@ -23,16 +23,6 @@ public class BinarySizeConverterTests
             Assert.IsTrue(converter.CanConvertTo(type));
         }
 
-        converter = new BinarySizeIecConverter();
-        Assert.IsTrue(converter.CanConvertFrom(typeof(string)));
-        Assert.IsTrue(converter.CanConvertFrom(typeof(IecBinarySize)));
-        Assert.IsTrue(converter.CanConvertTo(typeof(string)));
-        Assert.IsTrue(converter.CanConvertTo(typeof(IecBinarySize)));
-        foreach (var type in PrimitiveTypes)
-        {
-            Assert.IsTrue(converter.CanConvertTo(type));
-        }
-
         converter = new IecBinarySizeConverter();
         Assert.IsTrue(converter.CanConvertFrom(typeof(string)));
         Assert.IsTrue(converter.CanConvertFrom(typeof(BinarySize)));
@@ -66,19 +56,6 @@ public class BinarySizeConverterTests
     public void TestConversionOptions()
     {
         var converter = new BinarySizeConverter(BinarySizeOptions.UseIecStandard);
-        Assert.AreEqual(BinarySizeOptions.UseIecStandard, converter.Options);
-        var target = new BinarySize(123000);
-        Assert.AreEqual(target, converter.ConvertFrom(null, CultureInfo.InvariantCulture, "123KB"));
-        Assert.AreEqual("123000 B", converter.ConvertTo(null, CultureInfo.InvariantCulture, target, typeof(string)));
-        target = new(125952);
-        Assert.AreEqual(target, converter.ConvertFrom(null, CultureInfo.InvariantCulture, "123KiB"));
-        Assert.AreEqual("123 KiB", converter.ConvertTo(null, CultureInfo.InvariantCulture, target, typeof(string)));
-    }
-
-    [TestMethod]
-    public void TestIecConverter()
-    {
-        var converter = new BinarySizeIecConverter();
         Assert.AreEqual(BinarySizeOptions.UseIecStandard, converter.Options);
         var target = new BinarySize(123000);
         Assert.AreEqual(target, converter.ConvertFrom(null, CultureInfo.InvariantCulture, "123KB"));
