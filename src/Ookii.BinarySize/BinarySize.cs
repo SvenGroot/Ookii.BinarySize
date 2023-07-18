@@ -2,7 +2,12 @@
 using System.Diagnostics.CodeAnalysis;
 using System.Globalization;
 using System.Numerics;
+using System.Runtime.CompilerServices;
+using System.Runtime.Serialization;
 using System.Text;
+using System.Xml;
+using System.Xml.Schema;
+using System.Xml.Serialization;
 
 namespace Ookii;
 
@@ -29,7 +34,8 @@ namespace Ookii;
 /// </remarks>
 /// <threadsafety instance="true" static="true"/>
 [TypeConverter(typeof(BinarySizeConverter))]
-public readonly partial struct BinarySize : IEquatable<BinarySize>, IComparable<BinarySize>, IComparable, IFormattable
+[Serializable]
+public readonly partial struct BinarySize : IEquatable<BinarySize>, IComparable<BinarySize>, IComparable, IFormattable, IXmlSerializable
 #if NET6_0_OR_GREATER
     , ISpanFormattable
 #endif
@@ -769,6 +775,28 @@ public readonly partial struct BinarySize : IEquatable<BinarySize>, IComparable<
         }
 
         throw new ArgumentException(Properties.Resources.ValueNotByteSize, nameof(obj));
+    }
+
+    XmlSchema? IXmlSerializable.GetSchema() => null;
+
+    void IXmlSerializable.ReadXml(XmlReader reader)
+    {
+        var stringValue = reader.ReadElementContentAsString();
+        var newValue = Parse(stringValue, CultureInfo.InvariantCulture);
+        unsafe
+        {
+            // I don't like this, but it's the only way to use a readonly struct with XML
+            // serialization as far as I can tell.
+            fixed (BinarySize* self = &this)
+            {
+                *self = newValue;
+            }
+        }
+    }
+
+    void IXmlSerializable.WriteXml(XmlWriter writer)
+    {
+        writer.WriteString(ToString(null, CultureInfo.InvariantCulture));
     }
 
     private static SuffixInfo TrimSuffix(ReadOnlySpan<char> value, BinarySizeOptions? options)

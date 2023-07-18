@@ -1,6 +1,9 @@
 ﻿using System.ComponentModel;
 using System.Diagnostics.CodeAnalysis;
 using System.Globalization;
+using System.Xml;
+using System.Xml.Schema;
+using System.Xml.Serialization;
 
 namespace Ookii;
 
@@ -21,7 +24,8 @@ namespace Ookii;
 /// </para>
 /// </remarks>
 [TypeConverter(typeof(IecBinarySizeConverter))]
-public readonly struct IecBinarySize : IFormattable
+[Serializable]
+public readonly struct IecBinarySize : IFormattable, IXmlSerializable
 #if NET6_0_OR_GREATER
     , ISpanFormattable
 #endif
@@ -117,6 +121,28 @@ public readonly struct IecBinarySize : IFormattable
         => Value.TryFormat(destination, out charsWritten, format, provider);
 
 #endif
+
+    XmlSchema? IXmlSerializable.GetSchema() => null;
+
+    void IXmlSerializable.ReadXml(XmlReader reader)
+    {
+        var stringValue = reader.ReadElementContentAsString();
+        var newValue = Parse(stringValue, CultureInfo.InvariantCulture);
+        unsafe
+        {
+            // I don't like this, but it's the only way to use a readonly struct with XML
+            // serialization as far as I can tell.
+            fixed (IecBinarySize* self = &this)
+            {
+                *self = newValue;
+            }
+        }
+    }
+
+    void IXmlSerializable.WriteXml(XmlWriter writer)
+    {
+        writer.WriteString(ToString(null, CultureInfo.InvariantCulture));
+    }
 
     /// <summary>
     /// Performs an implicit conversion from <see cref="IecBinarySize"/> to <see cref="BinarySize"/>.

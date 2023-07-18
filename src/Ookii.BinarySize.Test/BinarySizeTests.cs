@@ -2,6 +2,10 @@
 using System;
 using System.ComponentModel;
 using System.Globalization;
+using System.Runtime.Serialization;
+using System.Runtime.Serialization.Formatters.Binary;
+using System.Xml;
+using System.Xml.Serialization;
 
 namespace Ookii.Test;
 
@@ -491,4 +495,48 @@ public class BinarySizeTests
         Assert.IsNull(await new[] { (BinarySize?)null }.ToAsyncEnumerable().AverageAsync());
     }
 
+    [TestMethod]
+    public void TestXmlSerialization()
+    {
+        var serializer = new XmlSerializer(typeof(SerializationTest));
+        using var writer = new StringWriter();
+        serializer.Serialize(writer, new SerializationTest() { Value = 10, Size = BinarySize.FromMebi(1.5) });
+        var actual = writer.ToString();
+        Assert.AreEqual(_expectedXml, actual);
+
+        using var reader = new StringReader(actual);
+        var result = (SerializationTest)serializer.Deserialize(reader);
+        Assert.AreEqual(BinarySize.FromMebi(1.5), result.Size);
+        Assert.AreEqual(10, result.Value);
+    }
+
+    [TestMethod]
+    public void TestDataContractSerialization()
+    {
+        var serializer = new DataContractSerializer(typeof(SerializationTest));
+        using var writer = new StringWriter();
+        using var xmlWriter = XmlWriter.Create(writer, new XmlWriterSettings { Indent = true });
+        serializer.WriteObject(xmlWriter, new SerializationTest() { Value = 10, Size = BinarySize.FromMebi(1.5) });
+        xmlWriter.Flush();
+        var actual = writer.ToString();
+        Assert.AreEqual(_expectedDataContract, actual);
+
+        using var reader = new StringReader(actual);
+        using var xmlReader = XmlReader.Create(reader);
+        var result = (SerializationTest)serializer.ReadObject(xmlReader);
+        Assert.AreEqual(BinarySize.FromMebi(1.5), result.Size);
+        Assert.AreEqual(10, result.Value);
+    }
+
+    private static readonly string _expectedXml = @"<?xml version=""1.0"" encoding=""utf-16""?>
+<SerializationTest xmlns:xsi=""http://www.w3.org/2001/XMLSchema-instance"" xmlns:xsd=""http://www.w3.org/2001/XMLSchema"">
+  <Size>1536 KiB</Size>
+  <Value>10</Value>
+</SerializationTest>".ReplaceLineEndings();
+
+    private static readonly string _expectedDataContract = @"<?xml version=""1.0"" encoding=""utf-16""?>
+<SerializationTest xmlns:i=""http://www.w3.org/2001/XMLSchema-instance"" xmlns=""http://schemas.datacontract.org/2004/07/Ookii.Test"">
+  <Size>1536 KiB</Size>
+  <Value>10</Value>
+</SerializationTest>";
 }

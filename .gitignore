@@ -6,6 +6,9 @@
 # SHFB Output
 docs/Help
 
+# VSCode settings
+.vscode
+
 # User-specific files
 *.rsuser
 *.suo
