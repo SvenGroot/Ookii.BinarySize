@@ -70,17 +70,12 @@ public class BinarySizeConverter : TypeConverter
     /// <inheritdoc/>
     public override object? ConvertFrom(ITypeDescriptorContext? context, CultureInfo? culture, object value)
     {
-        if (value is string stringValue)
+        return value switch
         {
-            return BinarySize.Parse(stringValue, Options, NumberStyles.Number, culture);
-        }
-
-        if (value is IecBinarySize sizeValue)
-        {
-            return sizeValue.Value;
-        }
-
-        return base.ConvertFrom(context, culture, value);
+            string stringValue => BinarySize.Parse(stringValue, Options, provider: culture),
+            IecBinarySize sizeValue => sizeValue.Value,
+            _ => base.ConvertFrom(context, culture, value)
+        };
     }
 
     /// <inheritdoc/>
