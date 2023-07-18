@@ -1,4 +1,5 @@
 ﻿using System.Globalization;
+using System.Text.Json;
 
 namespace Ookii.Test;
 
@@ -45,4 +46,21 @@ public class IecIecBinarySizeTests
     }
 
 #endif
+
+    class IecSerializationTest
+    {
+        public IecBinarySize Size { get; set; }
+    }
+
+    [TestMethod]
+    public void TestJsonSerialization()
+    {
+        var json = JsonSerializer.Serialize(new IecSerializationTest() { Size = BinarySize.FromMebi(1.5) });
+        Assert.AreEqual("{\"Size\":\"1536 KiB\"}", json);
+        var result = JsonSerializer.Deserialize<IecSerializationTest>(json)!;
+        Assert.AreEqual((IecBinarySize)BinarySize.FromMebi(1.5), result.Size);
+
+        result = JsonSerializer.Deserialize<IecSerializationTest>("{\"Size\":\"1536kB\"}")!;
+        Assert.AreEqual((IecBinarySize)1536000, result.Size);
+    }
 }

@@ -4,6 +4,7 @@ using System.ComponentModel;
 using System.Globalization;
 using System.Runtime.Serialization;
 using System.Runtime.Serialization.Formatters.Binary;
+using System.Text.Json;
 using System.Xml;
 using System.Xml.Serialization;
 
@@ -505,7 +506,7 @@ public class BinarySizeTests
         Assert.AreEqual(_expectedXml, actual);
 
         using var reader = new StringReader(actual);
-        var result = (SerializationTest)serializer.Deserialize(reader);
+        var result = (SerializationTest)serializer.Deserialize(reader)!;
         Assert.AreEqual(BinarySize.FromMebi(1.5), result.Size);
         Assert.AreEqual(10, result.Value);
     }
@@ -523,16 +524,38 @@ public class BinarySizeTests
 
         using var reader = new StringReader(actual);
         using var xmlReader = XmlReader.Create(reader);
-        var result = (SerializationTest)serializer.ReadObject(xmlReader);
+        var result = (SerializationTest)serializer.ReadObject(xmlReader)!;
         Assert.AreEqual(BinarySize.FromMebi(1.5), result.Size);
         Assert.AreEqual(10, result.Value);
     }
+
+    [TestMethod]
+    public void TestJsonSerialization()
+    {
+        var json = JsonSerializer.Serialize(new SerializationTest() { Value = 10, Size = BinarySize.FromMebi(1.5) });
+        Assert.AreEqual("{\"Size\":\"1536 KiB\",\"Value\":10}", json);
+        var result = JsonSerializer.Deserialize<SerializationTest>(json)!;
+        Assert.AreEqual(BinarySize.FromMebi(1.5), result.Size);
+        Assert.AreEqual(10, result.Value);
+    }
+
+#if NET6_0_OR_GREATER
 
     private static readonly string _expectedXml = @"<?xml version=""1.0"" encoding=""utf-16""?>
 <SerializationTest xmlns:xsi=""http://www.w3.org/2001/XMLSchema-instance"" xmlns:xsd=""http://www.w3.org/2001/XMLSchema"">
   <Size>1536 KiB</Size>
   <Value>10</Value>
 </SerializationTest>".ReplaceLineEndings();
+
+#else
+
+    private static readonly string _expectedXml = @"<?xml version=""1.0"" encoding=""utf-16""?>
+<SerializationTest xmlns:xsd=""http://www.w3.org/2001/XMLSchema"" xmlns:xsi=""http://www.w3.org/2001/XMLSchema-instance"">
+  <Size>1536 KiB</Size>
+  <Value>10</Value>
+</SerializationTest>".ReplaceLineEndings();
+
+#endif
 
     private static readonly string _expectedDataContract = @"<?xml version=""1.0"" encoding=""utf-16""?>
 <SerializationTest xmlns:i=""http://www.w3.org/2001/XMLSchema-instance"" xmlns=""http://schemas.datacontract.org/2004/07/Ookii.Test"">

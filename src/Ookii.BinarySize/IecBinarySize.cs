@@ -1,6 +1,7 @@
 ﻿using System.ComponentModel;
 using System.Diagnostics.CodeAnalysis;
 using System.Globalization;
+using System.Text.Json.Serialization;
 using System.Xml;
 using System.Xml.Schema;
 using System.Xml.Serialization;
@@ -24,6 +25,7 @@ namespace Ookii;
 /// </para>
 /// </remarks>
 [TypeConverter(typeof(IecBinarySizeConverter))]
+[JsonConverter(typeof(IecBinarySizeJsonConverter))]
 [Serializable]
 public readonly struct IecBinarySize : IFormattable, IXmlSerializable
 #if NET6_0_OR_GREATER

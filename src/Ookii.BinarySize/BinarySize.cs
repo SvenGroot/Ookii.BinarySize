@@ -5,6 +5,7 @@ using System.Numerics;
 using System.Runtime.CompilerServices;
 using System.Runtime.Serialization;
 using System.Text;
+using System.Text.Json.Serialization;
 using System.Xml;
 using System.Xml.Schema;
 using System.Xml.Serialization;
@@ -34,6 +35,7 @@ namespace Ookii;
 /// </remarks>
 /// <threadsafety instance="true" static="true"/>
 [TypeConverter(typeof(BinarySizeConverter))]
+[JsonConverter(typeof(BinarySizeJsonConverter))]
 [Serializable]
 public readonly partial struct BinarySize : IEquatable<BinarySize>, IComparable<BinarySize>, IComparable, IFormattable, IXmlSerializable
 #if NET6_0_OR_GREATER
