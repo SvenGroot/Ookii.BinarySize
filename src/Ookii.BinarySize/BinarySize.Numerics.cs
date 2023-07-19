@@ -73,22 +73,112 @@ partial struct BinarySize : IBinaryNumber<BinarySize>, ISignedNumber<BinarySize>
         => Parse(s, BinarySizeOptions.Default, style, provider);
 
     static bool INumberBase<BinarySize>.TryConvertFromChecked<TOther>(TOther value, out BinarySize result)
-        => TryConvertFrom(value, out result);
+    {
+        if (typeof(TOther) == typeof(long))
+        {
+            result = (BinarySize)(long)(object)value;
+            return true;
+        }
+
+        if (TryConvertFromCheckedHelper(value, out long longValue))
+        {
+            result = (BinarySize)longValue;
+            return true;
+        }
+
+        result = default;
+        return false;
+    }
 
     static bool INumberBase<BinarySize>.TryConvertFromSaturating<TOther>(TOther value, out BinarySize result)
-        => TryConvertFrom(value, out result);
+    {
+        if (typeof(TOther) == typeof(long))
+        {
+            result = (BinarySize)(long)(object)value;
+            return true;
+        }
+
+        if (TryConvertFromSaturatingHelper(value, out long longValue))
+        {
+            result = (BinarySize)longValue;
+            return true;
+        }
+
+        result = default;
+        return false;
+    }
 
     static bool INumberBase<BinarySize>.TryConvertFromTruncating<TOther>(TOther value, out BinarySize result)
-        => TryConvertFrom(value, out result);
+    {
+        if (typeof(TOther) == typeof(long))
+        {
+            result = (BinarySize)(long)(object)value;
+            return true;
+        }
+
+        if (TryConvertFromTruncatingHelper(value, out long longValue))
+        {
+            result = (BinarySize)longValue;
+            return true;
+        }
+
+        result = default;
+        return false;
+    }
 
     static bool INumberBase<BinarySize>.TryConvertToChecked<TOther>(BinarySize value, [MaybeNullWhen(false)] out TOther result)
-        => TryConvertTo(value, out result);
+    {
+        var longValue = value.Value;
+        if (typeof(TOther) == typeof(long))
+        {
+            result = (TOther)(object)longValue;
+            return true;
+        }
+
+        if (TryConvertToCheckedHelper(longValue, out result))
+        {
+            return true;
+        }
+
+        result = default;
+        return false;
+    }
 
     static bool INumberBase<BinarySize>.TryConvertToSaturating<TOther>(BinarySize value, [MaybeNullWhen(false)] out TOther result)
-        => TryConvertTo(value, out result);
+    {
+        var longValue = value.Value;
+        if (typeof(TOther) == typeof(long))
+        {
+            result = (TOther)(object)longValue;
+            return true;
+        }
+
+        if (TryConvertToSaturatingHelper(longValue, out result))
+        {
+            return true;
+        }
+
+        result = default;
+        return false;
+    }
 
     static bool INumberBase<BinarySize>.TryConvertToTruncating<TOther>(BinarySize value, [MaybeNullWhen(false)] out TOther result)
-        => TryConvertTo(value, out result);
+    {
+        var longValue = value.Value;
+        if (typeof(TOther) == typeof(long))
+        {
+            result = (TOther)(object)longValue;
+            return true;
+        }
+
+        if (TryConvertToTruncatingHelper(longValue, out result))
+        {
+            return true;
+        }
+
+        result = default;
+        return false;
+    }
 
     static bool INumberBase<BinarySize>.TryParse(ReadOnlySpan<char> s, NumberStyles style, IFormatProvider? provider, out BinarySize result)
         => TryParse(s, BinarySizeOptions.Default, style, provider, out result);
@@ -116,6 +206,8 @@ partial struct BinarySize : IBinaryNumber<BinarySize>, ISignedNumber<BinarySize>
             return true;
         }
 
+
+
         result = default;
         return false;
     }
@@ -135,6 +227,38 @@ partial struct BinarySize : IBinaryNumber<BinarySize>, ISignedNumber<BinarySize>
         result = default;
         return false;
     }
+
+    // The various TryConvert functions can only be accessed through a generic type parameter, so
+    // these helper functions let us use them.
+    private static bool TryConvertFromCheckedHelper<T, TOther>(TOther value, [MaybeNullWhen(false)] out T result)
+        where T : INumberBase<T>
+        where TOther : INumberBase<TOther>
+        => T.TryConvertFromChecked(value, out result);
+
+    private static bool TryConvertFromSaturatingHelper<T, TOther>(TOther value, [MaybeNullWhen(false)] out T result)
+        where T : INumberBase<T>
+        where TOther : INumberBase<TOther>
+        => T.TryConvertFromSaturating(value, out result);
+
+    private static bool TryConvertFromTruncatingHelper<T, TOther>(TOther value, [MaybeNullWhen(false)] out T result)
+        where T : INumberBase<T>
+        where TOther : INumberBase<TOther>
+        => T.TryConvertFromTruncating(value, out result);
+
+    private static bool TryConvertToCheckedHelper<T, TOther>(T value, [MaybeNullWhen(false)] out TOther result)
+        where T : INumberBase<T>
+        where TOther : INumberBase<TOther>
+        => T.TryConvertToChecked(value, out result);
+
+    private static bool TryConvertToSaturatingHelper<T, TOther>(T value, [MaybeNullWhen(false)] out TOther result)
+        where T : INumberBase<T>
+        where TOther : INumberBase<TOther>
+        => T.TryConvertToSaturating(value, out result);
+
+    private static bool TryConvertToTruncatingHelper<T, TOther>(T value, [MaybeNullWhen(false)] out TOther result)
+        where T : INumberBase<T>
+        where TOther : INumberBase<TOther>
+        => T.TryConvertToTruncating(value, out result);
 }
 
 #endif
