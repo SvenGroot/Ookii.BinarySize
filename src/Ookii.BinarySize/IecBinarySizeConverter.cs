@@ -6,7 +6,7 @@ namespace Ookii;
 
 /// <summary>
 /// Converts an <see cref="IecBinarySize"/> object from one data type to another. Access this class
-/// through the <see cref="TypeDescriptor"/> object.
+/// through the <see cref="TypeDescriptor"/> class.
 /// </summary>
 /// <remarks>
 /// <para>
@@ -16,8 +16,8 @@ namespace Ookii;
 ///   <see cref="IecBinarySize"/> structure.
 /// </para>
 /// <para>
-///   This converter will interpret SI prefixes as based on powers of ten, so "1kB" equals 1000
-///   bytes, and so forth. IEC prefixes are still based on powers of two.
+///   When converting from a string, this converter will interpret SI prefixes as based on powers of
+///   ten, so "1kB" equals 1000 bytes, and so forth. IEC prefixes are still based on powers of two.
 /// </para>
 /// </remarks>
 /// <threadsafety instance="true" static="true"/>

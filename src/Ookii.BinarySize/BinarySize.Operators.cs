@@ -17,6 +17,10 @@ partial struct BinarySize
     /// <returns>
     /// The sum of the <paramref name="left"/> and <paramref name="right"/> parameters.
     /// </returns>
+    /// <exception cref="OverflowException">
+    /// The result of the operation is greater than <see cref="MaxValue"/> or less than
+    /// <see cref="MinValue"/>.
+    /// </exception>
     public static BinarySize Add(BinarySize left, BinarySize right) => (BinarySize)checked(left.Value + right.Value);
 
     /// <summary>
@@ -27,6 +31,10 @@ partial struct BinarySize
     /// <returns>
     /// The result of subtracting <paramref name="right"/> from <paramref name="left"/>.
     /// </returns>
+    /// <exception cref="OverflowException">
+    /// The result of the operation is greater than <see cref="MaxValue"/> or less than
+    /// <see cref="MinValue"/>.
+    /// </exception>
     public static BinarySize Subtract(BinarySize left, BinarySize right) => (BinarySize)checked(left.Value - right.Value);
 
     /// <summary>
@@ -37,6 +45,10 @@ partial struct BinarySize
     /// <returns>
     /// The product of the <paramref name="left"/> and <paramref name="right"/> parameters.
     /// </returns>
+    /// <exception cref="OverflowException">
+    /// The result of the operation is greater than <see cref="MaxValue"/> or less than
+    /// <see cref="MinValue"/>.
+    /// </exception>
     public static BinarySize Multiply(BinarySize left, BinarySize right) => (BinarySize)checked(left.Value * right.Value);
 
     /// <summary>
@@ -47,6 +59,9 @@ partial struct BinarySize
     /// <returns>
     /// The result of dividing <paramref name="left"/> by <paramref name="right"/>.
     /// </returns>
+    /// <exception cref="DivideByZeroException">
+    /// <paramref name="right"/> is zero.
+    /// </exception>
     public static BinarySize Divide(BinarySize left, BinarySize right) => (BinarySize)checked(left.Value / right.Value);
 
     /// <summary>
@@ -57,6 +72,9 @@ partial struct BinarySize
     /// <returns>
     /// The remainder after dividing <paramref name="left"/> by <paramref name="right"/>.
     /// </returns>
+    /// <exception cref="DivideByZeroException">
+    /// <paramref name="right"/> is zero.
+    /// </exception>
     public static BinarySize Remainder(BinarySize left, BinarySize right) => (BinarySize)checked(left.Value % right.Value);
 
     /// <summary>
@@ -154,6 +172,10 @@ partial struct BinarySize
     /// <returns>
     /// The result of adding <paramref name="left"/> and <paramref name="right"/>.
     /// </returns>
+    /// <exception cref="OverflowException">
+    /// The result of the operation is greater than <see cref="MaxValue"/> or less than
+    /// <see cref="MinValue"/>.
+    /// </exception>
     public static BinarySize operator checked +(BinarySize left, BinarySize right) => (BinarySize)checked(left.Value + right.Value);
 
     /// <summary>
@@ -174,6 +196,10 @@ partial struct BinarySize
     /// <returns>
     /// The result of subtracting <paramref name="right"/> from <paramref name="left"/>.
     /// </returns>
+    /// <exception cref="OverflowException">
+    /// The result of the operation is greater than <see cref="MaxValue"/> or less than
+    /// <see cref="MinValue"/>.
+    /// </exception>
     public static BinarySize operator checked -(BinarySize left, BinarySize right) => (BinarySize)checked(left.Value - right.Value);
 
     /// <summary>
@@ -194,6 +220,10 @@ partial struct BinarySize
     /// <returns>
     /// The result of multiplying <paramref name="left"/> and <paramref name="right"/>.
     /// </returns>
+    /// <exception cref="OverflowException">
+    /// The result of the operation is greater than <see cref="MaxValue"/> or less than
+    /// <see cref="MinValue"/>.
+    /// </exception>
     public static BinarySize operator checked *(BinarySize left, BinarySize right) => (BinarySize)checked(left.Value * right.Value);
 
     /// <summary>
@@ -204,6 +234,9 @@ partial struct BinarySize
     /// <returns>
     /// The result of dividing <paramref name="left"/> by <paramref name="right"/>.
     /// </returns>
+    /// <exception cref="DivideByZeroException">
+    /// <paramref name="right"/> is zero.
+    /// </exception>
     public static BinarySize operator /(BinarySize left, BinarySize right) => (BinarySize)(left.Value / right.Value);
 
     /// <summary>
@@ -214,6 +247,9 @@ partial struct BinarySize
     /// <returns>
     /// The remainder after dividing <paramref name="left"/> by <paramref name="right"/>.
     /// </returns>
+    /// <exception cref="DivideByZeroException">
+    /// <paramref name="right"/> is zero.
+    /// </exception>
     public static BinarySize operator %(BinarySize left, BinarySize right) => (BinarySize)(left.Value % right.Value);
 
     /// <summary>
@@ -290,6 +326,9 @@ partial struct BinarySize
     /// <returns>
     /// The result of incrementing <paramref name="value"/>.
     /// </returns>
+    /// <exception cref="OverflowException">
+    /// The result of the operation is greater than <see cref="MaxValue"/>.
+    /// </exception>
     public static BinarySize operator checked ++(BinarySize value) => (BinarySize)checked(value.Value + 1);
 
     /// <summary>
@@ -308,6 +347,9 @@ partial struct BinarySize
     /// <returns>
     /// The result of decrementing <paramref name="value"/>.
     /// </returns>
+    /// <exception cref="OverflowException">
+    /// The result of the operation is less than <see cref="MinValue"/>.
+    /// </exception>
     public static BinarySize operator checked --(BinarySize value) => (BinarySize)checked(value.Value - 1);
 
     /// <summary>

@@ -28,9 +28,11 @@ namespace Ookii;
 /// </para>
 /// <para>
 ///   By default, this structure uses the definition that "1 KB" == 1024 bytes, identical to "1
-///   KiB", and "1 MB" == "1 MiB" == 1048576 bytes, and so forth. This behavior can be changed using
+///   KiB", and "1 MB" == "1 MiB" == 1048576 bytes, and so on. This behavior can be changed using
 ///   the see <see cref="BinarySizeOptions"/> enumeration, and formatting strings used with the
-///   <see cref="ToString(string?, IFormatProvider?)"/> method.
+///   <see cref="ToString(string?, IFormatProvider?)"/> method. The <see cref="IecBinarySize"/>
+///   structure provides a wrapper that defaults to the behavior of the
+///   <see cref="BinarySizeOptions.UseIecStandard" qualifyHint="true"/> flag.
 /// </para>
 /// </remarks>
 /// <threadsafety instance="true" static="true"/>
@@ -61,32 +63,32 @@ public readonly partial struct BinarySize : IEquatable<BinarySize>, IComparable<
     #endregion
 
     /// <summary>
-    /// The size of a kibibyte, 1024 bytes.
+    /// The size of a kibibyte (binary kilobyte); 1,024 bytes.
     /// </summary>
     public const long Kibi = 1024L;
 
     /// <summary>
-    /// The size of a mebibyte, 1,048,576 bytes.
+    /// The size of a mebibyte (binary megabyte); 1,048,576 bytes.
     /// </summary>
     public const long Mebi = 1024L * Kibi;
 
     /// <summary>
-    /// The size of a gibibyte, 1,073,741,824 bytes.
+    /// The size of a gibibyte (binary gigabyte); 1,073,741,824 bytes.
     /// </summary>
     public const long Gibi = 1024L * Mebi;
 
     /// <summary>
-    /// The size of a tebibyte, 1,099,511,627,776 bytes.
+    /// The size of a tebibyte (binary terabyte); 1,099,511,627,776 bytes.
     /// </summary>
     public const long Tebi = 1024L * Gibi;
 
     /// <summary>
-    /// The size of a pebibyte, 1,125,899,906,842,624 bytes.
+    /// The size of a pebibyte (binary petabyte); 1,125,899,906,842,624 bytes.
     /// </summary>
     public const long Pebi = 1024L * Tebi;
 
     /// <summary>
-    /// The size of an exbibyte, 1,152,921,504,606,846,976 bytes.
+    /// The size of an exbibyte (binary exabyte); 1,152,921,504,606,846,976 bytes.
     /// </summary>
     public const long Exbi = 1024L * Pebi;
 
@@ -280,8 +282,8 @@ public readonly partial struct BinarySize : IEquatable<BinarySize>, IComparable<
     /// </summary>
     /// <param name="s">The span of characters to parse.</param>
     /// <param name="options">
-    /// A bitwise combination of <see cref="BinarySizeOptions"/> values that indicates how units in
-    /// <paramref name="s"/> are interpreted.
+    /// A bitwise combination of <see cref="BinarySizeOptions"/> values that indicates how
+    /// multi-byte units in <paramref name="s"/> are interpreted.
     /// </param>
     /// <param name="style">
     /// A bitwise combination of <see cref="NumberStyles"/> values that indicates the style elements
@@ -296,34 +298,32 @@ public readonly partial struct BinarySize : IEquatable<BinarySize>, IComparable<
     /// <paramref name="s"/> is not in the correct format.
     /// </exception>
     /// <exception cref="OverflowException">
-    /// <paramref name="s"/> is not representable as a <see cref="long"/>.
+    /// <paramref name="s"/> is not representable as a <see cref="BinarySize"/>.
     /// </exception>
     /// <remarks>
     /// <para>
-    ///   The input must contain a number, followed by one of the following units: "B", "KB", "MB",
-    ///   "GB", "TB", or "PB".
+    ///   The input must contain a number, followed by one of the following units: "B", "KB", "KiB",
+    ///   "MB", "MiB", "GB", "GiB", "TB", "TiB", "PB", "PiB", "EB", or "EiB". The "B" may be
+    ///   omitted, and the casing of the unit and any surrounding whitespace is ignored.
     /// </para>
     /// <para>
-    ///   The "B" itself is optional, and the input may also use IEC binary units such as "KiB" or
-    ///   "MiB", etc. The case of the units does not matter.
-    /// </para>
-    /// <para>
-    ///   The size of 1 KiB always equals 1024 bytes, and 1 MiB is  1,048,576 bytes, and so forth.
+    ///   The size of 1 KiB always equals 1024 bytes, and 1 MiB is  1,048,576 bytes, and so on.
     /// </para>
     /// <para>
     ///   By default, this method also treats 1 KB as 1,024 bytes, identical to 1 KiB, and 1 MB
-    ///   equals 1 MiB equals 1,048,576 bytes, and so forth.
+    ///   equals 1 MiB equals 1,048,576 bytes, and so on.
     /// </para>
     /// <para>
     ///   When <paramref name="options"/> includes the <see cref="BinarySizeOptions.UseIecStandard" qualifyHint="true"/>
-    ///   flag, the SI prefixes (without an 'i') are treated as decimal, so that 1 kB equals 1,000
-    ///   bytes, 1 MB == 1,000,000 bytes, and so forth. The IEC prefixes are unchanged, and remain
-    ///   based on powers of two.
+    ///   flag, the SI prefixes (those without an 'i') are treated as powers of ten, so that 1 kB equals
+    ///   1,000 bytes, 1 MB == 1,000,000 bytes, and so on. The IEC prefixes are unchanged, and
+    ///   remain based on powers of two.
     /// </para>
     /// <para>
-    ///   The value of <paramref name="options"/> will not affect the output when converting back
-    ///   to a string, so use an appropriate format string with the <see cref="ToString(string?, IFormatProvider?)"/>
-    ///   method if you wish to use decimal prefixes there as well.
+    ///   The value of <paramref name="options"/> is not stored in the instance, and will therefore
+    ///   not affect the output when converting back to a string. Use an appropriate format string
+    ///   with the <see cref="ToString(string?, IFormatProvider?)"/> method if you wish to use
+    ///   decimal prefixes there as well.
     /// </para>
     /// </remarks>
     public static BinarySize Parse(ReadOnlySpan<char> s, BinarySizeOptions options = BinarySizeOptions.Default, NumberStyles style = NumberStyles.Number, IFormatProvider? provider = null)
@@ -346,17 +346,14 @@ public readonly partial struct BinarySize : IEquatable<BinarySize>, IComparable<
     /// <inheritdoc cref="Parse(ReadOnlySpan{char}, BinarySizeOptions, NumberStyles, IFormatProvider?)"/>
     /// <remarks>
     /// <para>
-    ///   The input must contain a number, followed by one of the following units: "B", "KB", "MB",
-    ///   "GB", "TB", "PB", or "EB".
-    /// </para>
-    /// <para>
-    ///   The "B" itself is optional, and the input may also use IEC binary units such as "KiB" or
-    ///   "MiB", etc. The case of the units does not matter.
+    ///   The input must contain a number, followed by one of the following units: "B", "KB", "KiB",
+    ///   "MB", "MiB", "GB", "GiB", "TB", "TiB", "PB", "PiB", "EB", or "EiB". The "B" may be
+    ///   omitted, and the casing of the unit and any surrounding whitespace is ignored.
     /// </para>
     /// <para>
     ///   This method uses the definition that "1 KB" == 1024 bytes, identical to "1 KiB", and "1
-    ///   MB" == "1 MiB" == 1048576 bytes, and so forth. To use the IEC definition where SI prefixes
-    ///   are treated as decimal, use the <see cref="Parse(ReadOnlySpan{char}, BinarySizeOptions, NumberStyles, IFormatProvider?)"/>
+    ///   MB" == "1 MiB" == 1048576 bytes, and so on. To use the IEC standard where SI prefixes
+    ///   are treated as powers of ten, use the <see cref="Parse(ReadOnlySpan{char}, BinarySizeOptions, NumberStyles, IFormatProvider?)"/>
     ///   method.
     /// </para>
     /// </remarks>
@@ -368,8 +365,8 @@ public readonly partial struct BinarySize : IEquatable<BinarySize>, IComparable<
     /// </summary>
     /// <param name="s">The span of characters to parse.</param>
     /// <param name="options">
-    /// A bitwise combination of <see cref="BinarySizeOptions"/> values that indicates how units in
-    /// <paramref name="s"/> are interpreted.
+    /// A bitwise combination of <see cref="BinarySizeOptions"/> values that indicates how
+    /// multi-byte units in <paramref name="s"/> are interpreted.
     /// </param>
     /// <param name="style">
     /// A bitwise combination of <see cref="NumberStyles"/> values that indicates the style elements
@@ -427,17 +424,14 @@ public readonly partial struct BinarySize : IEquatable<BinarySize>, IComparable<
     /// <inheritdoc cref="TryParse(ReadOnlySpan{char}, BinarySizeOptions, NumberStyles, IFormatProvider?, out BinarySize)"/>
     /// <remarks>
     /// <para>
-    ///   The input must contain a number, followed by one of the following units: "B", "KB", "MB",
-    ///   "GB", "TB", "PB", or "EB".
-    /// </para>
-    /// <para>
-    ///   The "B" itself is optional, and the input may also use IEC binary units such as "KiB" or
-    ///   "MiB", etc. The case of the units does not matter.
+    ///   The input must contain a number, followed by one of the following units: "B", "KB", "KiB",
+    ///   "MB", "MiB", "GB", "GiB", "TB", "TiB", "PB", "PiB", "EB", or "EiB". The "B" may be
+    ///   omitted, and the casing of the unit and any surrounding whitespace is ignored.
     /// </para>
     /// <para>
     ///   This method uses the definition that "1 KB" == 1024 bytes, identical to "1 KiB", and "1
-    ///   MB" == "1 MiB" == 1048576 bytes, and so forth. To use the IEC definition where SI prefixes
-    ///   are treated as decimal, use the <see cref="TryParse(ReadOnlySpan{char}, BinarySizeOptions, NumberStyles, IFormatProvider?, out BinarySize)"/>
+    ///   MB" == "1 MiB" == 1048576 bytes, and so on. To use the IEC standard where SI prefixes
+    ///   are treated as powers of ten, use the <see cref="TryParse(ReadOnlySpan{char}, BinarySizeOptions, NumberStyles, IFormatProvider?, out BinarySize)"/>
     ///   method.
     /// </para>
     /// </remarks>
@@ -453,8 +447,8 @@ public readonly partial struct BinarySize : IEquatable<BinarySize>, IComparable<
     /// </summary>
     /// <param name="s">The string to parse.</param>
     /// <param name="options">
-    /// A bitwise combination of <see cref="BinarySizeOptions"/> values that indicates how units in
-    /// <paramref name="s"/> are interpreted.
+    /// A bitwise combination of <see cref="BinarySizeOptions"/> values that indicates how
+    /// multi-byte units in <paramref name="s"/> are interpreted.
     /// </param>
     /// <param name="style">
     /// A bitwise combination of <see cref="NumberStyles"/> values that indicates the style elements
@@ -493,17 +487,14 @@ public readonly partial struct BinarySize : IEquatable<BinarySize>, IComparable<
     /// <inheritdoc cref="TryParse(string?, BinarySizeOptions, NumberStyles, IFormatProvider?, out BinarySize)"/>
     /// <remarks>
     /// <para>
-    ///   The input must contain a number, followed by one of the following units: "B", "KB", "MB",
-    ///   "GB", "TB", or "PB".
-    /// </para>
-    /// <para>
-    ///   The "B" itself is optional, and the input may also use IEC binary units such as "KiB" or
-    ///   "MiB", etc. The case of the units does not matter.
+    ///   The input must contain a number, followed by one of the following units: "B", "KB", "KiB",
+    ///   "MB", "MiB", "GB", "GiB", "TB", "TiB", "PB", "PiB", "EB", or "EiB". The "B" may be
+    ///   omitted, and the casing of the unit and any surrounding whitespace is ignored.
     /// </para>
     /// <para>
     ///   This method uses the definition that "1 KB" == 1024 bytes, identical to "1 KiB", and "1
-    ///   MB" == "1 MiB" == 1048576 bytes, and so forth. To use the IEC definition where SI prefixes
-    ///   are treated as decimal, use the <see cref="TryParse(string, BinarySizeOptions, NumberStyles, IFormatProvider?, out BinarySize)"/>
+    ///   MB" == "1 MiB" == 1048576 bytes, and so on. To use the IEC standard where SI prefixes
+    ///   are treated as powers of ten, use the <see cref="TryParse(string, BinarySizeOptions, NumberStyles, IFormatProvider?, out BinarySize)"/>
     ///   method.
     /// </para>
     /// </remarks>
@@ -527,8 +518,8 @@ public readonly partial struct BinarySize : IEquatable<BinarySize>, IComparable<
     /// </summary>
     /// <param name="s">The string to parse.</param>
     /// <param name="options">
-    /// A bitwise combination of <see cref="BinarySizeOptions"/> values that indicates how units in
-    /// <paramref name="s"/> are interpreted.
+    /// A bitwise combination of <see cref="BinarySizeOptions"/> values that indicates how
+    /// multi-byte units in <paramref name="s"/> are interpreted.
     /// </param>
     /// <param name="style">
     /// A bitwise combination of <see cref="NumberStyles"/> values that indicates the style elements
@@ -546,7 +537,7 @@ public readonly partial struct BinarySize : IEquatable<BinarySize>, IComparable<
     /// <paramref name="s"/> is not in the correct format.
     /// </exception>
     /// <exception cref="OverflowException">
-    /// <paramref name="s"/> is not representable as a <see cref="long"/>.
+    /// <paramref name="s"/> is not representable as a <see cref="BinarySize"/>.
     /// </exception>
     /// <remarks>
     /// <inheritdoc cref="Parse(ReadOnlySpan{char}, BinarySizeOptions, NumberStyles, IFormatProvider?)"/>
@@ -564,17 +555,14 @@ public readonly partial struct BinarySize : IEquatable<BinarySize>, IComparable<
     /// <inheritdoc cref="Parse(string, BinarySizeOptions, NumberStyles, IFormatProvider?)"/>
     /// <remarks>
     /// <para>
-    ///   The input must contain a number, followed by one of the following units: "B", "KB", "MB",
-    ///   "GB", "TB", "PB", or "EB".
-    /// </para>
-    /// <para>
-    ///   The "B" itself is optional, and the input may also use IEC binary units such as "KiB" or
-    ///   "MiB", etc. The case of the units does not matter.
+    ///   The input must contain a number, followed by one of the following units: "B", "KB", "KiB",
+    ///   "MB", "MiB", "GB", "GiB", "TB", "TiB", "PB", "PiB", "EB", or "EiB". The "B" may be
+    ///   omitted, and the casing of the unit and any surrounding whitespace is ignored.
     /// </para>
     /// <para>
     ///   This method uses the definition that "1 KB" == 1024 bytes, identical to "1 KiB", and "1
-    ///   MB" == "1 MiB" == 1048576 bytes, and so forth. To use the IEC definition where SI prefixes
-    ///   are treated as decimal, use the <see cref="Parse(string, BinarySizeOptions, NumberStyles, IFormatProvider?)"/>
+    ///   MB" == "1 MiB" == 1048576 bytes, and so on. To use the IEC standard where SI prefixes
+    ///   are treated as powers of ten, use the <see cref="Parse(string, BinarySizeOptions, NumberStyles, IFormatProvider?)"/>
     ///   method.
     /// </para>
     /// </remarks>
@@ -585,7 +573,8 @@ public readonly partial struct BinarySize : IEquatable<BinarySize>, IComparable<
 
     /// <inheritdoc/>
     /// <remarks>
-    /// <inheritdoc cref="ToString(string?, IFormatProvider?)"/>
+    /// See the <see cref="ToString(string?, IFormatProvider?)"/> method for the possible values of
+    /// <paramref name="format"/>.
     /// </remarks>
     public bool TryFormat(Span<char> destination, out int charsWritten, ReadOnlySpan<char> format, IFormatProvider? provider)
     {
@@ -604,18 +593,37 @@ public readonly partial struct BinarySize : IEquatable<BinarySize>, IComparable<
 
 #endif
 
-    /// <inheritdoc/>
+    /// <summary>
+    /// Formats the value of the current <see cref="BinarySize"/> instance using the specified
+    /// format.
+    /// </summary>
+    /// <param name="format">
+    /// The format to use, or <see langword="null"/> to use the default format.
+    /// </param>
+    /// <param name="formatProvider">
+    /// The provider to use to format the value, or <see langword="null"/> to obtain the numeric
+    /// format information from the current locale setting of the operating system.
+    /// </param>
+    /// <returns>The value of the current instance in the specified format.</returns>
     /// <exception cref="FormatException">
     /// <paramref name="format"/> is invalid.
     /// </exception>
     /// <remarks>
     /// <para>
-    ///   The value of <paramref name="format"/> must be either a byte unit, or a byte unit that follows either a
-    ///   <see href="https://learn.microsoft.com/dotnet/standard/base-types/standard-numeric-format-strings">standard numeric format string</see>
-    ///   or a <see href="https://learn.microsoft.com/dotnet/standard/base-types/custom-numeric-format-strings">custom numeric format string</see>.
+    ///   If <paramref name="format"/> is <see langword="null"/>, an empty string, or "G" (the
+    ///   general format specifier), the value will be formatted using the largest binary prefix in
+    ///   which it can be represented without fractions, with the suffix "iB", and a space before
+    ///   the unit. For example, "2 TiB", or "512 B". It is equivalent to using " AiB".
     /// </para>
     /// <para>
-    ///   The byte unit can be one of the following:
+    ///   Otherwise, the value of <paramref name="format"/> must be either a multiple-byte unit by
+    ///   itself, or a
+    ///   <see href="https://learn.microsoft.com/dotnet/standard/base-types/standard-numeric-format-strings">standard numeric format string</see>
+    ///   or <see href="https://learn.microsoft.com/dotnet/standard/base-types/custom-numeric-format-strings">custom numeric format string</see>
+    ///   followed by a multiple-byte unit.
+    /// </para>
+    /// <para>
+    ///   The multiple-byte unit can be one of the following:
     /// </para>
     /// <list type="table">
     ///   <listheader>
@@ -629,35 +637,26 @@ public readonly partial struct BinarySize : IEquatable<BinarySize>, IComparable<
     ///     </description>
     ///   </item>
     ///   <item>
-    ///     <term><em>empty</em>, or G</term>
-    ///     <description>
-    ///       This is the general format specifier. The value will be formatted using the largest
-    ///       binary prefix in which it can be represented without fractions, the suffix "iB", and a
-    ///       space before the unit. For example, "2 TiB", or "512 B". It is equivalent to using
-    ///       " AiB".
-    ///     </description>
-    ///   </item>
-    ///   <item>
     ///     <term>K[i][B], M[i][B], G[i][B], T[i][B], P[i][B], E[i][B]</term>
     ///     <description>
     ///       The output will be formatted as kibibytes, mebibytes, gibibytes, tebibytes, pebibytes,
-    ///       or exibytes, with an optional 'i' for IEC units, and an optional 'B'. For these units,
-    ///       SI prefixes without the 'i' character are still treated as binary prefixes, so 1 KB
-    ///       equals 1024 bytes, and so forth. For example, "1.5KiB", or "2Mi" or "42TB". 
+    ///       or exibytes respectively, with an optional 'i' for IEC units, and an optional 'B'. For
+    ///       these units, SI prefixes without the 'i' character are treated as binary prefixes, so
+    ///       1 KB equals 1 KiB equals 1,024 bytes, and so on. For example, "1.5KiB", or "2Mi" or "42TB". 
     ///     </description>
     ///   </item>
     ///   <item>
     ///     <term>k[B], m[B], g[B], t[B], p[B], e[B]</term>
     ///     <description>
     ///       With a lower case prefix, the output will be formatted as decimal kilobytes,
-    ///       megabytes, gigabytes, terabytes, petabytes, or exabytes, followed by an optional 'B'.
-    ///       In this case, 1 KB equals 1000 bytes, and so forth. The prefix will be a capital
-    ///       letter in the output, except for "k" which should be lower case as an SI prefix.
-    ///       For example, "1.5kB", or "2M" or "42T".
+    ///       megabytes, gigabytes, terabytes, petabytes, or exabytes respectively, followed by an
+    ///       optional 'B'. In this case, 1 kB equals 1,000 bytes, 1 MB equals 1,000,000 bytes, and
+    ///       so on. The unit prefix will be capitalized in the output, except for "k" which should
+    ///       be lower case as an SI prefix. For example, "1.5kB", or "2M" or "42T".
     ///     </description>
     ///   </item>
     ///   <item>
-    ///     <term>A[i][B] or a[B]</term>
+    ///     <term>A[i][B]</term>
     ///     <description>
     ///       Automatically select the largest prefix in which the value can be represented without
     ///       fractions, optionally followed by an 'i' and/or a 'B'. The former variant uses binary
@@ -667,23 +666,37 @@ public readonly partial struct BinarySize : IEquatable<BinarySize>, IComparable<
     ///     </description>
     ///   </item>
     ///   <item>
-    ///     <term>S[i][B] or s[B]</term>
+    ///     <term>a[B]</term>
     ///     <description>
-    ///       Automatically select the largest prefix in which the value is at least 1, optionally
-    ///       followed by an 'i' and/or a 'B'. The former variant uses binary units, while the
-    ///       latter uses decimal. The output may contain decimals. For example, 1,572,864 bytes
-    ///       would be formatted as "1.5MiB", "1.5Mi", "1.5MB" or "1.5M"; if using decimal it would
-    ///       be "1.572864MB".
+    ///       Automatically select the largest decimal prefix in which the value can be represented without
+    ///       fractions, optionally followed by a 'B'. For example, 1,500,000 bytes would be formatted
+    ///       as "1500kB", or "1500k".
+    ///     </description>
+    ///   </item>
+    ///   <item>
+    ///     <term>S[i][B]</term>
+    ///     <description>
+    ///       Automatically select the largest prefix where the value is at least 1, allowing the
+    ///       use of fractional values, optionally followed by an 'i' and/or a 'B'. For example,
+    ///       1,572,864 bytes would be formatted as "1.5MiB", "1.5Mi", "1.5MB" or "1.5M".
+    ///     </description>
+    ///   </item>
+    ///   <item>
+    ///     <term>s[B]</term>
+    ///     <description>
+    ///       Automatically select the largest decimal prefix where the value is at least 1,
+    ///       allowing the use of fractional values, optionally followed by a 'B'. For
+    ///       example, 1,500,000 bytes would be formatted as "1.5MB", or "1.5M".
     ///     </description>
     ///   </item>
     /// </list>
     /// <para>
-    ///   Any of the above unit formats, except the general format specified, can be combined with a
-    ///   numeric format string; for example, "#,##0.# SiB".
+    ///   Any of the above multi-byte units may follow a numeric format string; for example,
+    ///   "#,##0.# SiB".
     /// </para>
     /// <para>
-    ///   If a unit is preceded by white space, this will be preserved in the output. For example,
-    ///   " KB" can be used to format the value 512 as "0.5 KB".
+    ///   If a multi-byte unit is surrounded by white space, this will be preserved in the output.
+    ///   For example, " KB" can be used to format the value 512 as "0.5 KB".
     /// </para>
     /// <note>
     ///   Since "G" by itself is the general format specifier, it cannot be used to format as
@@ -723,7 +736,7 @@ public readonly partial struct BinarySize : IEquatable<BinarySize>, IComparable<
     /// </returns>
     /// <remarks>
     /// <para>
-    ///   Default formatting is equivalent to using the "AiB" format string with the
+    ///   Default formatting is equivalent to using the format string " AiB" with the
     ///   <see cref="ToString(string?, IFormatProvider?)"/> method.
     /// </para>
     /// </remarks>

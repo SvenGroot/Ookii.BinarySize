@@ -117,26 +117,22 @@
     <CopyrightText>Copyright &amp;#169%3b Sven Groot %28Ookii.org%29</CopyrightText>
     <SdkLinkTarget>Blank</SdkLinkTarget>
     <ProjectSummary>&amp;lt%3bpara&amp;gt%3b
-  Ookii.BinarySize provides parsing and formatting quantities of bytes using human-readable representation, with binary prefixes such as &amp;quot%3bMB&amp;quot%3b, &amp;quot%3bGiB&amp;quot%3b, and so forth.
+  Ookii.BinarySize provides parsing and formatting of quantities of bytes using human-readable representation, with binary prefixes such as &amp;quot%3bMB&amp;quot%3b, &amp;quot%3bGiB&amp;quot%3b, and so forth.
 &amp;lt%3b/para&amp;gt%3b
 &amp;lt%3bpara&amp;gt%3b
   The &amp;lt%3bsee cref=&amp;quot%3bT:Ookii.BinarySize&amp;quot%3b/&amp;gt%3b structure provides most of the library&amp;#39%3bs functionality. The &amp;lt%3bsee cref=&amp;quot%3bT:Ookii.IecBinarySize&amp;quot%3b/&amp;gt%3b structure is a wrapper
-  that parses SI prefixes as decimal prefixes.
+  that parses SI prefixes as powers of ten.
 &amp;lt%3b/para&amp;gt%3b
-&amp;lt%3bpara&amp;gt%3b
-  See the &amp;lt%3bsee href=&amp;quot%3bhttps://github.com/SvenGroot/Ookii.CommandLine&amp;quot%3b&amp;gt%3bGitHub project&amp;lt%3b/see&amp;gt%3b for more information.
-&amp;lt%3b/para&amp;gt%3b</ProjectSummary>
+&amp;lt%3bseealso href=&amp;quot%3bhttps://github.com/SvenGroot/Ookii.BinarySize&amp;quot%3b&amp;gt%3bOokii.BinarySize on GitHub&amp;lt%3b/seealso&amp;gt%3b</ProjectSummary>
     <NamespaceSummaries>
       <NamespaceSummaryItem name="Ookii" isDocumented="True">&lt;para&gt;
-  Ookii.BinarySize provides parsing and formatting quantities of bytes using human-readable representation, with binary prefixes such as "MB", "GiB", and so forth.
+  Ookii.BinarySize provides parsing and formatting of quantities of bytes using human-readable representation, with binary prefixes such as "MB", "GiB", and so forth.
 &lt;/para&gt;
 &lt;para&gt;
-  The &lt;see cref="T:Ookii.BinarySize"/&gt; structure provides most of the library's functionality. The &lt;see cref="T:Ookii.IecBinarySize"/&gt; structure serves as an
-  alternative that parses SI prefixes as decimal prefixes by default.
+  The &lt;see cref="T:Ookii.BinarySize"/&gt; structure provides most of the library's functionality. The &lt;see cref="T:Ookii.IecBinarySize"/&gt; structure is a wrapper
+  that parses SI prefixes as powers of ten.
 &lt;/para&gt;
-&lt;para&gt;
-  See the &lt;see href="https://github.com/SvenGroot/Ookii.CommandLine"&gt;GitHub project&lt;/see&gt; for more information.
-&lt;/para&gt;</NamespaceSummaryItem>
+&lt;seealso href="https://github.com/SvenGroot/Ookii.BinarySize"&gt;Ookii.BinarySize on GitHub&lt;/seealso&gt;</NamespaceSummaryItem>
     </NamespaceSummaries>
   </PropertyGroup>
   <!-- There are no properties for these groups.  AnyCPU needs to appear in order for Visual Studio to perform

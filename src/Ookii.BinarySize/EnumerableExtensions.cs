@@ -4,10 +4,11 @@
 /// Provides extension methods for <see cref="IEnumerable{T}"/> for use with the <see cref="BinarySize"/>
 /// type.
 /// </summary>
+/// <threadsafety instance="false" static="true"/>
 public static class EnumerableExtensions
 {
     /// <summary>
-    /// Computes the sum of the sequence of <see cref="BinarySize"/> values.
+    /// Computes the sum of a sequence of <see cref="BinarySize"/> values.
     /// </summary>
     /// <param name="source">
     /// A sequence of <see cref="BinarySize"/> values to calculate the sum of.
@@ -17,7 +18,7 @@ public static class EnumerableExtensions
     /// <paramref name="source"/> is <see langword="null"/>.
     /// </exception>
     /// <exception cref="OverflowException">
-    /// The sum is larger than <see cref="BinarySize.MaxValue"/>.
+    /// The sum is larger than <see cref="BinarySize.MaxValue" qualifyHint="true"/>.
     /// </exception>
     /// <remarks>
     /// <para>
@@ -28,11 +29,12 @@ public static class EnumerableExtensions
         => (BinarySize)source.Sum(s => s.Value);
 
     /// <summary>
-    /// Computes the sum of the sequence of <see cref="BinarySize"/> values.
+    /// Computes the sum of a sequence of <see cref="BinarySize"/> values that are obtained by
+    /// invoking a transform function on each element of the input sequence.
     /// </summary>
     /// <typeparam name="TSource">The type of the elements of <paramref name="source"/>.</typeparam>
     /// <param name="source">
-    /// A sequence of <see cref="BinarySize"/> values to calculate the sum of.
+    /// A sequence of values to calculate the sum of.
     /// </param>
     /// <param name="selector">A transform function to apply to each element.</param>
     /// <returns>The sum of the values in the sequence.</returns>
@@ -40,7 +42,7 @@ public static class EnumerableExtensions
     /// <paramref name="source"/> is <see langword="null"/>.
     /// </exception>
     /// <exception cref="OverflowException">
-    /// The sum is larger than <see cref="BinarySize.MaxValue"/>.
+    /// The sum is larger than <see cref="BinarySize.MaxValue" qualifyHint="true"/>.
     /// </exception>
     /// <remarks>
     /// <para>
@@ -51,7 +53,7 @@ public static class EnumerableExtensions
         => (BinarySize)source.Sum(s => selector(s).Value);
 
     /// <summary>
-    /// Computes the sum of the sequence of nullable <see cref="BinarySize"/> values.
+    /// Computes the sum of a sequence of nullable <see cref="BinarySize"/> values.
     /// </summary>
     /// <param name="source">
     /// A sequence of nullable <see cref="BinarySize"/> values to calculate the sum of.
@@ -61,7 +63,7 @@ public static class EnumerableExtensions
     /// <paramref name="source"/> is <see langword="null"/>.
     /// </exception>
     /// <exception cref="OverflowException">
-    /// The sum is larger than <see cref="BinarySize.MaxValue"/>.
+    /// The sum is larger than <see cref="BinarySize.MaxValue" qualifyHint="true"/>.
     /// </exception>
     /// <remarks>
     /// <para>
@@ -74,11 +76,12 @@ public static class EnumerableExtensions
         => (BinarySize?)source.Sum(s => s?.Value);
 
     /// <summary>
-    /// Computes the sum of the sequence of nullable <see cref="BinarySize"/> values.
+    /// Computes the sum of a sequence of nullable <see cref="BinarySize"/> values that are obtained
+    /// by invoking a transform function on each element of the input sequence..
     /// </summary>
     /// <typeparam name="TSource">The type of the elements of <paramref name="source"/>.</typeparam>
     /// <param name="source">
-    /// A sequence of nullable <see cref="BinarySize"/> values to calculate the sum of.
+    /// A sequence of values to calculate the sum of.
     /// </param>
     /// <param name="selector">A transform function to apply to each element.</param>
     /// <returns>The sum of the values in the sequence.</returns>
@@ -86,7 +89,7 @@ public static class EnumerableExtensions
     /// <paramref name="source"/> is <see langword="null"/>.
     /// </exception>
     /// <exception cref="OverflowException">
-    /// The sum is larger than <see cref="BinarySize.MaxValue"/>.
+    /// The sum is larger than <see cref="BinarySize.MaxValue" qualifyHint="true"/>.
     /// </exception>
     /// <remarks>
     /// <para>
@@ -99,7 +102,7 @@ public static class EnumerableExtensions
         => (BinarySize?)source.Sum(s => selector(s)?.Value);
 
     /// <summary>
-    /// Computes the average of the sequence of <see cref="BinarySize"/> values.
+    /// Computes the average of a sequence of <see cref="BinarySize"/> values.
     /// </summary>
     /// <param name="source">
     /// A sequence of <see cref="BinarySize"/> values to calculate the average of.
@@ -115,11 +118,12 @@ public static class EnumerableExtensions
         => (BinarySize)source.Average(s => (decimal)s.Value);
 
     /// <summary>
-    /// Computes the average of the sequence of <see cref="BinarySize"/> values.
+    /// Computes the average of a sequence of <see cref="BinarySize"/> values that are obtained by
+    /// invoking a transform function on each element of the input sequence.
     /// </summary>
     /// <typeparam name="TSource">The type of the elements of <paramref name="source"/>.</typeparam>
     /// <param name="source">
-    /// A sequence of <see cref="BinarySize"/> values to calculate the average of.
+    /// A sequence of values to calculate the average of.
     /// </param>
     /// <param name="selector">A transform function to apply to each element.</param>
     /// <returns>The average of the values in the sequence.</returns>
@@ -133,7 +137,7 @@ public static class EnumerableExtensions
         => (BinarySize)source.Average(s => (decimal)selector(s).Value);
 
     /// <summary>
-    /// Computes the average of the sequence of nullable <see cref="BinarySize"/> values.
+    /// Computes the average of a sequence of nullable <see cref="BinarySize"/> values.
     /// </summary>
     /// <param name="source">
     /// A sequence of nullable <see cref="BinarySize"/> values to calculate the average of.
@@ -149,11 +153,12 @@ public static class EnumerableExtensions
         => (BinarySize?)(long?)source.Average(s => (decimal?)s?.Value);
 
     /// <summary>
-    /// Computes the average of the sequence of nullable <see cref="BinarySize"/> values.
+    /// Computes the average of a sequence of nullable <see cref="BinarySize"/> values that are
+    /// obtained by invoking a transform function on each element of the input sequence..
     /// </summary>
     /// <typeparam name="TSource">The type of the elements of <paramref name="source"/>.</typeparam>
     /// <param name="source">
-    /// A sequence of nullable <see cref="BinarySize"/> values to calculate the average of.
+    /// A sequence of values to calculate the average of.
     /// </param>
     /// <param name="selector">A transform function to apply to each element.</param>
     /// <returns>

@@ -6,7 +6,7 @@ namespace Ookii;
 
 /// <summary>
 /// Converts a <see cref="BinarySize"/> object from one data type to another. Access this class
-/// through the <see cref="TypeDescriptor"/> object.
+/// through the <see cref="TypeDescriptor"/> class.
 /// </summary>
 /// <remarks>
 /// <para>
@@ -17,7 +17,8 @@ namespace Ookii;
 /// <para>
 ///   It can also convert from a <see cref="BinarySize"/> to a <see cref="string"/> using the
 ///   default format used by the <see cref="BinarySize.ToString(string?, IFormatProvider?)" qualifyHint="true"/>
-///   method. It also supports conversion from a <see cref="BinarySize"/> to any primitive type.
+///   method. It also supports conversion from a <see cref="BinarySize"/> to any primitive type,
+///   and between <see cref="BinarySize"/> and <see cref="IecBinarySize"/>.
 /// </para>
 /// </remarks>
 /// <threadsafety instance="true" static="true"/>

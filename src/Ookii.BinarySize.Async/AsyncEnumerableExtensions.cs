@@ -4,10 +4,11 @@
 /// Provides extension methods for <see cref="IAsyncEnumerable{T}"/> for use with the <see cref="BinarySize"/>
 /// type.
 /// </summary>
+/// <threadsafety instance="false" static="true"/>
 public static class AsyncEnumerableExtensions
 {
     /// <summary>
-    /// Asynchronously computes the sum of the sequence of <see cref="BinarySize"/> values.
+    /// Asynchronously computes the sum of a sequence of <see cref="BinarySize"/> values.
     /// </summary>
     /// <param name="source">
     /// A sequence of <see cref="BinarySize"/> values to calculate the sum of.
@@ -23,7 +24,7 @@ public static class AsyncEnumerableExtensions
     /// <paramref name="source"/> is <see langword="null"/>.
     /// </exception>
     /// <exception cref="OverflowException">
-    /// The sum is larger than <see cref="BinarySize.MaxValue"/>.
+    /// The sum is larger than <see cref="BinarySize.MaxValue" qualifyHint="true"/>.
     /// </exception>
     /// <remarks>
     /// <para>
@@ -37,11 +38,12 @@ public static class AsyncEnumerableExtensions
     }
 
     /// <summary>
-    /// Asynchronously computes the sum of the sequence of <see cref="BinarySize"/> values.
+    /// Asynchronously computes the sum of a sequence of <see cref="BinarySize"/> values that are
+    /// obtained by invoking a transform function on each element of the input sequence..
     /// </summary>
     /// <typeparam name="TSource">The type of the elements of <paramref name="source"/>.</typeparam>
     /// <param name="source">
-    /// A sequence of <see cref="BinarySize"/> values to calculate the sum of.
+    /// A sequence of values to calculate the sum of.
     /// </param>
     /// <param name="selector">A transform function to apply to each element.</param>
     /// <param name="cancellationToken">
@@ -55,7 +57,7 @@ public static class AsyncEnumerableExtensions
     /// <paramref name="source"/> is <see langword="null"/>.
     /// </exception>
     /// <exception cref="OverflowException">
-    /// The sum is larger than <see cref="BinarySize.MaxValue"/>.
+    /// The sum is larger than <see cref="BinarySize.MaxValue" qualifyHint="true"/>.
     /// </exception>
     /// <remarks>
     /// <para>
@@ -69,7 +71,7 @@ public static class AsyncEnumerableExtensions
     }
 
     /// <summary>
-    /// Asynchronously computes the sum of the sequence of nullable <see cref="BinarySize"/> values.
+    /// Asynchronously computes the sum of a sequence of nullable <see cref="BinarySize"/> values.
     /// </summary>
     /// <param name="source">
     /// A sequence of nullable <see cref="BinarySize"/> values to calculate the sum of.
@@ -85,7 +87,7 @@ public static class AsyncEnumerableExtensions
     /// <paramref name="source"/> is <see langword="null"/>.
     /// </exception>
     /// <exception cref="OverflowException">
-    /// The sum is larger than <see cref="BinarySize.MaxValue"/>.
+    /// The sum is larger than <see cref="BinarySize.MaxValue" qualifyHint="true"/>.
     /// </exception>
     /// <remarks>
     /// <para>
@@ -101,11 +103,12 @@ public static class AsyncEnumerableExtensions
     }
 
     /// <summary>
-    /// Asynchronously computes the sum of the sequence of nullable <see cref="BinarySize"/> values.
+    /// Asynchronously computes the sum of a sequence of nullable <see cref="BinarySize"/> values
+    /// that are obtained by invoking a transform function on each element of the input sequence.
     /// </summary>
     /// <typeparam name="TSource">The type of the elements of <paramref name="source"/>.</typeparam>
     /// <param name="source">
-    /// A sequence of nullable <see cref="BinarySize"/> values to calculate the sum of.
+    /// A sequence of values to calculate the sum of.
     /// </param>
     /// <param name="selector">A transform function to apply to each element.</param>
     /// <param name="cancellationToken">
@@ -119,7 +122,7 @@ public static class AsyncEnumerableExtensions
     /// <paramref name="source"/> is <see langword="null"/>.
     /// </exception>
     /// <exception cref="OverflowException">
-    /// The sum is larger than <see cref="BinarySize.MaxValue"/>.
+    /// The sum is larger than <see cref="BinarySize.MaxValue" qualifyHint="true"/>.
     /// </exception>
     /// <remarks>
     /// <para>
@@ -135,7 +138,7 @@ public static class AsyncEnumerableExtensions
     }
 
     /// <summary>
-    /// Asynchronously computes the average of the sequence of <see cref="BinarySize"/> values.
+    /// Asynchronously computes the average of a sequence of <see cref="BinarySize"/> values.
     /// </summary>
     /// <param name="source">
     /// A sequence of <see cref="BinarySize"/> values to calculate the average of.
@@ -160,11 +163,12 @@ public static class AsyncEnumerableExtensions
     }
 
     /// <summary>
-    /// Asynchronously computes the average of the sequence of <see cref="BinarySize"/> values.
+    /// Asynchronously computes the average of a sequence of <see cref="BinarySize"/> values that
+    /// are obtained by invoking a transform function on each element of the input sequence.
     /// </summary>
     /// <typeparam name="TSource">The type of the elements of <paramref name="source"/>.</typeparam>
     /// <param name="source">
-    /// A sequence of <see cref="BinarySize"/> values to calculate the average of.
+    /// A sequence of values to calculate the average of.
     /// </param>
     /// <param name="selector">A transform function to apply to each element.</param>
     /// <param name="cancellationToken">
@@ -187,7 +191,8 @@ public static class AsyncEnumerableExtensions
     }
 
     /// <summary>
-    /// Asynchronously computes the average of the sequence of nullable <see cref="BinarySize"/> values.
+    /// Asynchronously computes the average of a sequence of nullable <see cref="BinarySize"/>
+    /// values.
     /// </summary>
     /// <param name="source">
     /// A sequence of nullable <see cref="BinarySize"/> values to calculate the average of.
@@ -196,9 +201,9 @@ public static class AsyncEnumerableExtensions
     /// The optional cancellation token to be used for canceling the sequence at any time.
     /// </param>
     /// <returns>
-    /// A task that represents the asynchronous operation. The result of the task is the average of the
-    /// values in the sequence, or <see langword="null"/> if <paramref name="source"/>. is empty or
-    /// contains only values that are <see langword="null"/>.
+    /// A task that represents the asynchronous operation. The result of the task is the average of
+    /// the values in the sequence, or <see langword="null"/> if <paramref name="source"/> is empty
+    /// or contains only values that are <see langword="null"/>.
     /// </returns>
     /// <exception cref="ArgumentNullException">
     /// <paramref name="source"/> is <see langword="null"/>.
@@ -210,20 +215,22 @@ public static class AsyncEnumerableExtensions
     }
 
     /// <summary>
-    /// Asynchronously computes the average of the sequence of nullable <see cref="BinarySize"/> values.
+    /// Asynchronously computes the average of a sequence of nullable <see cref="BinarySize"/>
+    /// values that are obtained by invoking a transform function on each element of the input
+    /// sequence.
     /// </summary>
     /// <typeparam name="TSource">The type of the elements of <paramref name="source"/>.</typeparam>
     /// <param name="source">
-    /// A sequence of nullable <see cref="BinarySize"/> values to calculate the average of.
+    /// A sequence of values to calculate the average of.
     /// </param>
     /// <param name="selector">A transform function to apply to each element.</param>
     /// <param name="cancellationToken">
     /// The optional cancellation token to be used for canceling the sequence at any time.
     /// </param>
     /// <returns>
-    /// A task that represents the asynchronous operation. The result of the task is the average of the
-    /// values in the sequence, or <see langword="null"/> if <paramref name="source"/>. is empty or
-    /// contains only values that are <see langword="null"/>.
+    /// A task that represents the asynchronous operation. The result of the task is the average of
+    /// the values in the sequence, or <see langword="null"/> if <paramref name="source"/> is empty
+    /// or contains only values that are <see langword="null"/>.
     /// </returns>
     /// <exception cref="ArgumentNullException">
     /// <paramref name="source"/> is <see langword="null"/>.

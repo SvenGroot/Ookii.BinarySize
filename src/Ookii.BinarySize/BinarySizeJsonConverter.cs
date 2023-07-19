@@ -9,10 +9,15 @@ namespace Ookii;
 /// </summary>
 /// <remarks>
 /// <para>
+///   This class is used to serialize <see cref="BinarySize"/> values when using the
+///   <see cref="JsonSerializer"/> class.
+/// </para>
+/// <para>
 ///   <see cref="BinarySize"/> values are serialized to JSON as strings, allowing the use of values
 ///   with binary size suffixes.
 /// </para>
 /// </remarks>
+/// <threadsafety instance="true" static="true"/>
 public class BinarySizeJsonConverter : JsonConverter<BinarySize>
 {
     /// <summary>
@@ -28,7 +33,7 @@ public class BinarySizeJsonConverter : JsonConverter<BinarySize>
     /// </summary>
     /// <param name="options">
     /// A bitwise combination of <see cref="BinarySizeOptions"/> values that indicates how units
-    /// are interpreted when converting from a string.
+    /// are interpreted when converting from JSON.
     /// </param>
     /// <remarks>
     /// <para>
