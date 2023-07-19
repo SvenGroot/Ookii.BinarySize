@@ -36,7 +36,18 @@ public class IecBinarySizeJsonConverter : JsonConverter<IecBinarySize>
             return default;
         }
 
-        return IecBinarySize.Parse(stringValue, CultureInfo.InvariantCulture);
+        try
+        {
+            return IecBinarySize.Parse(stringValue, CultureInfo.InvariantCulture);
+        }
+        catch (FormatException ex)
+        {
+            throw new JsonException(null, ex);
+        }
+        catch (OverflowException ex)
+        {
+            throw new JsonException(null, ex);
+        }
     }
 
     /// <inheritdoc/>

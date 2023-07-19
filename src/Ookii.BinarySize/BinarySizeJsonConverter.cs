@@ -59,7 +59,18 @@ public class BinarySizeJsonConverter : JsonConverter<BinarySize>
             return default;
         }
 
-        return BinarySize.Parse(stringValue, Options, NumberStyles.Number, CultureInfo.InvariantCulture);
+        try
+        {
+            return BinarySize.Parse(stringValue, Options, NumberStyles.Number, CultureInfo.InvariantCulture);
+        }
+        catch (FormatException ex)
+        {
+            throw new JsonException(null, ex);
+        }
+        catch (OverflowException ex)
+        {
+            throw new JsonException(null, ex);
+        }
     }
 
     /// <inheritdoc/>
