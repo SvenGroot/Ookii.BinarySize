@@ -866,12 +866,13 @@ public readonly partial struct BinarySize : IEquatable<BinarySize>, IComparable<
         {
             // No scale prefix before the 'i', so don't count it as an IEC char.
             result.HasIecChar = false;
-            return result;
         }
-
-        result.Trimmed = result.Trimmed.Slice(0, index);
-        result.Factor = _scalingFactors[scaleIndex];
-        result.ScaleChar = prefixes[scaleIndex];
+        else
+        {
+            result.Trimmed = result.Trimmed.Slice(0, index);
+            result.Factor = _scalingFactors[scaleIndex];
+            result.ScaleChar = prefixes[scaleIndex];
+        }
 
         // Remove any whitespace between the number and the unit.
         var trimmed = result.Trimmed.TrimEnd();

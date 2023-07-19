@@ -54,6 +54,7 @@ public class BinarySizeTests
     {
         Assert.AreEqual(new BinarySize(123), BinarySize.Parse("123", CultureInfo.InvariantCulture));
         Assert.AreEqual(new BinarySize(123), BinarySize.Parse("123B", CultureInfo.InvariantCulture));
+        Assert.AreEqual(new BinarySize(123), BinarySize.Parse("123 B", CultureInfo.InvariantCulture));
         Assert.AreEqual(new BinarySize(125952), BinarySize.Parse("123KB", CultureInfo.InvariantCulture));
         Assert.AreEqual(new BinarySize(125952), BinarySize.Parse("123KiB", CultureInfo.InvariantCulture));
         Assert.AreEqual(new BinarySize(125952), BinarySize.Parse("123K", CultureInfo.InvariantCulture));
@@ -154,6 +155,8 @@ public class BinarySizeTests
     {
         var target = new BinarySize(123456789012345678);
         Assert.AreEqual("123456789012345678 B", target.ToString(null, CultureInfo.InvariantCulture));
+        Assert.AreEqual("123456789012345678B", target.ToString("B", CultureInfo.InvariantCulture));
+        Assert.AreEqual("123456789012345678 B", target.ToString(" B", CultureInfo.InvariantCulture));
         Assert.AreEqual("120563270519868.826171875KB", target.ToString("KB", CultureInfo.InvariantCulture));
         Assert.AreEqual("120563270519868.826171875KiB", target.ToString("KiB", CultureInfo.InvariantCulture));
         Assert.AreEqual("120563270519868.826171875K", target.ToString("K", CultureInfo.InvariantCulture));
