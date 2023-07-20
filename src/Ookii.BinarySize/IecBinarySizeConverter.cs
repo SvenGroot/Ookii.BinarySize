@@ -17,7 +17,8 @@ namespace Ookii;
 /// </para>
 /// <para>
 ///   When converting from a string, this converter will interpret SI prefixes as based on powers of
-///   ten, so "1kB" equals 1000 bytes, and so forth. IEC prefixes are still based on powers of two.
+///   ten, so "1kB" equals 1,000 bytes, "1MB" equals 1,000,000 bytes, and so on. IEC prefixes are
+///   still based on powers of two.
 /// </para>
 /// </remarks>
 /// <threadsafety instance="true" static="true"/>
