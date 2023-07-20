@@ -564,5 +564,5 @@ public class BinarySizeTests
 <SerializationTest xmlns:i=""http://www.w3.org/2001/XMLSchema-instance"" xmlns=""http://schemas.datacontract.org/2004/07/Ookii.Test"">
   <Size>1536 KiB</Size>
   <Value>10</Value>
-</SerializationTest>";
+</SerializationTest>".ReplaceLineEndings();
 }
