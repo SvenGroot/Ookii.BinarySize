@@ -61,6 +61,15 @@ namespace Ookii.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to The value is not a valid combination of BinarySizeOptions..
+        /// </summary>
+        internal static string InvalidOptions {
+            get {
+                return ResourceManager.GetString("InvalidOptions", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to BinarySize does not accept not-a-number values..
         /// </summary>
         internal static string ValueIsNaN {

@@ -301,6 +301,9 @@ public readonly partial struct BinarySize : IEquatable<BinarySize>, IComparable<
     /// <exception cref="FormatException">
     /// <paramref name="s"/> is not in the correct format.
     /// </exception>
+    /// <exception cref="ArgumentException">
+    /// <paramref name="options"/> is not valid.
+    /// </exception>
     /// <exception cref="OverflowException">
     /// <paramref name="s"/> is not representable as a <see cref="BinarySize"/>.
     /// </exception>
@@ -332,6 +335,7 @@ public readonly partial struct BinarySize : IEquatable<BinarySize>, IComparable<
     /// </remarks>
     public static BinarySize Parse(ReadOnlySpan<char> s, BinarySizeOptions options = BinarySizeOptions.Default, NumberStyles style = NumberStyles.Number, IFormatProvider? provider = null)
     {
+        ValidateOptions(options);
         if (s.IsEmpty)
         {
             return Zero;
@@ -347,7 +351,20 @@ public readonly partial struct BinarySize : IEquatable<BinarySize>, IComparable<
         return new BinarySize(checked((long)(size * result.Factor)));
     }
 
-    /// <inheritdoc cref="Parse(ReadOnlySpan{char}, BinarySizeOptions, NumberStyles, IFormatProvider?)"/>
+    /// <summary>
+    /// Parses a span of characters into a <see cref="BinarySize"/> structure.
+    /// </summary>
+    /// <param name="s">The span of characters to parse.</param>
+    /// <param name="provider">
+    /// An object that provides culture-specific formatting information about <paramref name="s"/>.
+    /// </param>
+    /// <returns>The result of parsing <paramref name="s"/>.</returns>
+    /// <exception cref="FormatException">
+    /// <paramref name="s"/> is not in the correct format.
+    /// </exception>
+    /// <exception cref="OverflowException">
+    /// <paramref name="s"/> is not representable as a <see cref="BinarySize"/>.
+    /// </exception>
     /// <remarks>
     /// <para>
     ///   The input must contain a number, followed by one of the following units: "B", "KB", "KiB",
@@ -388,11 +405,15 @@ public readonly partial struct BinarySize : IEquatable<BinarySize>, IComparable<
     /// <see langword="true"/> if <paramref name="s"/> was successfully parsed; otherwise,
     /// <see langword="false"/>.
     /// </returns>
+    /// <exception cref="ArgumentException">
+    /// <paramref name="options"/> is not valid.
+    /// </exception>
     /// <remarks>
     /// <inheritdoc cref="Parse(ReadOnlySpan{char}, BinarySizeOptions, NumberStyles, IFormatProvider?)"/>
     /// </remarks>
     public static bool TryParse(ReadOnlySpan<char> s, BinarySizeOptions options, NumberStyles style, IFormatProvider? provider, out BinarySize result)
     {
+        ValidateOptions(options);
         if (s.IsEmpty)
         {
             result = Zero;
@@ -425,7 +446,21 @@ public readonly partial struct BinarySize : IEquatable<BinarySize>, IComparable<
         }
     }
 
-    /// <inheritdoc cref="TryParse(ReadOnlySpan{char}, BinarySizeOptions, NumberStyles, IFormatProvider?, out BinarySize)"/>
+    /// <summary>
+    /// Tries to parse a span of characters into a <see cref="BinarySize"/> structure.
+    /// </summary>
+    /// <param name="s">The span of characters to parse.</param>
+    /// <param name="provider">
+    /// An object that provides culture-specific formatting information about <paramref name="s"/>.
+    /// </param>
+    /// <param name="result">
+    /// When this method returns, contains the result of successfully parsing <paramref name="s"/>,
+    /// or an undefined value on failure.
+    /// </param>
+    /// <returns>
+    /// <see langword="true"/> if <paramref name="s"/> was successfully parsed; otherwise,
+    /// <see langword="false"/>.
+    /// </returns>
     /// <remarks>
     /// <para>
     ///   The input must contain a number, followed by one of the following units: "B", "KB", "KiB",
@@ -470,6 +505,9 @@ public readonly partial struct BinarySize : IEquatable<BinarySize>, IComparable<
     /// <see langword="true"/> if <paramref name="s"/> was successfully parsed; otherwise,
     /// <see langword="false"/>.
     /// </returns>
+    /// <exception cref="ArgumentException">
+    /// <paramref name="options"/> is not valid.
+    /// </exception>
     /// <remarks>
     /// <inheritdoc cref="Parse(ReadOnlySpan{char}, BinarySizeOptions, NumberStyles, IFormatProvider?)"/>
     /// </remarks>
@@ -488,7 +526,21 @@ public readonly partial struct BinarySize : IEquatable<BinarySize>, IComparable<
         return TryParse(s.AsSpan(), options, style, provider, out result);
     }
 
-    /// <inheritdoc cref="TryParse(string?, BinarySizeOptions, NumberStyles, IFormatProvider?, out BinarySize)"/>
+    /// <summary>
+    /// Tries to parse a string into a <see cref="BinarySize"/> structure.
+    /// </summary>
+    /// <param name="s">The string to parse.</param>
+    /// <param name="provider">
+    /// An object that provides culture-specific formatting information about <paramref name="s"/>.
+    /// </param>
+    /// <param name="result">
+    /// When this method returns, contains the result of successfully parsing <paramref name="s"/>,
+    /// or an undefined value on failure.
+    /// </param>
+    /// <returns>
+    /// <see langword="true"/> if <paramref name="s"/> was successfully parsed; otherwise,
+    /// <see langword="false"/>.
+    /// </returns>
     /// <remarks>
     /// <para>
     ///   The input must contain a number, followed by one of the following units: "B", "KB", "KiB",
@@ -536,6 +588,9 @@ public readonly partial struct BinarySize : IEquatable<BinarySize>, IComparable<
     /// <returns>The result of parsing <paramref name="s"/>.</returns>
     /// <exception cref="ArgumentNullException">
     /// <paramref name="s"/> is <see langword="null"/>.
+    /// </exception>
+    /// <exception cref="ArgumentException">
+    /// <paramref name="options"/> is not valid.
     /// </exception>
     /// <exception cref="FormatException">
     /// <paramref name="s"/> is not in the correct format.
@@ -984,5 +1039,14 @@ public readonly partial struct BinarySize : IEquatable<BinarySize>, IComparable<
         }
 
         return (BinarySize)checked((long)(value * scale));
+    }
+
+    private static void ValidateOptions(BinarySizeOptions options)
+    {
+        const BinarySizeOptions invalid = ~BinarySizeOptions.UseIecStandard;
+        if ((options & invalid) != 0) 
+        {
+            throw new ArgumentException(Properties.Resources.InvalidOptions, nameof(options));
+        }
     }
 }
