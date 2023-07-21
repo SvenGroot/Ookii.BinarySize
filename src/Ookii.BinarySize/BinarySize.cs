@@ -923,10 +923,12 @@ public readonly partial struct BinarySize : IEquatable<BinarySize>, IComparable<
             factors = factors.Slice(0, factors.Length / 2);
         }
 
+        // Use the absolute value to select the correct unit for negative numbers.
+        var value = Math.Abs(Value);
         for (int index = 0; index < chars.Length; ++index)
         {
             var factor = factors[index];
-            if (Value >= factor && (allowRounding || Value % factor == 0))
+            if (value >= factor && (allowRounding || value % factor == 0))
             {
                 return (factor, chars[index]);
             }

@@ -76,6 +76,9 @@ public class BinarySizeTests
         Assert.AreEqual(new BinarySize(6341068275337658368), BinarySize.Parse("5.5E", CultureInfo.InvariantCulture));
         Assert.AreEqual(new BinarySize(6341068275337658368), BinarySize.Parse("5.5 EB ", CultureInfo.InvariantCulture)); // with some spaces.
 
+        // Negative
+        Assert.AreEqual(new BinarySize(-126464), BinarySize.Parse("-123.5KB", CultureInfo.InvariantCulture));
+
         // Explicit culture test:
         Assert.AreEqual(new BinarySize(126464), BinarySize.Parse("123.5KB", CultureInfo.InvariantCulture));
         Assert.AreEqual(new BinarySize(126464), BinarySize.Parse("123,5KB", new CultureInfo("nl-NL")));
@@ -102,6 +105,10 @@ public class BinarySizeTests
         Assert.AreEqual(new BinarySize(138485688541642752), result);
         Assert.IsTrue(BinarySize.TryParse(" 123 PB ", CultureInfo.InvariantCulture, out result));
         Assert.AreEqual(new BinarySize(138485688541642752), result);
+
+        // Negative
+        Assert.IsTrue(BinarySize.TryParse("-123.5KB", CultureInfo.InvariantCulture, out result));
+        Assert.AreEqual(new BinarySize(-126464), result);
 
         // Explicit culture test:
         Assert.IsTrue(BinarySize.TryParse("123,5KB", new CultureInfo("nl-NL"), out result));
@@ -234,7 +241,12 @@ public class BinarySizeTests
         Assert.AreEqual("1KB", ((BinarySize)1024).ToString("Ab"));
         Assert.AreEqual("1.5KiB", ((BinarySize)1536).ToString("sIb"));
 
-        // Test IFormattable
+        // Negative
+        Assert.AreEqual("-2048KiB", BinarySize.FromMebi(-2).ToString("KiB"));
+        Assert.AreEqual("-2MiB", BinarySize.FromMebi(-2).ToString("AiB"));
+        Assert.AreEqual("-1.5KiB", ((BinarySize)(-1536)).ToString("SiB"));
+
+        // Test IFormattable/ISpanFormattable
         Assert.AreEqual("test 109.7 PB test2", string.Format(CultureInfo.InvariantCulture, "test {0:0.# SB} test2", ((BinarySize)123456789012345678)));
     }
 
