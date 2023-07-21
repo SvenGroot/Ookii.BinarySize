@@ -143,7 +143,11 @@ public readonly partial struct BinarySize : IEquatable<BinarySize>, IComparable<
     /// <value>
     /// The value of this instance, in bytes.
     /// </value>
-    public long Value { get; }
+    public long Value
+    {
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        get;
+    }
 
     /// <summary>
     /// Gets the value of this instance in kibibytes.

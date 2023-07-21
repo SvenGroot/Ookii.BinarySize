@@ -336,21 +336,53 @@ public class BinarySizeTests
         Assert.IsTrue(new BinarySize(123).Equals(new BinarySize(123)));
         Assert.IsFalse(new BinarySize(123).Equals(new BinarySize(124)));
         Assert.IsTrue(new BinarySize(123) == new BinarySize(123));
+        Assert.IsTrue(new BinarySize(123) == 123);
+        Assert.IsTrue(123 == new BinarySize(123));
         Assert.IsFalse(new BinarySize(123) == new BinarySize(124));
+        Assert.IsFalse(new BinarySize(123) == 124);
+        Assert.IsFalse(124 == new BinarySize(123));
         Assert.IsTrue(new BinarySize(123) != new BinarySize(124));
+        Assert.IsTrue(new BinarySize(123) != 124);
+        Assert.IsTrue(124 != new BinarySize(123));
         Assert.IsFalse(new BinarySize(123) != new BinarySize(123));
+        Assert.IsFalse(new BinarySize(123) != 123);
+        Assert.IsFalse(123 != new BinarySize(123));
         Assert.IsTrue(new BinarySize(123) < new BinarySize(124));
         Assert.IsFalse(new BinarySize(123) < new BinarySize(123));
         Assert.IsFalse(new BinarySize(124) < new BinarySize(123));
+        Assert.IsTrue(123 < new BinarySize(124));
+        Assert.IsFalse(123 < new BinarySize(123));
+        Assert.IsFalse(124 < new BinarySize(123));
+        Assert.IsTrue(new BinarySize(123) < 124);
+        Assert.IsFalse(new BinarySize(123) < 123);
+        Assert.IsFalse(new BinarySize(124) < 123);
         Assert.IsTrue(new BinarySize(123) <= new BinarySize(124));
         Assert.IsTrue(new BinarySize(123) <= new BinarySize(123));
         Assert.IsFalse(new BinarySize(124) <= new BinarySize(123));
+        Assert.IsTrue(123 <= new BinarySize(124));
+        Assert.IsTrue(123 <= new BinarySize(123));
+        Assert.IsFalse(124 <= new BinarySize(123));
+        Assert.IsTrue(new BinarySize(123) <= 124);
+        Assert.IsTrue(new BinarySize(123) <= 123);
+        Assert.IsFalse(new BinarySize(124) <= 123);
         Assert.IsFalse(new BinarySize(123) > new BinarySize(124));
         Assert.IsFalse(new BinarySize(123) > new BinarySize(123));
         Assert.IsTrue(new BinarySize(124) > new BinarySize(123));
+        Assert.IsFalse(123 > new BinarySize(124));
+        Assert.IsFalse(123 > new BinarySize(123));
+        Assert.IsTrue(124 > new BinarySize(123));
+        Assert.IsFalse(new BinarySize(123) > 124);
+        Assert.IsFalse(new BinarySize(123) > 123);
+        Assert.IsTrue(new BinarySize(124) > 123);
         Assert.IsFalse(new BinarySize(123) >= new BinarySize(124));
         Assert.IsTrue(new BinarySize(123) >= new BinarySize(123));
         Assert.IsTrue(new BinarySize(124) >= new BinarySize(123));
+        Assert.IsFalse(123 >= new BinarySize(124));
+        Assert.IsTrue(123 >= new BinarySize(123));
+        Assert.IsTrue(124 >= new BinarySize(123));
+        Assert.IsFalse(new BinarySize(123) >= 124);
+        Assert.IsTrue(new BinarySize(123) >= 123);
+        Assert.IsTrue(new BinarySize(124) >= 123);
 
         Assert.AreEqual(-1, new BinarySize(123).CompareTo(new BinarySize(124)));
         Assert.AreEqual(0, new BinarySize(123).CompareTo(new BinarySize(123)));
@@ -366,10 +398,20 @@ public class BinarySizeTests
         var size2 = (BinarySize)value2;
 
         Assert.AreEqual((BinarySize)(value1 + value2), size1 + size2);
+        Assert.AreEqual((BinarySize)(value1 + value2), size1 + value2);
+        Assert.AreEqual((BinarySize)(value1 + value2), value1 + size2);
         Assert.AreEqual((BinarySize)(value1 - value2), size1 - size2);
+        Assert.AreEqual((BinarySize)(value1 - value2), size1 - value2);
+        Assert.AreEqual((BinarySize)(value1 - value2), value1 - size2);
         Assert.AreEqual((BinarySize)(value1 * value2), size1 * size2);
+        Assert.AreEqual((BinarySize)(value1 * value2), value1 * size2);
+        Assert.AreEqual((BinarySize)(value1 * value2), size1 * value2);
         Assert.AreEqual((BinarySize)(value2 / value1), size2 / size1);
+        Assert.AreEqual((BinarySize)(value2 / value1), value2 / size1);
+        Assert.AreEqual((BinarySize)(value2 / value1), size2 / value1);
         Assert.AreEqual((BinarySize)(value2 % value1), size2 % size1);
+        Assert.AreEqual((BinarySize)(value2 % value1), value2 % size1);
+        Assert.AreEqual((BinarySize)(value2 % value1), size2 % value1);
         Assert.AreEqual((BinarySize)(value2++), size2++);
         Assert.AreEqual((BinarySize)(--value2), --size2);
         Assert.AreEqual((BinarySize)(-value2), -size2);
@@ -381,6 +423,52 @@ public class BinarySizeTests
         Assert.AreEqual((BinarySize)(value2 / value1), BinarySize.Divide(size2, size1));
         Assert.AreEqual((BinarySize)(value2 % value1), BinarySize.Remainder(size2, size1));
         Assert.AreEqual((BinarySize)(-value2), BinarySize.Negate(size2));
+    }
+
+    [TestMethod]
+    public void TestCheckedArithmeticOperations()
+    {
+        checked
+        {
+            var value1 = 123L;
+            var value2 = 321L;
+            var size1 = (BinarySize)value1;
+            var size2 = (BinarySize)value2;
+
+            Assert.AreEqual((BinarySize)(value1 + value2), size1 + size2);
+            Assert.AreEqual((BinarySize)(value1 + value2), size1 + value2);
+            Assert.AreEqual((BinarySize)(value1 + value2), value1 + size2);
+            Assert.AreEqual((BinarySize)(value1 - value2), size1 - size2);
+            Assert.AreEqual((BinarySize)(value1 - value2), size1 - value2);
+            Assert.AreEqual((BinarySize)(value1 - value2), value1 - size2);
+            Assert.AreEqual((BinarySize)(value1 * value2), size1 * size2);
+            Assert.AreEqual((BinarySize)(value1 * value2), value1 * size2);
+            Assert.AreEqual((BinarySize)(value1 * value2), size1 * value2);
+            Assert.AreEqual((BinarySize)(value2 / value1), size2 / size1);
+            Assert.AreEqual((BinarySize)(value2 / value1), value2 / size1);
+            Assert.AreEqual((BinarySize)(value2 / value1), size2 / value1);
+            Assert.AreEqual((BinarySize)(value2 % value1), size2 % size1);
+            Assert.AreEqual((BinarySize)(value2 % value1), value2 % size1);
+            Assert.AreEqual((BinarySize)(value2 % value1), size2 % value1);
+            Assert.AreEqual((BinarySize)(value2++), size2++);
+            Assert.AreEqual((BinarySize)(--value2), --size2);
+            Assert.AreEqual((BinarySize)(-value2), -size2);
+            Assert.AreEqual((BinarySize)(+value2), +size2);
+
+            Assert.ThrowsException<OverflowException>(() => BinarySize.MaxValue + BinarySize.MaxValue);
+            Assert.ThrowsException<OverflowException>(() => long.MaxValue + BinarySize.MaxValue);
+            Assert.ThrowsException<OverflowException>(() => BinarySize.MaxValue + long.MaxValue);
+            Assert.ThrowsException<OverflowException>(() => BinarySize.MinValue - BinarySize.MaxValue);
+            Assert.ThrowsException<OverflowException>(() => long.MinValue - BinarySize.MaxValue);
+            Assert.ThrowsException<OverflowException>(() => BinarySize.MinValue - long.MaxValue);
+            Assert.ThrowsException<OverflowException>(() => BinarySize.MaxValue * BinarySize.MaxValue);
+            Assert.ThrowsException<OverflowException>(() => long.MaxValue * BinarySize.MaxValue);
+            Assert.ThrowsException<OverflowException>(() => BinarySize.MaxValue * long.MaxValue);
+            size1 = BinarySize.MaxValue;
+            Assert.ThrowsException<OverflowException>(() => size1++);
+            size1 = BinarySize.MinValue;
+            Assert.ThrowsException<OverflowException>(() => size1--);
+        }
     }
 
     [TestMethod]
@@ -396,8 +484,14 @@ public class BinarySizeTests
         Assert.AreEqual((BinarySize)(-123L >> 2), (BinarySize)(-123) >> 2);
         Assert.AreEqual((BinarySize)(-123L >>> 2), (BinarySize)(-123) >>> 2);
         Assert.AreEqual((BinarySize)(value1 & value2), size1 & size2);
+        Assert.AreEqual((BinarySize)(value1 & value2), value1 & size2);
+        Assert.AreEqual((BinarySize)(value1 & value2), size1 & value2);
         Assert.AreEqual((BinarySize)(value1 | value2), size1 | size2);
+        Assert.AreEqual((BinarySize)(value1 | value2), value1 | size2);
+        Assert.AreEqual((BinarySize)(value1 | value2), size1 | value2);
         Assert.AreEqual((BinarySize)(value2 ^ value1), size2 ^ size1);
+        Assert.AreEqual((BinarySize)(value2 ^ value1), value2 ^ size1);
+        Assert.AreEqual((BinarySize)(value2 ^ value1), size2 ^ value1);
         Assert.AreEqual((BinarySize)(~value1), ~size1);
     }
 
