@@ -1,22 +1,22 @@
 # Ookii.BinarySize
 
-Ookii.BinarySize is a modern library for parsing and displaying quantities of bytes using
+Ookii.BinarySize is a modern library for parsing and displaying quantities of bytes, using
 human-readable representation.
 
-It provides functionality to parse numeric values that end with a byte size unit, such as "512 B",
-"3 MB", "10 M", or "4.5GiB", and format them for display in the same way, automatically choosing the
-best size prefix, or using the one you specified depending on the format string.
+It provides functionality to [parse numeric values](#parsing) that end with a multiple-byte unit,
+such as B, KB, MiB, and so on, and to format them for display in the same way. It can automatically
+choose the best unit, or you can choose the one you want, based on the [format string](#formatting).
 
 - Supports units with SI prefixes ("KB", "MB", "GB", "TB", "PB", and "EB"), and IEC prefixes
   ("KiB", "MiB", "GiB", "TiB", "PiB", and "EiB"), with and without the "B".
-- Interpret SI prefixes as either [powers or two or powers of ten](https://en.wikipedia.org/wiki/Byte#Multiple-byte_units).
-- Supports values up to approximately positive and negative 8 EiB, using [`Int64`][] (`long`) to
-  store the value.
-- Supports .Net Standard 2.0, .Net Standard 2.1, and .Net 6.0 and up.
-- Supports math and binary operators, and .Net 7 generic math.
+- Interpret SI prefixes as either [powers of two or powers of ten](https://en.wikipedia.org/wiki/Byte#Multiple-byte_units).
+- Parse and store values up to approximately positive and negative 8 EiB, using [`Int64`][] (`long`)
+  to store the value.
+- Provided as a library for [.Net Standard 2.0, .Net Standard 2.1, and .Net 6.0 and up](#requirements).
+- Implements math and binary operators, and supports .Net 7 generic math.
 - Trim-friendly.
 
-Besides just display formatting and parsing user input, BinarySize provides everything needed to
+Besides formatting for display and parsing user input, BinarySize provides everything needed to
 easily use human-readable quantities of bytes in places such as configuration files, serialized
 XML and JSON, and [command line arguments](src/Samples/ListDirectory).
 
@@ -24,24 +24,30 @@ Ookii.BinarySize comes in two packages; the core functionality is in Ookii.Binar
 additional extension methods for [`IAsyncEnumerable<T>`][] are available in the Ookii.BinarySize.Async
 package. Both are available on NuGet.
 
-Ookii.BinarySize       | [![NuGet](https://img.shields.io/nuget/v/Ookii.BinarySize)](https://www.nuget.org/packages/Ookii.BinarySize/)
+Package                | Version
 -----------------------|--------------------------------------------------------------------------------------------------------------------------
+Ookii.BinarySize       | [![NuGet](https://img.shields.io/nuget/v/Ookii.BinarySize)](https://www.nuget.org/packages/Ookii.BinarySize/)
 Ookii.BinarySize.Async | [![NuGet](https://img.shields.io/nuget/v/Ookii.BinarySize.Async)](https://www.nuget.org/packages/Ookii.BinarySize.Async/)
 
-Keep reading to get started, or check out the [Samples](src/Samples).
+Keep reading to get started, or check out the [samples](src/Samples).
+
+To use the library, store your size values as a [`BinarySize`][] structure, which supports
+formatting and parsing, along with overloaded operators and other operations provided for
+convenience.
 
 ## Formatting
 
-Formatting is typically done using the [`BinarySize.ToString()`][] method, or by using the
-[`BinarySize`][] structure in a compound formatting string. You can use a format string to customize
-the output. This format string can use any of the supported units by itself, or following a numeric
-format string. Spaces around the unit are preserved.
+To create a string for a [`BinarySize`][] value, use the [`BinarySize.ToString()`][] method, or use
+the value directly in a compound formatting string.
 
-For example "KB", " MiB", "#.0 G", as well as simply "B", are all accepted format strings.
+You can use a format string to customize the output. This format string can consist of just a
+multi-byte unit, to use default number formatting followed by that unit, or it can use a numeric
+format string followed by a unit. Spaces around the unit are preserved. For example "KB", " MiB",
+"#.0 G", as well as simply "B", are all accepted format strings.
 
-In addition to an explicit unit, you can also use the prefix "A" to automatically pick the largest
-prefix where the value is a whole number, or "S" to pick the largest prefix where the value is
-larger than 1.
+To automatically pick the largest unit where the value is a whole number, use "A" instead of an
+explicit size prefix, or use "S" to pick the largest prefix where the value is larger than 1, but
+may have a fractional component.
 
 For example, the following displays a value using several different formats:
 
@@ -64,19 +70,31 @@ Shortest formatting: 2.5 GiB
 Explicit formatting: 2,621,440Ki
 ```
 
-As you can see, the default formatting is equivalent to " AiB", which formats the value in MiB
-because it is not a whole number of GiB. Using "SiB" will use the GiB unit.
+When no format string is specified, this is equivalent to using " AiB", which picks the largest
+unit where the value is a whole number, using IEC units and a "B" suffix, and a space between the
+number and the unit. In the example above, this formats the value in MiB because it is not a whole
+number of GiB. The "SiB" format string does use the GiB unit, because it allows factional values.
 
 The formatting above uses [powers of two](https://en.wikipedia.org/wiki/Byte#Multiple-byte_units)
-for both SI and IEC unit, so 1 KB equals 1 KiB equals 1,024 bytes. It is also possible to format
-using the IEC recommended standard where 1 KiB equal 1,024 bytes, but 1 kB equals 1,000 bytes.
+for both SI and IEC units. This means that 1 KB is the same as 1 KiB, and both equal 1,024 bytes, 1
+MB is equal to 1 MiB, both equaling 1,048,576 bytes, and so on.
 
-Do do this, use a lower-case prefix in the unit, and do not include an 'i' (which is for IEC units
-only).
+If you wish to use the IEC recommended standard where only IEC units are powers of two, and SI units
+are always powers of then, this can be done by using a lower-case unit prefix in the format string,
+without including an 'i',which is for IEC units only. This applies to explicit units ("k", "m", "g",
+"t", "p" and "e"), as well as the automatic units "a" and "s".
+
+With this option, 1 kB equals 1,000 bytes, 1 MiB equals 1,000,000 bytes, and so on.
 
 ```csharp
 var value = BinarySize.FromGibi(2.5);
 Console.WriteLine($"{value: B} is equal to (decimal):");
+Console.WriteLine($"Automatic formatting: {value: aB}");
+Console.WriteLine($"Shortest formatting: {value:#.0 sB}");
+Console.WriteLine($"Explicit formatting: {value:#,###k}");
+
+value = (BinarySize)2500000000;
+Console.WriteLine($"And {value: B} is equal to (decimal):");
 Console.WriteLine($"Automatic formatting: {value: aB}");
 Console.WriteLine($"Shortest formatting: {value:#.0 sB}");
 Console.WriteLine($"Explicit formatting: {value:#,###k}");
@@ -89,21 +107,26 @@ This outputs the following:
 Automatic formatting: 2684354560 B
 Shortest formatting: 2.7 GB
 Explicit formatting: 2,684,355k
+And 2500000000 B is equal to (decimal):
+Automatic formatting: 2500 MB
+Shortest formatting: 2.5 GB
+Explicit formatting: 2,500,000k
 ```
 
-Note that automatic formatting formatted as bytes, since there is no higher decimal prefix that
-could be used in this case.
+Note that using "aB" formatted 2.5 GiB as plain bytes, since there is no higher decimal prefix that
+could be used in that case while keeping a whole number.
 
 The unit prefixes will always be output as upper case, except for the decimal version of "kilo",
-which is a lower-case "k".
+which is a lower-case "k" to conform to the SI standard.
 
 See [`BinarySize.ToString()`][] for full documentation on the format string.
 
 ## Parsing
 
-Parsing can be done using the [`BinarySize.Parse()`][] and [`BinarySize.TryParse()`][] methods. Supported
-input is any number, optionally followed by an SI or IEC size prefix, and optionally ending with
-a 'B' character. The case of the unit, and any spacing surrounding it, will be ignored.
+To parse a string value into a [`BinarySize`][], use the [`BinarySize.Parse()`][] and
+[`BinarySize.TryParse()`][] methods. The input can be a number, optionally followed by an SI or IEC
+multi-byte unit, and optionally ending with a 'B' character. The case of the unit, and any spacing
+surrounding it, will be ignored.
 
 The following code parses several strings with different styles of unit, and displays their values
 in bytes on the console.
@@ -112,7 +135,7 @@ in bytes on the console.
 var values = new[] { "100", "100B", "10 KB", "2.5 MiB", "5G" };
 foreach (var value in values)
 {
-    var size = BinarySize.Parse(value);
+    var size = BinarySize.Parse(value, CultureInfo.InvariantCulture);
     Console.WriteLine($"'{value}' == {size.Value} bytes");
 }
 ```
@@ -130,13 +153,14 @@ This would print the following output.
 Just as with formatting, the default behavior is to treat both SI and IEC units as powers of two, as
 can be seen by the values for "10 KB" and "5G".
 
-To use the IEC standard of interpreting SI units as powers of ten, we can use the [`BinarySizeOptions`][] enumeration.
+To use the IEC standard of interpreting SI units as powers of ten, we can use the
+[`BinarySizeOptions`][] enumeration.
 
 ```csharp
 var values = new[] { "100", "100B", "10 KB", "2.5 MiB", "5G" };
 foreach (var value in values)
 {
-    var size = BinarySize.Parse(value, BinarySizeOptions.UseIecStandard);
+    var size = BinarySize.Parse(value, BinarySizeOptions.UseIecStandard, NumberStyles.Number, CultureInfo.InvariantCulture);
     Console.WriteLine($"'{value}' == {size.Value} bytes");
 }
 ```
@@ -151,35 +175,35 @@ Which gives this output instead.
 '5G' == 5000000000 bytes
 ```
 
-As you can see, IEC units are not affected by this options.
+As you can see, IEC units ("MiB" in this example) are not affected by this option.
 
-If you want to always treat SI units as powers of ten, or do so in a context where you cannot
-specify a [`BinarySizeOptions`][] value (such as a value that is being serialized), you can instead use
-the [`IecBinarySize`][] structure; this is a wrapper around [`BinarySize`][] which defaults to this parsing
-behavior.
+If you want to always treat SI units as powers of ten when parsing, or do so in a context where you
+cannot specify a [`BinarySizeOptions`][] value (such as a value that is being serialized), you can
+instead use the [`IecBinarySize`][] structure; this is a wrapper around [`BinarySize`][] which
+defaults to this parsing behavior.
 
 ## Other features
 
-Besides offering formatting and parsing behavior, [`BinarySize`][] aims to make using it as convenient
-as possible, and offers several features that make it as easy to use as the primitive numeric types.
+Besides offering formatting and parsing, Ookii.BinarySize aims to make using it as convenient as
+possible, and offers several features that make it as easy to use as the primitive numeric types.
 
-- Provide scaling constants [`Kibi`][], [`Mebi`][], [`Gibi`][], [`Tebi`][], [`Pebi`][] and
+- Provides size constants [`Kibi`][], [`Mebi`][], [`Gibi`][], [`Tebi`][], [`Pebi`][] and
   [`Exbi`][].
-- Create scaled values with the [`FromKibi()`][], [`FromMebi()`][], [`FromGibi()`][],
+- Create values with a specific size using the [`FromKibi()`][], [`FromMebi()`][], [`FromGibi()`][],
   [`FromTebi()`][], [`FromPebi()`][] and [`FromExbi()`][] methods.
-- Retrieve the values at any scale using the [`AsKibi`][], [`AsMebi`][], [`AsGibi`][], [`AsTebi`][],
-  [`AsPebi`][] and [`AsExbi`][] properties.
+- Retrieve the values scaled to any size using the [`AsKibi`][], [`AsMebi`][], [`AsGibi`][],
+  [`AsTebi`][], [`AsPebi`][] and [`AsExbi`][] properties.
 - Implements math, shift and binary operators.
-- Provides conversion operators to and from `long`.
 - Implements comparison operators, as well as [`IEquatable<T>`][], [`IComparable<T>`][],
   and [`GetHashCode()`][].
-- Provides extension methods for [`IEnumerable<T>`][], and through the
+- Convert to and from `long` by casting.
+- Provides extension methods for [`IEnumerable<T>`][], and with the
   [Ookii.BinarySize.Async](https://www.nuget.org/packages/Ookii.BinarySize.Async) package, also for
   [`IAsyncEnumerable<T>`][].
 
-The [`BinarySize`][] and [`IecBinarySize`][] structure can be used in context where they are
+The [`BinarySize`][] and [`IecBinarySize`][] structures can be used in contexts where they are
 automatically serialized, such as configuration files, serialized XML or JSON data, XAML, and
-others, because it provides a [`TypeConverter`][], a [`JsonConverter`][], and implements
+others, because they provide a [`TypeConverter`][], a [`JsonConverter`][], and implement
 [`IXmlSerializable`][].
 
 Ookii.BinarySize also supports modern .Net functionality. It supports parsing from a
