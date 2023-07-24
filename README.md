@@ -29,7 +29,8 @@ Package                | Version
 Ookii.BinarySize       | [![NuGet](https://img.shields.io/nuget/v/Ookii.BinarySize)](https://www.nuget.org/packages/Ookii.BinarySize/)
 Ookii.BinarySize.Async | [![NuGet](https://img.shields.io/nuget/v/Ookii.BinarySize.Async)](https://www.nuget.org/packages/Ookii.BinarySize.Async/)
 
-Keep reading to get started, or check out the [samples](src/Samples).
+Keep reading to get started, or check out the [samples](src/Samples). You can also try it out online
+on [.Net Fiddle](https://dotnetfiddle.net/zYiUV7).
 
 To use the library, store your size values as a [`BinarySize`][] structure, which supports
 formatting and parsing, along with overloaded operators and other operations provided for
