@@ -236,15 +236,31 @@ public class BinarySizeTests
         Assert.AreEqual(expected, ((BinarySize)129499136).ToString("", null));
 
         // Case correction.
-        Assert.AreEqual("1KB", ((BinarySize)1024).ToString("Kb"));
-        Assert.AreEqual("1KiB", ((BinarySize)1024).ToString("kIb"));
-        Assert.AreEqual("1KB", ((BinarySize)1024).ToString("Ab"));
-        Assert.AreEqual("1.5KiB", ((BinarySize)1536).ToString("sIb"));
+        Assert.AreEqual("1KB", ((BinarySize)1024).ToString("Kb", CultureInfo.CurrentCulture));
+        Assert.AreEqual("1KiB", ((BinarySize)1024).ToString("kIb", CultureInfo.CurrentCulture));
+        Assert.AreEqual("1KB", ((BinarySize)1024).ToString("Ab", CultureInfo.CurrentCulture));
+        Assert.AreEqual("1.5KiB", ((BinarySize)1536).ToString("sIb", CultureInfo.CurrentCulture));
 
         // Negative
-        Assert.AreEqual("-2048KiB", BinarySize.FromMebi(-2).ToString("KiB"));
-        Assert.AreEqual("-2MiB", BinarySize.FromMebi(-2).ToString("AiB"));
-        Assert.AreEqual("-1.5KiB", ((BinarySize)(-1536)).ToString("SiB"));
+        Assert.AreEqual("-2048KiB", BinarySize.FromMebi(-2).ToString("KiB", CultureInfo.CurrentCulture));
+        Assert.AreEqual("-2MiB", BinarySize.FromMebi(-2).ToString("AiB", CultureInfo.CurrentCulture));
+        Assert.AreEqual("-1.5KiB", ((BinarySize)(-1536)).ToString("SiB", CultureInfo.CurrentCulture));
+
+        var unitInfo = new BinaryUnitInfo()
+        {
+            ShortKilo = "L",
+            ShortDecimalKilo = "l",
+            ShortKibi = "Lj",
+            ShortByte = "C",
+            ShortBytes = "Cs",
+            ShortConnector = "-",
+        };
+
+        // Test custom format provider
+        Assert.AreEqual("2 Lj-Cs", BinarySize.FromKibi(2).ToString(" KiB", unitInfo));
+        Assert.AreEqual("1 Lj-C", BinarySize.FromKibi(1).ToString(" KiB", unitInfo));
+        Assert.AreEqual("1 L-C", BinarySize.FromKibi(1).ToString(" KB", unitInfo));
+        Assert.AreEqual("1 l-C", ((BinarySize)1000).ToString(" kB", unitInfo));
 
         // Test IFormattable/ISpanFormattable
         Assert.AreEqual("test 109.7 PB test2", string.Format(CultureInfo.InvariantCulture, "test {0:0.# SB} test2", ((BinarySize)123456789012345678)));
@@ -332,6 +348,26 @@ public class BinarySizeTests
         // Case correction.
         Assert.IsTrue(size.TryFormat(destination.AsSpan(), out charsWritten, "kIb".AsSpan(), CultureInfo.InvariantCulture));
         Assert.AreEqual("123.5KiB", destination.AsSpan(0, charsWritten).ToString());
+
+        var unitInfo = new BinaryUnitInfo()
+        {
+            ShortKilo = "L",
+            ShortDecimalKilo = "l",
+            ShortKibi = "Lj",
+            ShortByte = "C",
+            ShortBytes = "Cs",
+            ShortConnector = "-",
+        };
+
+        // Test custom format provider
+        Assert.IsTrue(BinarySize.FromKibi(2).TryFormat(destination.AsSpan(), out charsWritten, " KiB".AsSpan(), unitInfo));
+        Assert.AreEqual("2 Lj-Cs", destination.AsSpan(0, charsWritten).ToString());
+        Assert.IsTrue(BinarySize.FromKibi(1).TryFormat(destination.AsSpan(), out charsWritten, " KiB".AsSpan(), unitInfo));
+        Assert.AreEqual("1 Lj-C", destination.AsSpan(0, charsWritten).ToString());
+        Assert.IsTrue(BinarySize.FromKibi(1).TryFormat(destination.AsSpan(), out charsWritten, " KB".AsSpan(), unitInfo));
+        Assert.AreEqual("1 L-C", destination.AsSpan(0, charsWritten).ToString());
+        Assert.IsTrue(((BinarySize)1000).TryFormat(destination.AsSpan(), out charsWritten, " kB".AsSpan(), unitInfo));
+        Assert.AreEqual("1 l-C", destination.AsSpan(0, charsWritten).ToString());
 
         // Decimal
         Assert.IsTrue(size.TryFormat(destination.AsSpan(), out charsWritten, "kb".AsSpan(), CultureInfo.InvariantCulture));

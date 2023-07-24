@@ -61,6 +61,15 @@ namespace Ookii.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to The BinaryUnitInfo instance is read-only..
+        /// </summary>
+        internal static string BinaryUnitInfoReadOnly {
+            get {
+                return ResourceManager.GetString("BinaryUnitInfoReadOnly", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to The value is not a valid combination of BinarySizeOptions..
         /// </summary>
         internal static string InvalidOptions {
