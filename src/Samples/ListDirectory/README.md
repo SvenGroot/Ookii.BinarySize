@@ -11,7 +11,8 @@ which supports any type that can be converted from a string using a [`Parse()`][
 [`BinarySize`][] can be used without any further effort on our part.
 
 The current directory is listed by default, but a command line argument can also be used to specify
-a different on. Run `./ListDirectory --help` for more information.
+a different one. You can also output the sizes using SI units, based on powers of ten, by passing
+the `--si-units` argument. Run `./ListDirectory --help` for more information.
 
 Running it without arguments lists the current directory.
 

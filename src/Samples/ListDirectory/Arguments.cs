@@ -22,4 +22,8 @@ partial class Arguments
     [ValidateRange(0L, null)]
     [Description("The minimum size of the files to include in the listing. This value can use suffixes such as 'KB' or 'MiB'.")]
     public BinarySize? MinSize { get; set; }
+
+    [CommandLineArgument(IsShort = true)]
+    [Description("Use SI units, based on powers of ten, for the output. This doesn't affect how MinSize is parsed, which will always use powers of two.")]
+    public bool SiUnits { get; set; }
 }

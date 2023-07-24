@@ -23,12 +23,26 @@ if (arguments.MinSize is BinarySize minSize)
 // possible unit, using fractional values where necessary).
 foreach (var file in files)
 {
-    Console.WriteLine($"{file.Name}: {file.Size:0.# SiB}");
+    if (arguments.SiUnits)
+    {
+        Console.WriteLine($"{file.Name}: {file.Size:0.# sB}");
+    }
+    else
+    {
+        Console.WriteLine($"{file.Name}: {file.Size:0.# SiB}");
+    }
 }
 
 // Use the Sum extension method provided for BinarySize to add up all the values.
 var total = files.Sum(f => f.Size);
 Console.WriteLine();
-Console.WriteLine($"Total: {total:0.# SiB}");
+if (arguments.SiUnits)
+{
+    Console.WriteLine($"Total: {total:0.# sB}");
+}
+else
+{
+    Console.WriteLine($"Total: {total:0.# SiB}");
+}
 
 return 0;
