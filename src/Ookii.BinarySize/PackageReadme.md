@@ -18,7 +18,7 @@ unit, or you can choose the one you want, based on the format string.
 
 Besides display formatting and parsing user input, BinarySize provides everything needed to easily
 use human-readable byte sizes in places such as configuration files, serialized XML and
-JSON, and [command line arguments](src/Samples/ListDirectory).
+JSON, and command line arguments.
 
 You can format values using custom format strings to pick a unit, or choose one automatically, using
 either powers of ten or powers of two for SI units.
