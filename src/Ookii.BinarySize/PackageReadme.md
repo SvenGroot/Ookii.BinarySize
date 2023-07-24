@@ -1,1 +1,76 @@
 # Ookii.BinarySize
+
+Ookii.BinarySize is a modern library for parsing and displaying quantities of bytes, using
+human-readable representation.
+
+It provides functionality to parse numeric values that end with a multiple-byte unit, such as B, KB,
+MiB, and so on, and to format them for display in the same way. It can automatically choose the best
+unit, or you can choose the one you want, based on the format string.
+
+- Supports units with SI prefixes ("KB", "MB", "GB", "TB", "PB", and "EB"), and IEC prefixes
+  ("KiB", "MiB", "GiB", "TiB", "PiB", and "EiB"), with and without the "B".
+- Interpret SI prefixes as either [powers of two or powers of ten](https://en.wikipedia.org/wiki/Byte#Multiple-byte_units).
+- Parse and store values up to approximately positive and negative 8 EiB, using `Int64` (`long`)
+  as the underlying storage.
+- Provided as a library for .Net Standard 2.0, .Net Standard 2.1, and .Net 6.0 and up.
+- Implements arithmetic and binary operators, and supports .Net 7 generic math.
+- Trim-friendly.
+
+Besides display formatting and parsing user input, BinarySize provides everything needed to easily
+use human-readable byte sizes in places such as configuration files, serialized XML and
+JSON, and [command line arguments](src/Samples/ListDirectory).
+
+You can format values using custom format strings to pick a unit, or choose one automatically, using
+either powers of ten or powers of two for SI units.
+
+```csharp
+var value = BinarySize.FromGibi(2.5);
+Console.WriteLine($"{value: B} is equal to:");
+Console.WriteLine($"Default formatting: {value}");
+Console.WriteLine($"Automatic formatting: {value: AB}");
+Console.WriteLine($"Shortest formatting: {value:#.0 SiB}");
+Console.WriteLine($"Explicit formatting: {value:#,###Ki}");
+Console.WriteLine($"Automatic formatting (decimal): {value: aB}");
+Console.WriteLine($"Shortest formatting (decimal): {value:#.0 sB}");
+Console.WriteLine($"Explicit formatting (decimal): {value:#,###k}");
+```
+
+Which outputs:
+
+```text
+2684354560 B is equal to:
+Default formatting: 2560 MiB
+Automatic formatting: 2560 MB
+Shortest formatting: 2.5 GiB
+Explicit formatting: 2,621,440Ki
+Automatic formatting (decimal): 2684354560 B
+Shortest formatting (decimal): 2.7 GB
+Explicit formatting (decimal): 2,684,355k
+```
+
+See the documentation for [`BinarySize.ToString()`][] for information on the format string.
+
+You can also parse values that contain any supported unit.
+
+```csharp
+var values = new[] { "100", "100B", "10 KB", "2.5 MiB", "5G" };
+foreach (var value in values)
+{
+    var size = BinarySize.Parse(value, CultureInfo.InvariantCulture);
+    Console.WriteLine($"'{value}' == {size.Value} bytes");
+}
+```
+
+Which outputs:
+
+```text
+'100' == 100 bytes
+'100B' == 100 bytes
+'10 KB' == 10240 bytes
+'2.5 MiB' == 2621440 bytes
+'5G' == 5368709120 bytes
+```
+
+See the [GitHub project](https://www.github.com/SvenGroot/BinarySize) for more information.
+
+[`BinarySize.ToString()`]: https://www.ookii.org/docs/binarysize-1.0/html/Overload_Ookii_BinarySize_ToString.htm
