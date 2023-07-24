@@ -73,4 +73,4 @@ Which outputs:
 
 See the [GitHub project](https://www.github.com/SvenGroot/BinarySize) for more information.
 
-[`BinarySize.ToString()`]: https://www.ookii.org/docs/binarysize-1.0/html/Overload_Ookii_BinarySize_ToString.htm
+[`BinarySize.ToString()`]: https://www.ookii.org/docs/binarysize-1.0/html/M_Ookii_BinarySize_ToString_1.htm

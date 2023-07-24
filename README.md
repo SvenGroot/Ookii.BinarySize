@@ -259,7 +259,7 @@ The class library documentation is generated using [Sandcastle Help File Builder
 [`AsPebi`]: https://www.ookii.org/docs/binarysize-1.0/html/P_Ookii_BinarySize_AsPebi.htm
 [`AsTebi`]: https://www.ookii.org/docs/binarysize-1.0/html/P_Ookii_BinarySize_AsTebi.htm
 [`BinarySize.Parse()`]: https://www.ookii.org/docs/binarysize-1.0/html/Overload_Ookii_BinarySize_Parse.htm
-[`BinarySize.ToString()`]: https://www.ookii.org/docs/binarysize-1.0/html/Overload_Ookii_BinarySize_ToString.htm
+[`BinarySize.ToString()`]: https://www.ookii.org/docs/binarysize-1.0/html/M_Ookii_BinarySize_ToString_1.htm
 [`BinarySize.TryParse()`]: https://www.ookii.org/docs/binarysize-1.0/html/Overload_Ookii_BinarySize_TryParse.htm
 [`BinarySize`]: https://www.ookii.org/docs/binarysize-1.0/html/T_Ookii_BinarySize.htm
 [`BinarySizeOptions`]: https://www.ookii.org/docs/binarysize-1.0/html/T_Ookii_BinarySizeOptions.htm
