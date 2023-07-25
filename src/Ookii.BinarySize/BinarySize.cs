@@ -105,7 +105,7 @@ public readonly partial struct BinarySize : IEquatable<BinarySize>, IComparable<
     private const long DecimalAutoFactor = -3;
     private const long DecimalShortestFactor = -4;
 
-    private static readonly char[] _scalingChars =   new[] { 'E',  'P',  'T',  'G',  'M',  'K',
+    private static readonly char[] _scalingChars = new[] { 'E',  'P',  'T',  'G',  'M',  'K',
                                                              'e',  'p',  't',  'g',  'm',  'k', 'A', 'S', 'a', 's' };
     private static readonly long[] _scalingFactors = new[] { Exbi, Pebi, Tebi, Gibi, Mebi, Kibi,
                                                              Exa,  Peta, Tera, Giga, Mega, Kilo, AutoFactor, ShortestFactor, DecimalAutoFactor, DecimalShortestFactor };
@@ -339,14 +339,14 @@ public readonly partial struct BinarySize : IEquatable<BinarySize>, IComparable<
             return Zero;
         }
 
-        var result = TrimSuffix(s, options);
+        var factor = ParseUnit(ref s, provider, options);
 #if NET6_0_OR_GREATER
-        var size = decimal.Parse(result.Trimmed, style, provider);
+        var size = decimal.Parse(s, style, provider);
 #else
-        var size = decimal.Parse(result.Trimmed.ToString(), style, provider);
+        var size = decimal.Parse(s.ToString(), style, provider);
 #endif
 
-        return new BinarySize(checked((long)(size * result.Factor)));
+        return new BinarySize(checked((long)(size * factor)));
     }
 
     /// <summary>
@@ -418,11 +418,11 @@ public readonly partial struct BinarySize : IEquatable<BinarySize>, IComparable<
             return true;
         }
 
-        var trim = TrimSuffix(s, options);
+        var factor = ParseUnit(ref s, provider, options);
 #if NET6_0_OR_GREATER
-        var success = decimal.TryParse(trim.Trimmed, style, provider, out var size);
+        var success = decimal.TryParse(s, style, provider, out var size);
 #else
-        var success = decimal.TryParse(trim.Trimmed.ToString(), style, provider, out var size);
+        var success = decimal.TryParse(s.ToString(), style, provider, out var size);
 #endif
 
         if (!success)
@@ -433,7 +433,7 @@ public readonly partial struct BinarySize : IEquatable<BinarySize>, IComparable<
 
         try
         {
-            result = new BinarySize(checked((long)(size * trim.Factor)));
+            result = new BinarySize(checked((long)(size * factor)));
             return true;
         }
         catch (OverflowException)
@@ -897,7 +897,48 @@ public readonly partial struct BinarySize : IEquatable<BinarySize>, IComparable<
         writer.WriteString(ToString(null, CultureInfo.InvariantCulture));
     }
 
-    private static SuffixInfo TrimSuffix(ReadOnlySpan<char> value, BinarySizeOptions? options)
+    private static long ParseUnit(ref ReadOnlySpan<char> value, IFormatProvider? provider, BinarySizeOptions options)
+    {
+        var unitInfo = GetUnitInfo(provider);
+        var compareInfo = provider is CultureInfo culture ? culture.CompareInfo : CultureInfo.CurrentCulture.CompareInfo;
+        value = value.TrimEnd();
+        _ = SpanExtensions.TrimSuffix(ref value, unitInfo.ShortByte, compareInfo, CompareOptions.IgnoreCase)
+            || SpanExtensions.TrimSuffix(ref value, unitInfo.ShortBytes, compareInfo, CompareOptions.IgnoreCase);
+
+        SpanExtensions.TrimSuffix(ref value, unitInfo.ShortConnector, compareInfo, CompareOptions.IgnoreCase);
+
+        var useDecimal = options.HasFlag(BinarySizeOptions.UseIecStandard);
+        long factor = 1;
+        _ = CheckUnit(ref value, unitInfo.ShortKibi, compareInfo, Kibi, ref factor)
+            || CheckUnit(ref value, unitInfo.ShortMebi, compareInfo, Mebi, ref factor)
+            || CheckUnit(ref value, unitInfo.ShortGibi, compareInfo, Gibi, ref factor)
+            || CheckUnit(ref value, unitInfo.ShortTebi, compareInfo, Tebi, ref factor)
+            || CheckUnit(ref value, unitInfo.ShortPebi, compareInfo, Pebi, ref factor)
+            || CheckUnit(ref value, unitInfo.ShortExbi, compareInfo, Exbi, ref factor)
+            || CheckUnit(ref value, unitInfo.ShortKilo, compareInfo, useDecimal ? Kilo : Kibi, ref factor)
+            || CheckUnit(ref value, unitInfo.ShortMega, compareInfo, useDecimal ? Mega : Mebi, ref factor)
+            || CheckUnit(ref value, unitInfo.ShortMega, compareInfo, useDecimal ? Mega : Mebi, ref factor)
+            || CheckUnit(ref value, unitInfo.ShortGiga, compareInfo, useDecimal ? Giga : Gibi, ref factor)
+            || CheckUnit(ref value, unitInfo.ShortTera, compareInfo, useDecimal ? Tera : Tebi, ref factor)
+            || CheckUnit(ref value, unitInfo.ShortPeta, compareInfo, useDecimal ? Peta : Pebi, ref factor)
+            || CheckUnit(ref value, unitInfo.ShortExa, compareInfo, useDecimal ? Exa : Exbi, ref factor)
+            || CheckUnit(ref value, unitInfo.ShortDecimalKilo, compareInfo, useDecimal ? Kilo : Kibi, ref factor);
+
+        return factor;
+    }
+
+    private static bool CheckUnit(ref ReadOnlySpan<char> value, string unit, CompareInfo info, long factor, ref long factorResult)
+    {
+        if (SpanExtensions.TrimSuffix(ref value, unit, info, CompareOptions.IgnoreCase))
+        {
+            factorResult = factor;
+            return true;
+        }
+
+        return false;
+    }
+
+    private static SuffixInfo TrimFormatSuffix(ReadOnlySpan<char> value)
     {
         SuffixInfo result = new()
         {
@@ -936,24 +977,9 @@ public readonly partial struct BinarySize : IEquatable<BinarySize>, IComparable<
 
         ch = result.Trimmed[index];
         var prefixes = _scalingChars.AsSpan();
-        if (options is BinarySizeOptions o)
+        if (result.HasIecChar)
         {
-            // This is not a format string; trim off the auto prefixes.
-            prefixes = prefixes.Slice(0, prefixes.Length - 4);
-            if (o.HasFlag(BinarySizeOptions.UseIecStandard) && !result.HasIecChar)
-            {
-                // No 'i' and IEC mode, so treat it as decimal.
-                ch = char.ToLowerInvariant(ch);
-            }
-            else
-            {
-                // Default mode or an 'i', so treat it as binary.
-                ch = char.ToUpperInvariant(ch);
-            }
-        }
-        else if (result.HasIecChar)
-        {
-            // For format strings, force the use of binary regardless of case if 'i' is present.
+            // Force the use of binary regardless of case if 'i' is present.
             ch = char.ToUpperInvariant(ch);
         }
 
@@ -1027,7 +1053,7 @@ public readonly partial struct BinarySize : IEquatable<BinarySize>, IComparable<
         }
         else
         {
-            suffix = TrimSuffix(format, null);
+            suffix = TrimFormatSuffix(format);
         }
 
         if (suffix.Factor < 0)
@@ -1060,10 +1086,13 @@ public readonly partial struct BinarySize : IEquatable<BinarySize>, IComparable<
         }
     }
 
-    private static BinaryUnitInfo GetUnitInfo(IFormatProvider? formatProvider)
-        => (BinaryUnitInfo?)formatProvider?.GetFormat(typeof(BinaryUnitInfo))
-            ?? (BinaryUnitInfo?)CultureInfo.CurrentCulture.GetFormat(typeof(BinaryUnitInfo))
-            ?? BinaryUnitInfo.InvariantInfo;
+    private static BinaryUnitInfo GetUnitInfo(IFormatProvider? provider)
+    {
+        // Only check current culture if provider was not specified. If it was but has no unit info,
+        // we always use the invariant info.
+        provider ??= CultureInfo.CurrentCulture;
+        return (BinaryUnitInfo?)provider.GetFormat(typeof(BinaryUnitInfo)) ?? BinaryUnitInfo.InvariantInfo;
+    }
 
     private static string? GetUnitScale(SuffixInfo suffix, BinaryUnitInfo unitInfo)
     {

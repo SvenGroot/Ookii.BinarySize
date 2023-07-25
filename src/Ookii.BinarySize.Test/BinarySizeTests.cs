@@ -88,6 +88,26 @@ public class BinarySizeTests
 
         // Empty span
         Assert.AreEqual((BinarySize)0, BinarySize.Parse(ReadOnlySpan<char>.Empty, CultureInfo.InvariantCulture));
+
+        var unitInfo = new BinaryUnitInfo()
+        {
+            ShortKilo = "L",
+            ShortDecimalKilo = "l",
+            ShortKibi = "Lj",
+            ShortByte = "C",
+            ShortBytes = "Cs",
+            ShortConnector = "-",
+        };
+
+        // Test custom format provider
+        Assert.AreEqual(BinarySize.FromKibi(2), BinarySize.Parse("2 Lj-Cs", unitInfo));
+        Assert.AreEqual(BinarySize.FromKibi(2), BinarySize.Parse("2 Lj-C", unitInfo));
+        Assert.AreEqual(BinarySize.FromKibi(2), BinarySize.Parse("2 LjC", unitInfo));
+        Assert.AreEqual(BinarySize.FromKibi(2), BinarySize.Parse("2 L-C", unitInfo));
+        Assert.AreEqual(BinarySize.FromKibi(2), BinarySize.Parse("2 LC", unitInfo));
+        Assert.AreEqual(BinarySize.FromKibi(2), BinarySize.Parse("2 lc", unitInfo));
+        Assert.AreEqual(BinarySize.FromKibi(2), BinarySize.Parse("2 ljc", BinarySizeOptions.UseIecStandard, provider: unitInfo));
+        Assert.AreEqual((BinarySize)2000, BinarySize.Parse("2 lc", BinarySizeOptions.UseIecStandard, provider: unitInfo));
     }
 
     [TestMethod]
@@ -128,6 +148,32 @@ public class BinarySizeTests
 
         // Overflow.
         Assert.IsFalse(BinarySize.TryParse("1234EB", CultureInfo.InvariantCulture, out _));
+
+        var unitInfo = new BinaryUnitInfo()
+        {
+            ShortKilo = "L",
+            ShortDecimalKilo = "l",
+            ShortKibi = "Lj",
+            ShortByte = "C",
+            ShortBytes = "Cs",
+            ShortConnector = "-",
+        };
+
+        // Test custom format provider
+        Assert.IsTrue(BinarySize.TryParse("2 Lj-Cs", unitInfo, out result));
+        Assert.AreEqual(BinarySize.FromKibi(2), result);
+        Assert.IsTrue(BinarySize.TryParse("2 LjC", unitInfo, out result));
+        Assert.AreEqual(BinarySize.FromKibi(2), result);
+        Assert.IsTrue(BinarySize.TryParse("2 L-C", unitInfo, out result));
+        Assert.AreEqual(BinarySize.FromKibi(2), result);
+        Assert.IsTrue(BinarySize.TryParse("2 LC", unitInfo, out result));
+        Assert.AreEqual(BinarySize.FromKibi(2), result);
+        Assert.IsTrue(BinarySize.TryParse("2 lc", unitInfo, out result));
+        Assert.AreEqual(BinarySize.FromKibi(2), result);
+        Assert.IsTrue(BinarySize.TryParse("2 ljc", unitInfo, out result));
+        Assert.AreEqual(BinarySize.FromKibi(2), result);
+        Assert.IsTrue(BinarySize.TryParse("2 lc", BinarySizeOptions.UseIecStandard, NumberStyles.Number, unitInfo, out result));
+        Assert.AreEqual((BinarySize)2000, result);
     }
 
     [TestMethod]

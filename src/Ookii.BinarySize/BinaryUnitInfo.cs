@@ -123,6 +123,7 @@ public class BinaryUnitInfo : ICloneable, IFormatProvider
         }
     }
 
+    // When parsing, this will be interpreted as 1024 depending on flag.
     public string ShortDecimalKilo
     {
         get => _shortDecimalKilo;
