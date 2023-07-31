@@ -282,6 +282,7 @@ public class BinarySizeTests
         Assert.AreEqual(expected, ((BinarySize)129499136).ToString("", null));
 
         // Case correction.
+<<<<<<< HEAD
         Assert.AreEqual("1KB", ((BinarySize)1024).ToString("Kb", CultureInfo.CurrentCulture));
         Assert.AreEqual("1KiB", ((BinarySize)1024).ToString("kIb", CultureInfo.CurrentCulture));
         Assert.AreEqual("1KB", ((BinarySize)1024).ToString("Ab", CultureInfo.CurrentCulture));
@@ -307,6 +308,17 @@ public class BinarySizeTests
         Assert.AreEqual("1 Lj-C", BinarySize.FromKibi(1).ToString(" KiB", unitInfo));
         Assert.AreEqual("1 L-C", BinarySize.FromKibi(1).ToString(" KB", unitInfo));
         Assert.AreEqual("1 l-C", ((BinarySize)1000).ToString(" kB", unitInfo));
+=======
+        Assert.AreEqual("1KB", ((BinarySize)1024).ToString("Kb", CultureInfo.InvariantCulture));
+        Assert.AreEqual("1KiB", ((BinarySize)1024).ToString("kIb", CultureInfo.InvariantCulture));
+        Assert.AreEqual("1KB", ((BinarySize)1024).ToString("Ab", CultureInfo.InvariantCulture));
+        Assert.AreEqual("1.5KiB", ((BinarySize)1536).ToString("sIb", CultureInfo.InvariantCulture));
+
+        // Negative
+        Assert.AreEqual("-2048KiB", BinarySize.FromMebi(-2).ToString("KiB", CultureInfo.InvariantCulture));
+        Assert.AreEqual("-2MiB", BinarySize.FromMebi(-2).ToString("AiB", CultureInfo.InvariantCulture));
+        Assert.AreEqual("-1.5KiB", ((BinarySize)(-1536)).ToString("SiB", CultureInfo.InvariantCulture));
+>>>>>>> main
 
         // Test IFormattable/ISpanFormattable
         Assert.AreEqual("test 109.7 PB test2", string.Format(CultureInfo.InvariantCulture, "test {0:0.# SB} test2", ((BinarySize)123456789012345678)));
