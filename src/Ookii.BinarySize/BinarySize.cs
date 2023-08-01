@@ -905,11 +905,12 @@ public readonly partial struct BinarySize : IEquatable<BinarySize>, IComparable<
         _ = SpanExtensions.TrimSuffix(ref value, unitInfo.ShortByte, compareInfo, CompareOptions.IgnoreCase)
             || SpanExtensions.TrimSuffix(ref value, unitInfo.ShortBytes, compareInfo, CompareOptions.IgnoreCase);
 
+        var withConnector = value;
         SpanExtensions.TrimSuffix(ref value, unitInfo.ShortConnector, compareInfo, CompareOptions.IgnoreCase);
 
         var useDecimal = options.HasFlag(BinarySizeOptions.UseIecStandard);
         long factor = 1;
-        _ = CheckUnit(ref value, unitInfo.ShortKibi, compareInfo, Kibi, ref factor)
+        if (!(CheckUnit(ref value, unitInfo.ShortKibi, compareInfo, Kibi, ref factor)
             || CheckUnit(ref value, unitInfo.ShortMebi, compareInfo, Mebi, ref factor)
             || CheckUnit(ref value, unitInfo.ShortGibi, compareInfo, Gibi, ref factor)
             || CheckUnit(ref value, unitInfo.ShortTebi, compareInfo, Tebi, ref factor)
@@ -922,7 +923,11 @@ public readonly partial struct BinarySize : IEquatable<BinarySize>, IComparable<
             || CheckUnit(ref value, unitInfo.ShortTera, compareInfo, useDecimal ? Tera : Tebi, ref factor)
             || CheckUnit(ref value, unitInfo.ShortPeta, compareInfo, useDecimal ? Peta : Pebi, ref factor)
             || CheckUnit(ref value, unitInfo.ShortExa, compareInfo, useDecimal ? Exa : Exbi, ref factor)
-            || CheckUnit(ref value, unitInfo.ShortDecimalKilo, compareInfo, useDecimal ? Kilo : Kibi, ref factor);
+            || CheckUnit(ref value, unitInfo.ShortDecimalKilo, compareInfo, useDecimal ? Kilo : Kibi, ref factor)))
+        {
+            // Don't remove the connector if there was no recognized character before it.
+            value = withConnector;
+        }
 
         return factor;
     }

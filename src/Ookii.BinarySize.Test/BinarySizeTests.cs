@@ -96,18 +96,21 @@ public class BinarySizeTests
             ShortKibi = "Lj",
             ShortByte = "C",
             ShortBytes = "Cs",
-            ShortConnector = "-",
+            ShortConnector = ":",
         };
 
         // Test custom format provider
-        Assert.AreEqual(BinarySize.FromKibi(2), BinarySize.Parse("2 Lj-Cs", unitInfo));
-        Assert.AreEqual(BinarySize.FromKibi(2), BinarySize.Parse("2 Lj-C", unitInfo));
+        Assert.AreEqual(BinarySize.FromKibi(2), BinarySize.Parse("2 Lj:Cs", unitInfo));
+        Assert.AreEqual(BinarySize.FromKibi(2), BinarySize.Parse("2 Lj:C", unitInfo));
         Assert.AreEqual(BinarySize.FromKibi(2), BinarySize.Parse("2 LjC", unitInfo));
-        Assert.AreEqual(BinarySize.FromKibi(2), BinarySize.Parse("2 L-C", unitInfo));
+        Assert.AreEqual(BinarySize.FromKibi(2), BinarySize.Parse("2 L:C", unitInfo));
         Assert.AreEqual(BinarySize.FromKibi(2), BinarySize.Parse("2 LC", unitInfo));
         Assert.AreEqual(BinarySize.FromKibi(2), BinarySize.Parse("2 lc", unitInfo));
         Assert.AreEqual(BinarySize.FromKibi(2), BinarySize.Parse("2 ljc", BinarySizeOptions.UseIecStandard, provider: unitInfo));
         Assert.AreEqual((BinarySize)2000, BinarySize.Parse("2 lc", BinarySizeOptions.UseIecStandard, provider: unitInfo));
+        Assert.AreEqual((BinarySize)2, BinarySize.Parse("2 C", BinarySizeOptions.UseIecStandard, provider: unitInfo));
+        Assert.AreEqual((BinarySize)2, BinarySize.Parse("2 cs", BinarySizeOptions.UseIecStandard, provider: unitInfo));
+        Assert.ThrowsException<FormatException>(() => BinarySize.Parse("2 :cs", BinarySizeOptions.UseIecStandard, provider: unitInfo));
     }
 
     [TestMethod]
@@ -307,6 +310,8 @@ public class BinarySizeTests
         Assert.AreEqual("1 Lj-C", BinarySize.FromKibi(1).ToString(" KiB", unitInfo));
         Assert.AreEqual("1 L-C", BinarySize.FromKibi(1).ToString(" KB", unitInfo));
         Assert.AreEqual("1 l-C", ((BinarySize)1000).ToString(" kB", unitInfo));
+        Assert.AreEqual("5 Cs", ((BinarySize)5).ToString(" sB", unitInfo));
+        Assert.AreEqual("1 C", ((BinarySize)1).ToString(" sB", unitInfo));
 
         // Test IFormattable/ISpanFormattable
         Assert.AreEqual("test 109.7 PB test2", string.Format(CultureInfo.InvariantCulture, "test {0:0.# SB} test2", ((BinarySize)123456789012345678)));
