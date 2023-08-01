@@ -15,7 +15,8 @@ namespace Ookii;
 ///   to localize or customize the units. Pass a custom <see cref="BinaryUnitInfo"/> instance to
 ///   the <see cref="BinarySize.ToString(string?, IFormatProvider?)" qualifyHint="true"/> or
 ///   <see cref="BinarySize.Parse(ReadOnlySpan{char}, BinarySizeOptions, NumberStyles, IFormatProvider?)"/>
-///   method, or combine it with a <see cref="CultureInfo"/> class using the <see cref="TODO"/>
+///   method, or combine it with a <see cref="CultureInfo"/> class using the
+///   <see cref="CultureInfoExtensions.WithBinaryUnitInfo(CultureInfo, Ookii.BinaryUnitInfo)" qualifyHint="true"/>
 ///   method.
 /// </para>
 /// </remarks>

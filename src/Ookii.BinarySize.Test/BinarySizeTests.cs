@@ -100,17 +100,17 @@ public class BinarySizeTests
         };
 
         // Test custom format provider
-        Assert.AreEqual(BinarySize.FromKibi(2), BinarySize.Parse("2 Lj:Cs", unitInfo));
-        Assert.AreEqual(BinarySize.FromKibi(2), BinarySize.Parse("2 Lj:C", unitInfo));
-        Assert.AreEqual(BinarySize.FromKibi(2), BinarySize.Parse("2 LjC", unitInfo));
-        Assert.AreEqual(BinarySize.FromKibi(2), BinarySize.Parse("2 L:C", unitInfo));
-        Assert.AreEqual(BinarySize.FromKibi(2), BinarySize.Parse("2 LC", unitInfo));
-        Assert.AreEqual(BinarySize.FromKibi(2), BinarySize.Parse("2 lc", unitInfo));
-        Assert.AreEqual(BinarySize.FromKibi(2), BinarySize.Parse("2 ljc", BinarySizeOptions.UseIecStandard, provider: unitInfo));
-        Assert.AreEqual((BinarySize)2000, BinarySize.Parse("2 lc", BinarySizeOptions.UseIecStandard, provider: unitInfo));
-        Assert.AreEqual((BinarySize)2, BinarySize.Parse("2 C", BinarySizeOptions.UseIecStandard, provider: unitInfo));
-        Assert.AreEqual((BinarySize)2, BinarySize.Parse("2 cs", BinarySizeOptions.UseIecStandard, provider: unitInfo));
-        Assert.ThrowsException<FormatException>(() => BinarySize.Parse("2 :cs", BinarySizeOptions.UseIecStandard, provider: unitInfo));
+        Assert.AreEqual(BinarySize.FromKibi(2), BinarySize.Parse("2 Lj:Cs", CultureInfo.InvariantCulture.WithBinaryUnitInfo(unitInfo)));
+        Assert.AreEqual(BinarySize.FromKibi(2), BinarySize.Parse("2 Lj:C", CultureInfo.InvariantCulture.WithBinaryUnitInfo(unitInfo)));
+        Assert.AreEqual(BinarySize.FromKibi(2), BinarySize.Parse("2 LjC", CultureInfo.InvariantCulture.WithBinaryUnitInfo(unitInfo)));
+        Assert.AreEqual(BinarySize.FromKibi(2), BinarySize.Parse("2 L:C", CultureInfo.InvariantCulture.WithBinaryUnitInfo(unitInfo)));
+        Assert.AreEqual(BinarySize.FromKibi(2), BinarySize.Parse("2 LC", CultureInfo.InvariantCulture.WithBinaryUnitInfo(unitInfo)));
+        Assert.AreEqual(BinarySize.FromKibi(2), BinarySize.Parse("2 lc", CultureInfo.InvariantCulture.WithBinaryUnitInfo(unitInfo)));
+        Assert.AreEqual(BinarySize.FromKibi(2), BinarySize.Parse("2 ljc", BinarySizeOptions.UseIecStandard, provider: CultureInfo.InvariantCulture.WithBinaryUnitInfo(unitInfo)));
+        Assert.AreEqual((BinarySize)2000, BinarySize.Parse("2 lc", BinarySizeOptions.UseIecStandard, provider: CultureInfo.InvariantCulture.WithBinaryUnitInfo(unitInfo)));
+        Assert.AreEqual((BinarySize)2, BinarySize.Parse("2 C", BinarySizeOptions.UseIecStandard, provider: CultureInfo.InvariantCulture.WithBinaryUnitInfo(unitInfo)));
+        Assert.AreEqual((BinarySize)2, BinarySize.Parse("2 cs", BinarySizeOptions.UseIecStandard, provider: CultureInfo.InvariantCulture.WithBinaryUnitInfo(unitInfo)));
+        Assert.ThrowsException<FormatException>(() => BinarySize.Parse("2 :cs", BinarySizeOptions.UseIecStandard, provider: CultureInfo.InvariantCulture.WithBinaryUnitInfo(unitInfo)));
     }
 
     [TestMethod]
@@ -163,19 +163,19 @@ public class BinarySizeTests
         };
 
         // Test custom format provider
-        Assert.IsTrue(BinarySize.TryParse("2 Lj-Cs", unitInfo, out result));
+        Assert.IsTrue(BinarySize.TryParse("2 Lj-Cs", CultureInfo.InvariantCulture.WithBinaryUnitInfo(unitInfo), out result));
         Assert.AreEqual(BinarySize.FromKibi(2), result);
-        Assert.IsTrue(BinarySize.TryParse("2 LjC", unitInfo, out result));
+        Assert.IsTrue(BinarySize.TryParse("2 LjC", CultureInfo.InvariantCulture.WithBinaryUnitInfo(unitInfo), out result));
         Assert.AreEqual(BinarySize.FromKibi(2), result);
-        Assert.IsTrue(BinarySize.TryParse("2 L-C", unitInfo, out result));
+        Assert.IsTrue(BinarySize.TryParse("2 L-C", CultureInfo.InvariantCulture.WithBinaryUnitInfo(unitInfo), out result));
         Assert.AreEqual(BinarySize.FromKibi(2), result);
-        Assert.IsTrue(BinarySize.TryParse("2 LC", unitInfo, out result));
+        Assert.IsTrue(BinarySize.TryParse("2 LC", CultureInfo.InvariantCulture.WithBinaryUnitInfo(unitInfo), out result));
         Assert.AreEqual(BinarySize.FromKibi(2), result);
-        Assert.IsTrue(BinarySize.TryParse("2 lc", unitInfo, out result));
+        Assert.IsTrue(BinarySize.TryParse("2 lc", CultureInfo.InvariantCulture.WithBinaryUnitInfo(unitInfo), out result));
         Assert.AreEqual(BinarySize.FromKibi(2), result);
-        Assert.IsTrue(BinarySize.TryParse("2 ljc", unitInfo, out result));
+        Assert.IsTrue(BinarySize.TryParse("2 ljc", CultureInfo.InvariantCulture.WithBinaryUnitInfo(unitInfo), out result));
         Assert.AreEqual(BinarySize.FromKibi(2), result);
-        Assert.IsTrue(BinarySize.TryParse("2 lc", BinarySizeOptions.UseIecStandard, NumberStyles.Number, unitInfo, out result));
+        Assert.IsTrue(BinarySize.TryParse("2 lc", BinarySizeOptions.UseIecStandard, NumberStyles.Number, CultureInfo.InvariantCulture.WithBinaryUnitInfo(unitInfo), out result));
         Assert.AreEqual((BinarySize)2000, result);
     }
 
