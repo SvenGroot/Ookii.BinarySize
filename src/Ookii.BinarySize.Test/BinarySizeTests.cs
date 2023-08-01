@@ -306,12 +306,13 @@ public class BinarySizeTests
         };
 
         // Test custom format provider
-        Assert.AreEqual("2 Lj-Cs", BinarySize.FromKibi(2).ToString(" KiB", unitInfo));
-        Assert.AreEqual("1 Lj-C", BinarySize.FromKibi(1).ToString(" KiB", unitInfo));
-        Assert.AreEqual("1 L-C", BinarySize.FromKibi(1).ToString(" KB", unitInfo));
-        Assert.AreEqual("1 l-C", ((BinarySize)1000).ToString(" kB", unitInfo));
-        Assert.AreEqual("5 Cs", ((BinarySize)5).ToString(" sB", unitInfo));
-        Assert.AreEqual("1 C", ((BinarySize)1).ToString(" sB", unitInfo));
+        var culture = CultureInfo.InvariantCulture.WithBinaryUnitInfo(unitInfo);
+        Assert.AreEqual("2 Lj-Cs", BinarySize.FromKibi(2).ToString(" KiB", culture));
+        Assert.AreEqual("1 Lj-C", BinarySize.FromKibi(1).ToString(" KiB", culture));
+        Assert.AreEqual("1 L-C", BinarySize.FromKibi(1).ToString(" KB", culture));
+        Assert.AreEqual("1 l-C", ((BinarySize)1000).ToString(" kB", culture));
+        Assert.AreEqual("5 Cs", ((BinarySize)5).ToString(" sB", culture));
+        Assert.AreEqual("1 C", ((BinarySize)1).ToString(" sB", culture));
 
         // Test IFormattable/ISpanFormattable
         Assert.AreEqual("test 109.7 PB test2", string.Format(CultureInfo.InvariantCulture, "test {0:0.# SB} test2", ((BinarySize)123456789012345678)));
@@ -349,6 +350,75 @@ public class BinarySizeTests
         Assert.AreEqual("1.234MB", target.ToString("sB", CultureInfo.InvariantCulture));
         Assert.AreEqual("1.1768341064453125MiB", target.ToString("siB", CultureInfo.InvariantCulture));
     }
+
+    [TestMethod]
+    public void TestToStringLong()
+    {
+        var target = new BinarySize(123456789012345678);
+        Assert.AreEqual("123456789012345678 bytes", target.ToString(" byte", CultureInfo.InvariantCulture));
+        Assert.AreEqual("120563270519868.826171875kilobytes", target.ToString("KByte", CultureInfo.InvariantCulture));
+        Assert.AreEqual("120563270519868.826171875kibibytes", target.ToString("Kibyte", CultureInfo.InvariantCulture));
+        Assert.AreEqual("117737568867.05940055847167969megabytes", target.ToString("Mbyte", CultureInfo.InvariantCulture));
+        Assert.AreEqual("117737568867.05940055847167969mebibytes", target.ToString("Mibyte", CultureInfo.InvariantCulture));
+        Assert.AreEqual("114978094.59673769585788249969gigabytes", target.ToString("Gbyte", CultureInfo.InvariantCulture));
+        Assert.AreEqual("114978094.59673769585788249969gibibytes", target.ToString("Gibyte", CultureInfo.InvariantCulture));
+        Assert.AreEqual("112283.29550462665611121337861terabytes", target.ToString("Tbyte", CultureInfo.InvariantCulture));
+        Assert.AreEqual("112283.29550462665611121337861tebibytes", target.ToString("Tibyte", CultureInfo.InvariantCulture));
+        Assert.AreEqual("109.65165576623696885860681505petabytes", target.ToString("Pbyte", CultureInfo.InvariantCulture));
+        Assert.AreEqual("109.65165576623696885860681505pebibytes", target.ToString("Pibyte", CultureInfo.InvariantCulture));
+        Assert.AreEqual("0.1070816950842157899009832178exabytes", target.ToString("Ebyte", CultureInfo.InvariantCulture));
+        Assert.AreEqual("0.1070816950842157899009832178exbibytes", target.ToString("Eibyte", CultureInfo.InvariantCulture));
+
+        // Decimal
+        Assert.AreEqual("123456789012345678 bytes", target.ToString(" byte", CultureInfo.InvariantCulture));
+        Assert.AreEqual("123456789012345.678kilobytes", target.ToString("kbyte", CultureInfo.InvariantCulture));
+
+        target = new BinarySize(1234000);
+        Assert.AreEqual("1234kilobytes", target.ToString("abyte", CultureInfo.InvariantCulture));
+        Assert.AreEqual("1234000 bytes", target.ToString(" aibyte", CultureInfo.InvariantCulture));
+        Assert.AreEqual("1.234megabytes", target.ToString("sbyte", CultureInfo.InvariantCulture));
+        Assert.AreEqual("1.1768341064453125mebibytes", target.ToString("sibyte", CultureInfo.InvariantCulture));
+
+        // Automatic units test:
+        Assert.AreEqual("126464 kilobytes", ((BinarySize)129499136).ToString(" AByte", CultureInfo.InvariantCulture));
+        Assert.AreEqual("123.5 mebibytes", ((BinarySize)129499136).ToString(" SIBYTE", CultureInfo.InvariantCulture));
+
+        // Singular
+        Assert.AreEqual("1 byte", ((BinarySize)1).ToString(" Abyte", CultureInfo.InvariantCulture));
+        Assert.AreEqual("1 kilobyte", BinarySize.FromKibi(1).ToString(" Kbyte", CultureInfo.InvariantCulture));
+
+        // Zero
+        Assert.AreEqual("0 bytes", BinarySize.Zero.ToString(" byte", CultureInfo.InvariantCulture));
+        Assert.AreEqual("0bytes", BinarySize.Zero.ToString("Sbyte", CultureInfo.InvariantCulture));
+        Assert.AreEqual("0kilobytes", BinarySize.Zero.ToString("Kbyte", CultureInfo.InvariantCulture));
+
+        // Negative (-1 is plural).
+        Assert.AreEqual("-2048 kibibytes", BinarySize.FromMebi(-2).ToString(" Kibyte", CultureInfo.InvariantCulture));
+        Assert.AreEqual("-1 mebibytes", BinarySize.FromMebi(-1).ToString(" Aibyte", CultureInfo.InvariantCulture));
+        Assert.AreEqual("-1.5 kibibytes", ((BinarySize)(-1536)).ToString(" Sibyte", CultureInfo.InvariantCulture));
+
+        var unitInfo = new BinaryUnitInfo()
+        {
+            LongKilo = "foo",
+            LongKibi = "bar",
+            LongByte = "bit",
+            LongBytes = "bits",
+            LongConnector = "-",
+        };
+
+        // Test custom format provider
+        var culture = CultureInfo.InvariantCulture.WithBinaryUnitInfo(unitInfo);
+        Assert.AreEqual("2 bar-bits", BinarySize.FromKibi(2).ToString(" Kibyte", culture));
+        Assert.AreEqual("1 bar-bit", BinarySize.FromKibi(1).ToString(" Kibyte", culture));
+        Assert.AreEqual("1 foo-bit", BinarySize.FromKibi(1).ToString(" Kbyte", culture));
+        Assert.AreEqual("1 foo-bit", ((BinarySize)1000).ToString(" kbyte", culture));
+        Assert.AreEqual("5 bits", ((BinarySize)5).ToString(" sbyte", culture));
+        Assert.AreEqual("1 bit", ((BinarySize)1).ToString(" sbyte", culture));
+
+        // Test IFormattable/ISpanFormattable
+        Assert.AreEqual("test 109.7 petabytes test2", string.Format(CultureInfo.InvariantCulture, "test {0:0.# Sbyte} test2", ((BinarySize)123456789012345678)));
+    }
+
 
 #if NET6_0_OR_GREATER
 
@@ -396,6 +466,10 @@ public class BinarySizeTests
         Assert.IsFalse(size.TryFormat(default, out _, "AiB".AsSpan(), CultureInfo.InvariantCulture));
         Assert.IsFalse(size.TryFormat(default, out _, "  KB  ".AsSpan(), CultureInfo.InvariantCulture));
 
+        // Long units.
+        Assert.IsTrue(size.TryFormat(destination.AsSpan(), out charsWritten, " Sbyte".AsSpan(), CultureInfo.InvariantCulture));
+        Assert.AreEqual("123.5 kilobytes", destination.AsSpan(0, charsWritten).ToString());
+
         // Case correction.
         Assert.IsTrue(size.TryFormat(destination.AsSpan(), out charsWritten, "kIb".AsSpan(), CultureInfo.InvariantCulture));
         Assert.AreEqual("123.5KiB", destination.AsSpan(0, charsWritten).ToString());
@@ -408,6 +482,11 @@ public class BinarySizeTests
             ShortByte = "C",
             ShortBytes = "Cs",
             ShortConnector = "-",
+            LongKilo = "foo",
+            LongKibi = "bar",
+            LongByte = "bit",
+            LongBytes = "bits",
+            LongConnector = "-",
         };
 
         // Test custom format provider
@@ -419,10 +498,14 @@ public class BinarySizeTests
         Assert.AreEqual("1 L-C", destination.AsSpan(0, charsWritten).ToString());
         Assert.IsTrue(((BinarySize)1000).TryFormat(destination.AsSpan(), out charsWritten, " kB".AsSpan(), unitInfo));
         Assert.AreEqual("1 l-C", destination.AsSpan(0, charsWritten).ToString());
+        Assert.IsTrue(BinarySize.FromKibi(2).TryFormat(destination.AsSpan(), out charsWritten, " Kibyte".AsSpan(), unitInfo));
+        Assert.AreEqual("2 bar-bits", destination.AsSpan(0, charsWritten).ToString());
 
         // Decimal
         Assert.IsTrue(size.TryFormat(destination.AsSpan(), out charsWritten, "kb".AsSpan(), CultureInfo.InvariantCulture));
         Assert.AreEqual("126.464kB", destination.AsSpan(0, charsWritten).ToString());
+        Assert.IsTrue(size.TryFormat(destination.AsSpan(), out charsWritten, " kbyte".AsSpan(), CultureInfo.InvariantCulture));
+        Assert.AreEqual("126.464 kilobytes", destination.AsSpan(0, charsWritten).ToString());
     }
 
 #endif

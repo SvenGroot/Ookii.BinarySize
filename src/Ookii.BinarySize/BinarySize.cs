@@ -58,6 +58,7 @@ public readonly partial struct BinarySize : IEquatable<BinarySize>, IComparable<
         public bool HasIecChar { get; set; }
         public bool HasByteChar { get; set; }
         public bool UseDecimal { get; set; }
+        public bool IsLong { get; set; }
     }
 
     #endregion
@@ -656,13 +657,22 @@ public readonly partial struct BinarySize : IEquatable<BinarySize>, IComparable<
                 return false;
             }
 
-            if (suffix.HasByteChar && !destination.TryAppend(ref charsWritten, unitInfo.ShortConnector.AsSpan()))
+            var connector = suffix.IsLong ? unitInfo.LongConnector : unitInfo.ShortConnector;
+            if (suffix.HasByteChar && !destination.TryAppend(ref charsWritten, connector))
             {
                 return false;
             }
         }
 
-        var unit = scaledValue == 1 ? unitInfo.ShortByte : unitInfo.ShortBytes;
+        string unit;
+        if (suffix.IsLong)
+        {
+            unit = scaledValue == 1 ? unitInfo.LongByte : unitInfo.LongBytes;
+        }
+        else
+        {
+            unit = scaledValue == 1 ? unitInfo.ShortByte : unitInfo.ShortBytes;
+        }
 
         // Note: this does not account for the possibility that a not-exactly-one value is
         // rounded to 1 by the number format.
@@ -796,7 +806,7 @@ public readonly partial struct BinarySize : IEquatable<BinarySize>, IComparable<
             result.Append(scale);
             if (suffix.HasByteChar)
             {
-                result.Append(unitInfo.ShortConnector);
+                result.Append(suffix.IsLong ? unitInfo.LongConnector : unitInfo.ShortConnector);
             }
         }
 
@@ -804,7 +814,14 @@ public readonly partial struct BinarySize : IEquatable<BinarySize>, IComparable<
         {
             // Note: this does not account for the possibility that a not-exactly-one value is
             // rounded to 1 by the number format.
-            result.Append(scaledValue == 1 ? unitInfo.ShortByte : unitInfo.ShortBytes);
+            if (suffix.IsLong)
+            {
+                result.Append(scaledValue == 1 ? unitInfo.LongByte : unitInfo.LongBytes);
+            }
+            else
+            {
+                result.Append(scaledValue == 1 ? unitInfo.ShortByte : unitInfo.ShortBytes);
+            }
         }
 
         result.Append(suffix.Trailing);
@@ -947,40 +964,43 @@ public readonly partial struct BinarySize : IEquatable<BinarySize>, IComparable<
     {
         SuffixInfo result = new()
         {
-            Trimmed = value.TrimEnd(),
             Factor = 1,
         };
 
-        result.Trailing = value.Slice(result.Trimmed.Length);
-        if (result.Trimmed.Length == 0)
+        var trimmed = value.TrimEnd();
+        result.Trailing = value.Slice(trimmed.Length);
+        if (trimmed.Length == 0)
         {
             return result;
         }
 
-        // Suffix can use B.
-        char ch = result.Trimmed[result.Trimmed.Length - 1];
-        if (ch is 'B' or 'b')
+        // Suffix can use "byte" to indicate long units.
+        if (SpanExtensions.TrimSuffix(ref trimmed, "byte", StringComparison.OrdinalIgnoreCase))
         {
-            result.Trimmed = result.Trimmed.Slice(0, result.Trimmed.Length - 1);
+            result.HasByteChar = true;
+            result.IsLong = true;
+        }
+        else if (SpanExtensions.TrimSuffix(ref trimmed, "b", StringComparison.OrdinalIgnoreCase))
+        {
             result.HasByteChar = true;
         }
 
-        if (result.Trimmed.Length == 0)
+        if (trimmed.Length == 0)
         {
             return result;
         }
 
-        var index = result.Trimmed.Length - 1;
-        ch = result.Trimmed[index];
+        var index = trimmed.Length - 1;
+        var ch = trimmed[index];
 
         // The 'i' is only counted as an IEC char if there's a valid scale prefix before it.
-        if (result.Trimmed.Length > 1 && ch is 'I' or 'i')
+        if (trimmed.Length > 1 && ch is 'I' or 'i')
         {
             result.HasIecChar = true;
             --index;
         }
 
-        ch = result.Trimmed[index];
+        ch = trimmed[index];
         var prefixes = _scalingChars.AsSpan();
         if (result.HasIecChar)
         {
@@ -996,14 +1016,13 @@ public readonly partial struct BinarySize : IEquatable<BinarySize>, IComparable<
         }
         else
         {
-            result.Trimmed = result.Trimmed.Slice(0, index);
+            trimmed = trimmed.Slice(0, index);
             result.Factor = _scalingFactors[scaleIndex];
         }
 
         // Remove any whitespace between the number and the unit.
-        var trimmed = result.Trimmed.TrimEnd();
-        result.Whitespace = result.Trimmed.Slice(trimmed.Length);
-        result.Trimmed = trimmed;
+        result.Trimmed = trimmed.TrimEnd();
+        result.Whitespace = trimmed.Slice(result.Trimmed.Length);
         return result;
     }
 
@@ -1101,6 +1120,34 @@ public readonly partial struct BinarySize : IEquatable<BinarySize>, IComparable<
 
     private static string? GetUnitScale(SuffixInfo suffix, BinaryUnitInfo unitInfo)
     {
+        if (suffix.IsLong)
+        {
+            if (suffix.HasIecChar)
+            {
+                return suffix.Factor switch
+                {
+                    Kilo or Kibi => unitInfo.LongKibi,
+                    Mega or Mebi => unitInfo.LongMebi,
+                    Giga or Gibi => unitInfo.LongGibi,
+                    Tera or Tebi => unitInfo.LongTebi,
+                    Peta or Pebi => unitInfo.LongPebi,
+                    Exa or Exbi => unitInfo.LongExbi,
+                    _ => null,
+                };
+            }
+
+            return suffix.Factor switch
+            {
+                Kilo or Kibi => unitInfo.LongKilo,
+                Mega or Mebi => unitInfo.LongMega,
+                Giga or Gibi => unitInfo.LongGiga,
+                Tera or Tebi => unitInfo.LongTera,
+                Peta or Pebi => unitInfo.LongPeta,
+                Exa or Exbi => unitInfo.LongExa,
+                _ => null,
+            };
+        }
+
         if (suffix.HasIecChar)
         {
             return suffix.Factor switch
@@ -1114,19 +1161,17 @@ public readonly partial struct BinarySize : IEquatable<BinarySize>, IComparable<
                 _ => null,
             };
         }
-        else
+
+        return suffix.Factor switch
         {
-            return suffix.Factor switch
-            {
-                Kilo => unitInfo.ShortDecimalKilo,
-                Kibi => unitInfo.ShortKilo,
-                Mega or Mebi => unitInfo.ShortMega,
-                Giga or Gibi => unitInfo.ShortGiga,
-                Tera or Tebi => unitInfo.ShortTera,
-                Peta or Pebi => unitInfo.ShortPeta,
-                Exa or Exbi => unitInfo.ShortExa,
-                _ => null,
-            };
-        }
+            Kilo => unitInfo.ShortDecimalKilo,
+            Kibi => unitInfo.ShortKilo,
+            Mega or Mebi => unitInfo.ShortMega,
+            Giga or Gibi => unitInfo.ShortGiga,
+            Tera or Tebi => unitInfo.ShortTera,
+            Peta or Pebi => unitInfo.ShortPeta,
+            Exa or Exbi => unitInfo.ShortExa,
+            _ => null,
+        };
     }
 }

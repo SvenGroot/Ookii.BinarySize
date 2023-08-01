@@ -39,6 +39,21 @@ public class BinaryUnitInfo : ICloneable, IFormatProvider
     private string _shortTera = "T";
     private string _shortPeta = "P";
     private string _shortExa = "E";
+    private string _longByte = "byte";
+    private string _longBytes = "bytes";
+    private string _longConnector = "";
+    private string _longKibi = "kibi";
+    private string _longMebi = "mebi";
+    private string _longGibi = "gibi";
+    private string _longTebi = "tebi";
+    private string _longPebi = "pebi";
+    private string _longExbi = "exbi";
+    private string _longKilo = "kilo";
+    private string _longMega = "mega";
+    private string _longGiga = "giga";
+    private string _longTera = "tera";
+    private string _longPeta = "peta";
+    private string _longExa = "exa";
 
     /// <summary>
     /// Gets a read-only <see cref="BinaryUnitInfo"/> object that is culture-independent (invariant).
@@ -518,6 +533,412 @@ public class BinaryUnitInfo : ICloneable, IFormatProvider
         {
             CheckReadOnly();
             _shortExa = value ?? throw new ArgumentNullException(nameof(value));
+        }
+    }
+
+    /// <summary>
+    /// Gets or sets the full version of the byte unit, singular.
+    /// </summary>
+    /// <value>
+    /// The full singular byte unit. The default value is "byte".
+    /// </value>
+    /// <exception cref="ArgumentNullException">
+    /// <inheritdoc cref="ShortByte"/>
+    /// </exception>
+    /// <exception cref="InvalidOperationException">
+    /// <inheritdoc cref="ShortByte"/>
+    /// </exception>
+    /// <remarks>
+    /// <para>
+    ///   When formatting, the <see cref="LongByte"/> property is only used if the value, when
+    ///   scaled to the prefix, is exactly one. For example, 1 byte, 1 kibibyte, 1 petabyte, etc.
+    /// </para>
+    /// <para>
+    ///   If the value is not exactly one, but is rounded to one by the number format used, the
+    ///   <see cref="LongBytes"/> property is still used. For example, a value of 1.01 kibibytes,
+    ///   when using a format string of "0.# Sibyte", would be formatted as "1 kibibytes", using the
+    ///   plural version of the unit.
+    /// </para>
+    /// </remarks>
+    public string LongByte
+    {
+        get => _longByte;
+        set
+        {
+            CheckReadOnly();
+            _longByte = value ?? throw new ArgumentNullException(nameof(value));
+        }
+    }
+
+    /// <summary>
+    /// Gets or sets the full version of the bytes unit, plural.
+    /// </summary>
+    /// <value>
+    /// The full plural bytes unit. The default value is "bytes".
+    /// </value>
+    /// <exception cref="ArgumentNullException">
+    /// <inheritdoc cref="ShortByte"/>
+    /// </exception>
+    /// <exception cref="InvalidOperationException">
+    /// <inheritdoc cref="ShortByte"/>
+    /// </exception>
+    /// <remarks>
+    /// <inheritdoc cref="LongByte"/>
+    /// </remarks>
+    public string LongBytes
+    {
+        get => _longBytes;
+        set
+        {
+            CheckReadOnly();
+            _longBytes = value ?? throw new ArgumentNullException(nameof(value));
+        }
+    }
+
+    /// <summary>
+    /// Gets or sets a string that can be used between a full prefix (e.g. <see cref="LongKibi"/>
+    /// and a unit (e.g. <see cref="LongByte"/>).
+    /// </summary>
+    /// <value>
+    /// The connector for full units. The default value is an empty string.
+    /// </value>
+    /// <exception cref="ArgumentNullException">
+    /// <inheritdoc cref="ShortByte"/>
+    /// </exception>
+    /// <exception cref="InvalidOperationException">
+    /// <inheritdoc cref="ShortByte"/>
+    /// </exception>
+    /// <remarks>
+    /// <para>
+    ///   The connector will be inserted when formatting a value if both a prefix and unit are
+    ///   present. When parsing, the connector may be present between prefix and unit, but it is
+    ///   always optional and parsing will not fail if it is not present.
+    /// </para>
+    /// </remarks>
+    public string LongConnector
+    {
+        get => _longConnector;
+        set
+        {
+            CheckReadOnly();
+            _longConnector = value ?? throw new ArgumentNullException(nameof(value));
+        }
+    }
+
+    /// <summary>
+    /// Gets or sets the full version of the kibi prefix.
+    /// </summary>
+    /// <value>
+    /// The full prefix. The default value is "kibi".
+    /// </value>
+    /// <exception cref="ArgumentNullException">
+    /// <inheritdoc cref="ShortByte"/>
+    /// </exception>
+    /// <exception cref="InvalidOperationException">
+    /// <inheritdoc cref="ShortByte"/>
+    /// </exception>
+    /// <remarks>
+    /// <para>
+    ///   See the format string documentation for the <see cref="BinarySize.ToString(string?, IFormatProvider?)" qualifyHint="true"/>
+    ///   method for when this prefix will be used.
+    /// </para>
+    /// <para>
+    ///   When parsing, a string containing this prefix will always be interpreted as powers of
+    ///   two. Long units are only allowed when parsing if the <see cref="BinarySizeOptions.AllowLongUnits" qualifyHint="true"/>
+    ///   or <see cref="BinarySizeOptions.AllowLongUnitsOnly" qualifyHint="true"/> flag is used.
+    /// </para>
+    /// </remarks>
+    public string LongKibi
+    {
+        get => _longKibi;
+        set
+        {
+            CheckReadOnly();
+            _longKibi = value ?? throw new ArgumentNullException(nameof(value));
+        }
+    }
+
+    /// <summary>
+    /// Gets or sets the full version of the mebi prefix.
+    /// </summary>
+    /// <value>
+    /// The full prefix. The default value is "mebi".
+    /// </value>
+    /// <exception cref="ArgumentNullException">
+    /// <inheritdoc cref="ShortByte"/>
+    /// </exception>
+    /// <exception cref="InvalidOperationException">
+    /// <inheritdoc cref="ShortByte"/>
+    /// </exception>
+    /// <remarks>
+    /// <inheritdoc cref="LongKibi"/>
+    /// </remarks>
+    public string LongMebi
+    {
+        get => _longMebi;
+        set
+        {
+            CheckReadOnly();
+            _longMebi = value ?? throw new ArgumentNullException(nameof(value));
+        }
+    }
+
+    /// <summary>
+    /// Gets or sets the full version of the gibi prefix.
+    /// </summary>
+    /// <value>
+    /// The full prefix. The default value is "gibi".
+    /// </value>
+    /// <exception cref="ArgumentNullException">
+    /// <inheritdoc cref="ShortByte"/>
+    /// </exception>
+    /// <exception cref="InvalidOperationException">
+    /// <inheritdoc cref="ShortByte"/>
+    /// </exception>
+    /// <remarks>
+    /// <inheritdoc cref="LongKibi"/>
+    /// </remarks>
+    public string LongGibi
+    {
+        get => _longGibi;
+        set
+        {
+            CheckReadOnly();
+            _longGibi = value ?? throw new ArgumentNullException(nameof(value));
+        }
+    }
+
+    /// <summary>
+    /// Gets or sets the full version of the tebi prefix.
+    /// </summary>
+    /// <value>
+    /// The full prefix. The default value is "tebi".
+    /// </value>
+    /// <exception cref="ArgumentNullException">
+    /// <inheritdoc cref="ShortByte"/>
+    /// </exception>
+    /// <exception cref="InvalidOperationException">
+    /// <inheritdoc cref="ShortByte"/>
+    /// </exception>
+    /// <remarks>
+    /// <inheritdoc cref="LongKibi"/>
+    /// </remarks>
+    public string LongTebi
+    {
+        get => _longTebi;
+        set
+        {
+            CheckReadOnly();
+            _longTebi = value ?? throw new ArgumentNullException(nameof(value));
+        }
+    }
+
+    /// <summary>
+    /// Gets or sets the full version of the pebi prefix.
+    /// </summary>
+    /// <value>
+    /// The full prefix. The default value is "pebi".
+    /// </value>
+    /// <exception cref="ArgumentNullException">
+    /// <inheritdoc cref="ShortByte"/>
+    /// </exception>
+    /// <exception cref="InvalidOperationException">
+    /// <inheritdoc cref="ShortByte"/>
+    /// </exception>
+    /// <remarks>
+    /// <inheritdoc cref="LongKibi"/>
+    /// </remarks>
+    public string LongPebi
+    {
+        get => _longPebi;
+        set
+        {
+            CheckReadOnly();
+            _longPebi = value ?? throw new ArgumentNullException(nameof(value));
+        }
+    }
+
+    /// <summary>
+    /// Gets or sets the full version of the exbi prefix.
+    /// </summary>
+    /// <value>
+    /// The full prefix. The default value is "exbi".
+    /// </value>
+    /// <exception cref="ArgumentNullException">
+    /// <inheritdoc cref="ShortByte"/>
+    /// </exception>
+    /// <exception cref="InvalidOperationException">
+    /// <inheritdoc cref="ShortByte"/>
+    /// </exception>
+    /// <remarks>
+    /// <inheritdoc cref="LongKibi"/>
+    /// </remarks>
+    public string LongExbi
+    {
+        get => _longExbi;
+        set
+        {
+            CheckReadOnly();
+            _longExbi = value ?? throw new ArgumentNullException(nameof(value));
+        }
+    }
+
+    /// <summary>
+    /// Gets or sets the full version of the kilo prefix.
+    /// </summary>
+    /// <value>
+    /// The full prefix. The default value is "kilo".
+    /// </value>
+    /// <exception cref="ArgumentNullException">
+    /// <inheritdoc cref="ShortByte"/>
+    /// </exception>
+    /// <exception cref="InvalidOperationException">
+    /// <inheritdoc cref="ShortByte"/>
+    /// </exception>
+    /// <remarks>
+    /// <para>
+    ///   See the format string documentation for the <see cref="BinarySize.ToString(string?, IFormatProvider?)" qualifyHint="true"/>
+    ///   method for when this prefix will be used.
+    /// </para>
+    /// <para>
+    ///   When parsing, whether this prefix is interpreted as powers of two or powers of ten depends
+    ///   on the <see cref="BinarySizeOptions"/> value used. Long units are only allowed when
+    ///   parsing if the <see cref="BinarySizeOptions.AllowLongUnits" qualifyHint="true"/> or
+    ///   <see cref="BinarySizeOptions.AllowLongUnitsOnly" qualifyHint="true"/> flag is used.
+    /// </para>
+    /// </remarks>
+    public string LongKilo
+    {
+        get => _longKilo;
+        set
+        {
+            CheckReadOnly();
+            _longKilo = value ?? throw new ArgumentNullException(nameof(value));
+        }
+    }
+
+    /// <summary>
+    /// Gets or sets the full version of the mega prefix.
+    /// </summary>
+    /// <value>
+    /// The full prefix. The default value is "mega".
+    /// </value>
+    /// <exception cref="ArgumentNullException">
+    /// <inheritdoc cref="ShortByte"/>
+    /// </exception>
+    /// <exception cref="InvalidOperationException">
+    /// <inheritdoc cref="ShortByte"/>
+    /// </exception>
+    /// <remarks>
+    /// <inheritdoc cref="LongKilo"/>
+    /// </remarks>
+    public string LongMega
+    {
+        get => _longMega;
+        set
+        {
+            CheckReadOnly();
+            _longMega = value ?? throw new ArgumentNullException(nameof(value));
+        }
+    }
+
+    /// <summary>
+    /// Gets or sets the full version of the giga prefix.
+    /// </summary>
+    /// <value>
+    /// The full prefix. The default value is "G".
+    /// </value>
+    /// <exception cref="ArgumentNullException">
+    /// <inheritdoc cref="ShortByte"/>
+    /// </exception>
+    /// <exception cref="InvalidOperationException">
+    /// <inheritdoc cref="ShortByte"/>
+    /// </exception>
+    /// <remarks>
+    /// <inheritdoc cref="LongKilo"/>
+    /// </remarks>
+    public string LongGiga
+    {
+        get => _longGiga;
+        set
+        {
+            CheckReadOnly();
+            _longGiga = value ?? throw new ArgumentNullException(nameof(value));
+        }
+    }
+
+    /// <summary>
+    /// Gets or sets the full version of the tera prefix.
+    /// </summary>
+    /// <value>
+    /// The full prefix. The default value is "tera".
+    /// </value>
+    /// <exception cref="ArgumentNullException">
+    /// <inheritdoc cref="ShortByte"/>
+    /// </exception>
+    /// <exception cref="InvalidOperationException">
+    /// <inheritdoc cref="ShortByte"/>
+    /// </exception>
+    /// <remarks>
+    /// <inheritdoc cref="LongKilo"/>
+    /// </remarks>
+    public string LongTera
+    {
+        get => _longTera;
+        set
+        {
+            CheckReadOnly();
+            _longTera = value ?? throw new ArgumentNullException(nameof(value));
+        }
+    }
+
+    /// <summary>
+    /// Gets or sets the full version of the peta prefix.
+    /// </summary>
+    /// <value>
+    /// The full prefix. The default value is "peta".
+    /// </value>
+    /// <exception cref="ArgumentNullException">
+    /// <inheritdoc cref="ShortByte"/>
+    /// </exception>
+    /// <exception cref="InvalidOperationException">
+    /// <inheritdoc cref="ShortByte"/>
+    /// </exception>
+    /// <remarks>
+    /// <inheritdoc cref="LongKilo"/>
+    /// </remarks>
+    public string LongPeta
+    {
+        get => _longPeta;
+        set
+        {
+            CheckReadOnly();
+            _longPeta = value ?? throw new ArgumentNullException(nameof(value));
+        }
+    }
+
+    /// <summary>
+    /// Gets or sets the full version of the exa prefix.
+    /// </summary>
+    /// <value>
+    /// The full prefix. The default value is "exa".
+    /// </value>
+    /// <exception cref="ArgumentNullException">
+    /// <inheritdoc cref="ShortByte"/>
+    /// </exception>
+    /// <exception cref="InvalidOperationException">
+    /// <inheritdoc cref="ShortByte"/>
+    /// </exception>
+    /// <remarks>
+    /// <inheritdoc cref="LongKilo"/>
+    /// </remarks>
+    public string LongExa
+    {
+        get => _longExa;
+        set
+        {
+            CheckReadOnly();
+            _longExa = value ?? throw new ArgumentNullException(nameof(value));
         }
     }
 

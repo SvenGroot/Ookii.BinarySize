@@ -21,10 +21,23 @@ public enum BinarySizeOptions
     /// Use the default interpretation, where 1 KB equals 1 KiB equals 1,024 bytes, and 1 MB equals
     /// 1 MiB equals 1,048,576 bytes, and so on.
     /// </summary>
-    Default,
+    Default = 0,
     /// <summary>
     /// Use the interpretation suggested by the IEC standard, where 1 kB equals 1,000 bytes, 1 KiB
     /// equals 1,024 bytes, 1 MB equals 1,000,000 bytes, 1 MiB equals 1,048,576 bytes, and so on.
     /// </summary>
-    UseIecStandard
+    UseIecStandard = 0x1,
+    /// <summary>
+    /// Allow the use of long units, as defined by the <see cref="BinaryUnitInfo"/> class.
+    /// Typically, these are units written out fully such as "kilobyte". If the
+    /// <see cref="AllowLongUnitsOnly"/> flag is not present, both short and long units are
+    /// accepted.
+    /// </summary>
+    AllowLongUnits = 0x2,
+    /// <summary>
+    /// Only allow the use of long units, as defined by the <see cref="BinaryUnitInfo"/> class.
+    /// Typically, these are units written out fully such as "kilobyte". Short units will not be
+    /// accepted. Implies <see cref="AllowLongUnits"/>.
+    /// </summary>
+    AllowLongUnitsOnly = 0x4,
 }

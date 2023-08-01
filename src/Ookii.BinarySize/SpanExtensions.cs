@@ -51,4 +51,15 @@ static class SpanExtensions
 
         return result;
     }
+
+    public static bool TrimSuffix(ref ReadOnlySpan<char> value, string suffix, StringComparison comparison)
+    {
+        var result = value.EndsWith(suffix.AsSpan(), comparison);
+        if (result)
+        {
+            value = value.Slice(0, value.Length - suffix.Length);
+        }
+
+        return result;
+    }
 }
