@@ -98,7 +98,7 @@ public class BinaryUnitInfo : ICloneable, IFormatProvider
     /// <para>
     ///   If the value is not exactly one, but is rounded to one by the number format used, the
     ///   <see cref="ShortBytes"/> property is still used. For example, a value of 1.01 kibibytes,
-    ///   when using a format string of "0.# SiB", would be formatted as "1 KB" using the plural
+    ///   when using a format string of "0.# SiB", would be formatted as "1 KB", using the plural
     ///   version of the unit.
     /// </para>
     /// <para>

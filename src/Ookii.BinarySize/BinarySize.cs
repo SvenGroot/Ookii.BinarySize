@@ -731,7 +731,7 @@ public readonly partial struct BinarySize : IEquatable<BinarySize>, IComparable<
     ///       The output will be formatted as kibibytes, mebibytes, gibibytes, tebibytes, pebibytes,
     ///       or exibytes respectively, with an optional 'i' for IEC units, and an optional 'B'. For
     ///       these units, SI prefixes without the 'i' character are treated as binary prefixes, so
-    ///       1 KB equals 1 KiB equals 1,024 bytes, and so on. For example, "1.5KiB", or "2Mi" or "42TB". 
+    ///       1 KB equals 1 KiB equals 1,024 bytes, and so on. For example, "1.5KiB", or "2Mi" or "42TB".
     ///     </description>
     ///   </item>
     ///   <item>
@@ -778,6 +778,26 @@ public readonly partial struct BinarySize : IEquatable<BinarySize>, IComparable<
     ///       example, 1,500,000 bytes would be formatted as "1.5MB", or "1.5M".
     ///     </description>
     ///   </item>
+    ///   <item>
+    ///     <term>
+    ///       byte, K[i]byte, M[i]byte, G[i]byte, T[i]byte, P[i]byte, E[i]byte, A[i]byte,
+    ///       S[i]byte
+    ///     </term>
+    ///     <description>
+    ///       Format the output using the specified or automatic unit, using the long form of the
+    ///       unit (e.g. "kilobytes" or "mebibytes"). IEC prefixes will be used if the 'i' is
+    ///       present, and all prefixes are treated as binary prefixes.
+    ///     </description>
+    ///   </item>
+    ///   <item>
+    ///     <term>
+    ///       kbyte, mbyte, gbyte, tbyte, pbyte, ebyte, abyte, sbyte
+    ///     </term>
+    ///     <description>
+    ///       Format the output using the specified or automatic SI unit, using the long form of the
+    ///       unit (e.g. "kilobytes" or "megabytes"), and using decimal prefixes.
+    ///     </description>
+    ///   </item>
     /// </list>
     /// <para>
     ///   Any of the above multi-byte units may follow a numeric format string; for example,
@@ -789,9 +809,35 @@ public readonly partial struct BinarySize : IEquatable<BinarySize>, IComparable<
     /// </para>
     /// <note>
     ///   Since "G" by itself is the general format specifier, it cannot be used to format as
-    ///   gibibytes; use "GG" instead for this purpose. Using "G" with leading white space or a
+    ///   gibibytes; use "GG" instead for this purpose. Using " G" with leading white space or a
     ///   number format will work correctly.
     /// </note>
+    /// <para>
+    ///   The actual units used when formatting are determined by the <see cref="BinaryUnitInfo"/>
+    ///   object provided by the <paramref name="formatProvider"/>, or the value of the
+    ///   <see cref="BinaryUnitInfo.InvariantInfo" qualifyHint="true"/> property if the provider
+    ///   doesn't support this type.
+    /// </para>
+    /// <para>
+    ///   The properties defining abbreviated units, such as <see cref="BinaryUnitInfo.ShortByte" qualifyHint="true"/>,
+    ///   <see cref="BinaryUnitInfo.ShortKibi" qualifyHint="true"/> or <see cref="BinaryUnitInfo.ShortKilo" qualifyHint="true"/>
+    ///   are used for all format strings, except those that end in "byte", which use the
+    ///   full units, defined by properties such as <see cref="BinaryUnitInfo.LongByte" qualifyHint="true"/>,
+    ///   <see cref="BinaryUnitInfo.LongKibi" qualifyHint="true"/> or <see cref="BinaryUnitInfo.LongKilo" qualifyHint="true"/>.
+    /// </para>
+    /// <para>
+    ///   The <see cref="BinaryUnitInfo.ShortByte" qualifyHint="true"/> and <see cref="BinaryUnitInfo.LongByte" qualifyHint="true"/>
+    ///   property are only used if the value, when scaled to the prefix, is exactly one. For
+    ///   example, 1 B, 1 KiB, 1 PB, etc. Otherwise, the <see cref="BinaryUnitInfo.LongByte" qualifyHint="true"/>
+    ///   and <see cref="BinaryUnitInfo.LongBytes" qualifyHint="true"/> properties are used.
+    /// </para>
+    /// <para>
+    ///   If the value is not exactly one, but is rounded to one by the number format used, the
+    ///   <see cref="BinaryUnitInfo.LongByte" qualifyHint="true"/> and
+    ///   <see cref="BinaryUnitInfo.LongBytes" qualifyHint="true"/> properties are still used.
+    ///   For example, a value of 1.01 kibibytes, when using a format string of "0.# Sibyte", would be
+    ///   formatted as "1 kibibytes", using the plural version of the unit.
+    /// </para>
     /// </remarks>
     public string ToString(string? format, IFormatProvider? formatProvider = null)
     {
