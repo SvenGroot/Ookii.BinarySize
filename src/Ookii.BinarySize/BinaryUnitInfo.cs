@@ -21,8 +21,7 @@ namespace Ookii;
 /// </remarks>
 public class BinaryUnitInfo : ICloneable, IFormatProvider
 {
-    private bool _isReadOnly;
-    private static readonly BinaryUnitInfo _invariantInfo = new() { _isReadOnly = true };
+    private static readonly BinaryUnitInfo _invariantInfo = new() { IsReadOnly = true };
     private string _shortByte = "B";
     private string _shortBytes = "B";
     private string _shortConnector = "";
@@ -55,6 +54,15 @@ public class BinaryUnitInfo : ICloneable, IFormatProvider
     public static BinaryUnitInfo InvariantInfo => _invariantInfo;
 
     /// <summary>
+    /// Gets a value that indicates whether this <see cref="BinaryUnitInfo"/> object is read-only.
+    /// </summary>
+    /// <value>
+    /// <see langword="true"/> if the <see cref="BinaryUnitInfo"/> is read-only; otherwise,
+    /// <see langword="false"/>.
+    /// </value>
+    public bool IsReadOnly { get; private set; }
+
+    /// <summary>
     /// Gets or sets the abbreviated version of the byte unit, singular.
     /// </summary>
     /// <value>
@@ -66,6 +74,22 @@ public class BinaryUnitInfo : ICloneable, IFormatProvider
     /// <exception cref="InvalidOperationException">
     /// The property is being set and the <see cref="BinaryUnitInfo"/> object is read-only.
     /// </exception>
+    /// <remarks>
+    /// <para>
+    ///   When formatting, the <see cref="ShortByte"/> property is only used if the value, when
+    ///   scaled to the prefix, is exactly one. For example, 1 B, 1 KiB, 1 PB, etc.
+    /// </para>
+    /// <para>
+    ///   If the value is not exactly one, but is rounded to one by the number format used, the
+    ///   <see cref="ShortBytes"/> property is still used. For example, a value of 1.01 kibibytes,
+    ///   when using a format string of "0.# SiB", would be formatted as "1 KB" using the plural
+    ///   version of the unit.
+    /// </para>
+    /// <para>
+    ///   In the default (invariant) information, the singular and plural abbreviated units are the
+    ///   same.
+    /// </para>
+    /// </remarks>
     public string ShortByte
     {
         get => _shortByte;
@@ -83,11 +107,14 @@ public class BinaryUnitInfo : ICloneable, IFormatProvider
     /// The abbreviated plural bytes unit. The default value is "B".
     /// </value>
     /// <exception cref="ArgumentNullException">
-    /// The property is being set to <see langword="null"/>.
+    /// <inheritdoc cref="ShortByte"/>
     /// </exception>
     /// <exception cref="InvalidOperationException">
-    /// The property is being set and the <see cref="BinaryUnitInfo"/> object is read-only.
+    /// <inheritdoc cref="ShortByte"/>
     /// </exception>
+    /// <remarks>
+    /// <inheritdoc cref="ShortByte"/>
+    /// </remarks>
     public string ShortBytes
     {
         get => _shortBytes;
@@ -99,17 +126,25 @@ public class BinaryUnitInfo : ICloneable, IFormatProvider
     }
 
     /// <summary>
-    /// Gets or sets a string that is inserted between a
+    /// Gets or sets a string that can be used between an abbreviated prefix (e.g. <see cref="ShortKibi"/>
+    /// and a unit (e.g. <see cref="ShortByte"/>).
     /// </summary>
     /// <value>
-    /// The abbreviated singular byte unit. The default value is "B".
+    /// The connector for abbreviated units. The default value is an empty string.
     /// </value>
     /// <exception cref="ArgumentNullException">
-    /// The property is being set to <see langword="null"/>.
+    /// <inheritdoc cref="ShortByte"/>
     /// </exception>
     /// <exception cref="InvalidOperationException">
-    /// The property is being set and the <see cref="BinaryUnitInfo"/> object is read-only.
+    /// <inheritdoc cref="ShortByte"/>
     /// </exception>
+    /// <remarks>
+    /// <para>
+    ///   The connector will be inserted when formatting a value if both a prefix and unit are
+    ///   present. When parsing, the connector may be present between prefix and unit, but it is
+    ///   always optional and parsing will not fail if it is not present.
+    /// </para>
+    /// </remarks>
     public string ShortConnector
     {
         get => _shortConnector;
@@ -120,6 +155,28 @@ public class BinaryUnitInfo : ICloneable, IFormatProvider
         }
     }
 
+    /// <summary>
+    /// Gets or sets the abbreviated version of the kibi prefix.
+    /// </summary>
+    /// <value>
+    /// The abbreviated prefix. The default value is "Ki".
+    /// </value>
+    /// <exception cref="ArgumentNullException">
+    /// <inheritdoc cref="ShortByte"/>
+    /// </exception>
+    /// <exception cref="InvalidOperationException">
+    /// <inheritdoc cref="ShortByte"/>
+    /// </exception>
+    /// <remarks>
+    /// <para>
+    ///   See the format string documentation for the <see cref="BinarySize.ToString(string?, IFormatProvider?)" qualifyHint="true"/>
+    ///   method for when this prefix will be used.
+    /// </para>
+    /// <para>
+    ///   When parsing, a string containing this prefix will always be interpreted as powers of
+    ///   two.
+    /// </para>
+    /// </remarks>
     public string ShortKibi
     {
         get => _shortKibi;
@@ -130,6 +187,21 @@ public class BinaryUnitInfo : ICloneable, IFormatProvider
         }
     }
 
+    /// <summary>
+    /// Gets or sets the abbreviated version of the mebi prefix.
+    /// </summary>
+    /// <value>
+    /// The abbreviated prefix. The default value is "Me".
+    /// </value>
+    /// <exception cref="ArgumentNullException">
+    /// <inheritdoc cref="ShortByte"/>
+    /// </exception>
+    /// <exception cref="InvalidOperationException">
+    /// <inheritdoc cref="ShortByte"/>
+    /// </exception>
+    /// <remarks>
+    /// <inheritdoc cref="ShortKibi"/>
+    /// </remarks>
     public string ShortMebi
     {
         get => _shortMebi;
@@ -140,6 +212,21 @@ public class BinaryUnitInfo : ICloneable, IFormatProvider
         }
     }
 
+    /// <summary>
+    /// Gets or sets the abbreviated version of the gibi prefix.
+    /// </summary>
+    /// <value>
+    /// The abbreviated prefix. The default value is "Gi".
+    /// </value>
+    /// <exception cref="ArgumentNullException">
+    /// <inheritdoc cref="ShortByte"/>
+    /// </exception>
+    /// <exception cref="InvalidOperationException">
+    /// <inheritdoc cref="ShortByte"/>
+    /// </exception>
+    /// <remarks>
+    /// <inheritdoc cref="ShortKibi"/>
+    /// </remarks>
     public string ShortGibi
     {
         get => _shortGibi;
@@ -150,6 +237,21 @@ public class BinaryUnitInfo : ICloneable, IFormatProvider
         }
     }
 
+    /// <summary>
+    /// Gets or sets the abbreviated version of the tebi prefix.
+    /// </summary>
+    /// <value>
+    /// The abbreviated prefix. The default value is "Ti".
+    /// </value>
+    /// <exception cref="ArgumentNullException">
+    /// <inheritdoc cref="ShortByte"/>
+    /// </exception>
+    /// <exception cref="InvalidOperationException">
+    /// <inheritdoc cref="ShortByte"/>
+    /// </exception>
+    /// <remarks>
+    /// <inheritdoc cref="ShortKibi"/>
+    /// </remarks>
     public string ShortTebi
     {
         get => _shortTebi;
@@ -160,6 +262,21 @@ public class BinaryUnitInfo : ICloneable, IFormatProvider
         }
     }
 
+    /// <summary>
+    /// Gets or sets the abbreviated version of the pebi prefix.
+    /// </summary>
+    /// <value>
+    /// The abbreviated prefix. The default value is "Pi".
+    /// </value>
+    /// <exception cref="ArgumentNullException">
+    /// <inheritdoc cref="ShortByte"/>
+    /// </exception>
+    /// <exception cref="InvalidOperationException">
+    /// <inheritdoc cref="ShortByte"/>
+    /// </exception>
+    /// <remarks>
+    /// <inheritdoc cref="ShortKibi"/>
+    /// </remarks>
     public string ShortPebi
     {
         get => _shortPebi;
@@ -170,6 +287,21 @@ public class BinaryUnitInfo : ICloneable, IFormatProvider
         }
     }
 
+    /// <summary>
+    /// Gets or sets the abbreviated version of the exbi prefix.
+    /// </summary>
+    /// <value>
+    /// The abbreviated prefix. The default value is "Ei".
+    /// </value>
+    /// <exception cref="ArgumentNullException">
+    /// <inheritdoc cref="ShortByte"/>
+    /// </exception>
+    /// <exception cref="InvalidOperationException">
+    /// <inheritdoc cref="ShortByte"/>
+    /// </exception>
+    /// <remarks>
+    /// <inheritdoc cref="ShortKibi"/>
+    /// </remarks>
     public string ShortExbi
     {
         get => _shortExbi;
@@ -180,6 +312,31 @@ public class BinaryUnitInfo : ICloneable, IFormatProvider
         }
     }
 
+    /// <summary>
+    /// Gets or sets the abbreviated version of the kilo prefix, when interpreted as powers of two
+    /// (1,024 bytes).
+    /// </summary>
+    /// <value>
+    /// The abbreviated prefix. The default value is "K".
+    /// </value>
+    /// <exception cref="ArgumentNullException">
+    /// <inheritdoc cref="ShortByte"/>
+    /// </exception>
+    /// <exception cref="InvalidOperationException">
+    /// <inheritdoc cref="ShortByte"/>
+    /// </exception>
+    /// <remarks>
+    /// <para>
+    ///   When formatting, this prefix is used only when SI prefixes are treated as powers of two
+    ///   (see the format string information for the <see cref="BinarySize.ToString(string?, IFormatProvider?)" qualifyHint="true"/>
+    ///   method). For a powers of ten version of the kilo prefix, the <see cref="ShortDecimalKilo"/>
+    ///   property is used.
+    /// </para>
+    /// <para>
+    ///   When parsing, whether this prefix is interpreted as powers of two or powers of ten depends
+    ///   on the <see cref="BinarySizeOptions"/> value used.
+    /// </para>
+    /// </remarks>
     public string ShortKilo
     {
         get => _shortKilo;
@@ -190,7 +347,37 @@ public class BinaryUnitInfo : ICloneable, IFormatProvider
         }
     }
 
-    // When parsing, this will be interpreted as 1024 depending on flag.
+    /// <summary>
+    /// Gets or sets the abbreviated version of the kilo prefix, when interpreted as powers of ten
+    /// (1,000 bytes).
+    /// </summary>
+    /// <value>
+    /// The abbreviated prefix. The default value is "k".
+    /// </value>
+    /// <exception cref="ArgumentNullException">
+    /// <inheritdoc cref="ShortByte"/>
+    /// </exception>
+    /// <exception cref="InvalidOperationException">
+    /// <inheritdoc cref="ShortByte"/>
+    /// </exception>
+    /// <remarks>
+    /// <para>
+    ///   A distinct version of the powers of ten SI kilo prefix is provided because the SI prefixes
+    ///   indicate that kilo should be a lower-case k, while when using kilo to represent 1,024
+    ///   bytes, it is by convention written with an upper-case K. This is only the case for the
+    ///   kilo prefix, so similar properties do not exist for other SI prefixes.
+    /// </para>
+    /// <para>
+    ///   When formatting, this prefix is used only when SI prefixes are treated as powers of ten
+    ///   (see the format string information for the <see cref="BinarySize.ToString(string?, IFormatProvider?)" qualifyHint="true"/>
+    ///   method). For a powers of two version of the kilo prefix, the <see cref="ShortKilo"/>
+    ///   property is used.
+    /// </para>
+    /// <para>
+    ///   When parsing, whether this prefix is interpreted as powers of two or powers of ten depends
+    ///   on the <see cref="BinarySizeOptions"/> value used.
+    /// </para>
+    /// </remarks>
     public string ShortDecimalKilo
     {
         get => _shortDecimalKilo;
@@ -201,6 +388,28 @@ public class BinaryUnitInfo : ICloneable, IFormatProvider
         }
     }
 
+    /// <summary>
+    /// Gets or sets the abbreviated version of the mega prefix.
+    /// </summary>
+    /// <value>
+    /// The abbreviated prefix. The default value is "M".
+    /// </value>
+    /// <exception cref="ArgumentNullException">
+    /// <inheritdoc cref="ShortByte"/>
+    /// </exception>
+    /// <exception cref="InvalidOperationException">
+    /// <inheritdoc cref="ShortByte"/>
+    /// </exception>
+    /// <remarks>
+    /// <para>
+    ///   See the format string documentation for the <see cref="BinarySize.ToString(string?, IFormatProvider?)" qualifyHint="true"/>
+    ///   method for when this prefix will be used.
+    /// </para>
+    /// <para>
+    ///   When parsing, whether this prefix is interpreted as powers of two or powers of ten depends
+    ///   on the <see cref="BinarySizeOptions"/> value used.
+    /// </para>
+    /// </remarks>
     public string ShortMega
     {
         get => _shortMega;
@@ -211,6 +420,21 @@ public class BinaryUnitInfo : ICloneable, IFormatProvider
         }
     }
 
+    /// <summary>
+    /// Gets or sets the abbreviated version of the giga prefix.
+    /// </summary>
+    /// <value>
+    /// The abbreviated prefix. The default value is "G".
+    /// </value>
+    /// <exception cref="ArgumentNullException">
+    /// <inheritdoc cref="ShortByte"/>
+    /// </exception>
+    /// <exception cref="InvalidOperationException">
+    /// <inheritdoc cref="ShortByte"/>
+    /// </exception>
+    /// <remarks>
+    /// <inheritdoc cref="ShortMega"/>
+    /// </remarks>
     public string ShortGiga
     {
         get => _shortGiga;
@@ -221,6 +445,21 @@ public class BinaryUnitInfo : ICloneable, IFormatProvider
         }
     }
 
+    /// <summary>
+    /// Gets or sets the abbreviated version of the tera prefix.
+    /// </summary>
+    /// <value>
+    /// The abbreviated prefix. The default value is "T".
+    /// </value>
+    /// <exception cref="ArgumentNullException">
+    /// <inheritdoc cref="ShortByte"/>
+    /// </exception>
+    /// <exception cref="InvalidOperationException">
+    /// <inheritdoc cref="ShortByte"/>
+    /// </exception>
+    /// <remarks>
+    /// <inheritdoc cref="ShortMega"/>
+    /// </remarks>
     public string ShortTera
     {
         get => _shortTera;
@@ -231,6 +470,21 @@ public class BinaryUnitInfo : ICloneable, IFormatProvider
         }
     }
 
+    /// <summary>
+    /// Gets or sets the abbreviated version of the peta prefix.
+    /// </summary>
+    /// <value>
+    /// The abbreviated prefix. The default value is "P".
+    /// </value>
+    /// <exception cref="ArgumentNullException">
+    /// <inheritdoc cref="ShortByte"/>
+    /// </exception>
+    /// <exception cref="InvalidOperationException">
+    /// <inheritdoc cref="ShortByte"/>
+    /// </exception>
+    /// <remarks>
+    /// <inheritdoc cref="ShortMega"/>
+    /// </remarks>
     public string ShortPeta
     {
         get => _shortPeta;
@@ -241,6 +495,21 @@ public class BinaryUnitInfo : ICloneable, IFormatProvider
         }
     }
 
+    /// <summary>
+    /// Gets or sets the abbreviated version of the exa prefix.
+    /// </summary>
+    /// <value>
+    /// The abbreviated prefix. The default value is "E".
+    /// </value>
+    /// <exception cref="ArgumentNullException">
+    /// <inheritdoc cref="ShortByte"/>
+    /// </exception>
+    /// <exception cref="InvalidOperationException">
+    /// <inheritdoc cref="ShortByte"/>
+    /// </exception>
+    /// <remarks>
+    /// <inheritdoc cref="ShortMega"/>
+    /// </remarks>
     public string ShortExa
     {
         get => _shortExa;
@@ -251,25 +520,49 @@ public class BinaryUnitInfo : ICloneable, IFormatProvider
         }
     }
 
+    /// <summary>
+    /// Creates a read-only copy of this <see cref="BinaryUnitInfo"/> object.
+    /// </summary>
+    /// <param name="info">The <see cref="BinaryUnitInfo"/> to make read-only.</param>
+    /// <returns>
+    /// An object with the same values as <paramref name="info"/>, but which is read-only.
+    /// </returns>
     public static BinaryUnitInfo ReadOnly(BinaryUnitInfo info)
     {
-        if (info._isReadOnly)
+        if (info.IsReadOnly)
         {
             return info;
         }
 
         var result = (BinaryUnitInfo)info.MemberwiseClone();
-        result._isReadOnly = true;
+        result.IsReadOnly = true;
         return result;
     }
 
+    /// <summary>
+    /// Creates a shallow copy of the <see cref="BinaryUnitInfo"/> object.
+    /// </summary>
+    /// <returns>
+    /// A new object copied from the original <see cref="BinaryUnitInfo"/> object.
+    /// </returns>
+    /// <remarks>
+    /// The clone is writable even if the original <see cref="BinaryUnitInfo"/> object is read-only.
+    /// </remarks>
     public object Clone()
     {
         var result = (BinaryUnitInfo)MemberwiseClone();
-        result._isReadOnly = false;
+        result.IsReadOnly = false;
         return result;
     }
 
+    /// <summary>
+    /// Gets an object of the specified type that provides a formatting service.
+    /// </summary>
+    /// <param name="formatType">The <see cref="Type"/> of the formatting service.</param>
+    /// <returns>
+    /// The current <see cref="BinaryUnitInfo"/>, if <paramref name="formatType"/> is the
+    /// <see cref="BinaryUnitInfo"/> class; otherwise, <see langword="null"/>.
+    /// </returns>
     public object? GetFormat(Type? formatType)
     {
         if (formatType == typeof(BinaryUnitInfo))
@@ -282,7 +575,7 @@ public class BinaryUnitInfo : ICloneable, IFormatProvider
 
     private void CheckReadOnly()
     {
-        if (_isReadOnly)
+        if (IsReadOnly)
         {
             throw new InvalidOperationException(Properties.Resources.BinaryUnitInfoReadOnly);
         }
