@@ -177,6 +177,28 @@ public class BinarySizeTests
         Assert.AreEqual(BinarySize.FromKibi(2), result);
         Assert.IsTrue(BinarySize.TryParse("2 lc", BinarySizeOptions.UseIecStandard, NumberStyles.Number, CultureInfo.InvariantCulture.WithBinaryUnitInfo(unitInfo), out result));
         Assert.AreEqual((BinarySize)2000, result);
+
+        // Decimal
+        Assert.IsTrue(BinarySize.TryParse("123PB", BinarySizeOptions.UseIecStandard, NumberStyles.Number, CultureInfo.InvariantCulture, out result));
+        Assert.AreEqual(new BinarySize(123000000000000000), result);
+        Assert.IsTrue(BinarySize.TryParse("123PiB", BinarySizeOptions.UseIecStandard, NumberStyles.Number, CultureInfo.InvariantCulture, out result));
+        Assert.AreEqual(new BinarySize(138485688541642752), result);
+        Assert.IsTrue(BinarySize.TryParse("123P", BinarySizeOptions.UseIecStandard, NumberStyles.Number, CultureInfo.InvariantCulture, out result));
+        Assert.AreEqual(new BinarySize(123000000000000000), result);
+
+        // Long
+        Assert.IsTrue(BinarySize.TryParse("123petabytes", BinarySizeOptions.AllowLongUnits, NumberStyles.Number, CultureInfo.InvariantCulture, out result));
+        Assert.AreEqual(new BinarySize(138485688541642752), result);
+        Assert.IsTrue(BinarySize.TryParse("123pebibyte", BinarySizeOptions.AllowLongUnits, NumberStyles.Number, CultureInfo.InvariantCulture, out result));
+        Assert.AreEqual(new BinarySize(138485688541642752), result);
+        Assert.IsTrue(BinarySize.TryParse("123peta", BinarySizeOptions.AllowLongUnitsOnly, NumberStyles.Number, CultureInfo.InvariantCulture, out result));
+        Assert.AreEqual(new BinarySize(138485688541642752), result);
+        Assert.IsTrue(BinarySize.TryParse("123petabytes", BinarySizeOptions.UseIecStandard | BinarySizeOptions.AllowLongUnits, NumberStyles.Number, CultureInfo.InvariantCulture, out result));
+        Assert.AreEqual(new BinarySize(123000000000000000), result);
+
+        // Flags
+        Assert.IsFalse(BinarySize.TryParse("123petabytes", CultureInfo.InvariantCulture, out result));
+        Assert.IsFalse(BinarySize.TryParse("123PB", BinarySizeOptions.AllowLongUnitsOnly, NumberStyles.Number, CultureInfo.InvariantCulture, out result));
     }
 
     [TestMethod]
@@ -205,6 +227,92 @@ public class BinarySizeTests
         Assert.AreEqual(new BinarySize(5500000000000000000), BinarySize.Parse("5.5E", BinarySizeOptions.UseIecStandard, NumberStyles.Number, CultureInfo.InvariantCulture));
         Assert.AreEqual(new BinarySize(5500000000000000000), BinarySize.Parse("5.5 EB ", BinarySizeOptions.UseIecStandard, NumberStyles.Number, CultureInfo.InvariantCulture)); // with some spaces.
     }
+
+    [TestMethod]
+    public void TestParseLong()
+    {
+        Assert.AreEqual(new BinarySize(123), BinarySize.Parse("123 byte", BinarySizeOptions.AllowLongUnits, NumberStyles.Number, CultureInfo.InvariantCulture));
+        Assert.AreEqual(new BinarySize(123), BinarySize.Parse("123 bytes", BinarySizeOptions.AllowLongUnits, NumberStyles.Number, CultureInfo.InvariantCulture));
+        Assert.AreEqual(new BinarySize(125952), BinarySize.Parse("123kilobytes", BinarySizeOptions.AllowLongUnits, NumberStyles.Number, CultureInfo.InvariantCulture));
+        Assert.AreEqual(new BinarySize(125952), BinarySize.Parse("123kibibytes", BinarySizeOptions.AllowLongUnits, NumberStyles.Number, CultureInfo.InvariantCulture));
+        Assert.AreEqual(new BinarySize(125952), BinarySize.Parse("123kilo", BinarySizeOptions.AllowLongUnits, NumberStyles.Number, CultureInfo.InvariantCulture));
+        Assert.AreEqual(new BinarySize(128974848), BinarySize.Parse("123megabytes", BinarySizeOptions.AllowLongUnits, NumberStyles.Number, CultureInfo.InvariantCulture));
+        Assert.AreEqual(new BinarySize(128974848), BinarySize.Parse("123mebibytes", BinarySizeOptions.AllowLongUnits, NumberStyles.Number, CultureInfo.InvariantCulture));
+        Assert.AreEqual(new BinarySize(128974848), BinarySize.Parse("123mebi", BinarySizeOptions.AllowLongUnits, NumberStyles.Number, CultureInfo.InvariantCulture));
+        Assert.AreEqual(new BinarySize(132070244352), BinarySize.Parse("123gigabytes", BinarySizeOptions.AllowLongUnits, NumberStyles.Number, CultureInfo.InvariantCulture));
+        Assert.AreEqual(new BinarySize(132070244352), BinarySize.Parse("123gibibyte", BinarySizeOptions.AllowLongUnits, NumberStyles.Number, CultureInfo.InvariantCulture));
+        Assert.AreEqual(new BinarySize(132070244352), BinarySize.Parse("123gibi", BinarySizeOptions.AllowLongUnits, NumberStyles.Number, CultureInfo.InvariantCulture));
+        Assert.AreEqual(new BinarySize(135239930216448), BinarySize.Parse("123terabyte", BinarySizeOptions.AllowLongUnits, NumberStyles.Number, CultureInfo.InvariantCulture));
+        Assert.AreEqual(new BinarySize(135239930216448), BinarySize.Parse("123tebibytes", BinarySizeOptions.AllowLongUnits, NumberStyles.Number, CultureInfo.InvariantCulture));
+        Assert.AreEqual(new BinarySize(135239930216448), BinarySize.Parse("123tera", BinarySizeOptions.AllowLongUnits, NumberStyles.Number, CultureInfo.InvariantCulture));
+        Assert.AreEqual(new BinarySize(138485688541642752), BinarySize.Parse("123petabytes", BinarySizeOptions.AllowLongUnits, NumberStyles.Number, CultureInfo.InvariantCulture));
+        Assert.AreEqual(new BinarySize(138485688541642752), BinarySize.Parse("123pebibytes", BinarySizeOptions.AllowLongUnits, NumberStyles.Number, CultureInfo.InvariantCulture));
+        Assert.AreEqual(new BinarySize(138485688541642752), BinarySize.Parse("123pebi", BinarySizeOptions.AllowLongUnits, NumberStyles.Number, CultureInfo.InvariantCulture));
+        Assert.AreEqual(new BinarySize(138485688541642752), BinarySize.Parse("123 pebibyte ", BinarySizeOptions.AllowLongUnits, NumberStyles.Number, CultureInfo.InvariantCulture)); // with some spaces.
+        Assert.AreEqual(new BinarySize(6341068275337658368), BinarySize.Parse("5.5exabytes", BinarySizeOptions.AllowLongUnits, NumberStyles.Number, CultureInfo.InvariantCulture));
+        Assert.AreEqual(new BinarySize(6341068275337658368), BinarySize.Parse("5.5exbibytes", BinarySizeOptions.AllowLongUnits, NumberStyles.Number, CultureInfo.InvariantCulture));
+        Assert.AreEqual(new BinarySize(6341068275337658368), BinarySize.Parse("5.5exa", BinarySizeOptions.AllowLongUnits, NumberStyles.Number, CultureInfo.InvariantCulture));
+
+        // Negative
+        Assert.AreEqual(new BinarySize(-126464), BinarySize.Parse("-123.5kilobytes", BinarySizeOptions.AllowLongUnits, NumberStyles.Number, CultureInfo.InvariantCulture));
+
+        var unitInfo = new BinaryUnitInfo()
+        {
+            LongKilo = "foo",
+            LongKibi = "bar",
+            LongByte = "bit",
+            LongBytes = "bits",
+            LongConnector = ":",
+        };
+
+        // Test custom format provider
+        Assert.AreEqual(BinarySize.FromKibi(2), BinarySize.Parse("2 foo:bits", BinarySizeOptions.AllowLongUnits, NumberStyles.Number, CultureInfo.InvariantCulture.WithBinaryUnitInfo(unitInfo)));
+        Assert.AreEqual(BinarySize.FromKibi(2), BinarySize.Parse("2 foo:bit", BinarySizeOptions.AllowLongUnits, NumberStyles.Number, CultureInfo.InvariantCulture.WithBinaryUnitInfo(unitInfo)));
+        Assert.AreEqual(BinarySize.FromKibi(2), BinarySize.Parse("2 barbit", BinarySizeOptions.AllowLongUnits, NumberStyles.Number, CultureInfo.InvariantCulture.WithBinaryUnitInfo(unitInfo)));
+        Assert.AreEqual(BinarySize.FromKibi(2), BinarySize.Parse("2 bar", BinarySizeOptions.AllowLongUnits, NumberStyles.Number, CultureInfo.InvariantCulture.WithBinaryUnitInfo(unitInfo)));
+        Assert.AreEqual(BinarySize.FromKibi(2), BinarySize.Parse("2 FOO:BIT", BinarySizeOptions.AllowLongUnits, NumberStyles.Number, CultureInfo.InvariantCulture.WithBinaryUnitInfo(unitInfo)));
+        Assert.AreEqual(BinarySize.FromKibi(2), BinarySize.Parse("2 BAR:BIT", BinarySizeOptions.AllowLongUnits, NumberStyles.Number, CultureInfo.InvariantCulture.WithBinaryUnitInfo(unitInfo)));
+        Assert.AreEqual(BinarySize.FromKibi(2), BinarySize.Parse("2 FOObit", BinarySizeOptions.AllowLongUnits, NumberStyles.Number, CultureInfo.InvariantCulture.WithBinaryUnitInfo(unitInfo)));
+        Assert.AreEqual(BinarySize.FromKibi(2), BinarySize.Parse("2 BaRbIT", BinarySizeOptions.UseIecStandard | BinarySizeOptions.AllowLongUnits, provider: CultureInfo.InvariantCulture.WithBinaryUnitInfo(unitInfo)));
+        Assert.AreEqual((BinarySize)2000, BinarySize.Parse("2 foobits", BinarySizeOptions.UseIecStandard | BinarySizeOptions.AllowLongUnits, provider: CultureInfo.InvariantCulture.WithBinaryUnitInfo(unitInfo)));
+        Assert.AreEqual(BinarySize.FromKibi(2), BinarySize.Parse("2 barbits", BinarySizeOptions.UseIecStandard | BinarySizeOptions.AllowLongUnits, provider: CultureInfo.InvariantCulture.WithBinaryUnitInfo(unitInfo)));
+        Assert.AreEqual((BinarySize)2, BinarySize.Parse("2 bits", BinarySizeOptions.UseIecStandard | BinarySizeOptions.AllowLongUnits, provider: CultureInfo.InvariantCulture.WithBinaryUnitInfo(unitInfo)));
+        Assert.AreEqual((BinarySize)2, BinarySize.Parse("2 bit", BinarySizeOptions.UseIecStandard | BinarySizeOptions.AllowLongUnits, provider: CultureInfo.InvariantCulture.WithBinaryUnitInfo(unitInfo)));
+        Assert.ThrowsException<FormatException>(() => BinarySize.Parse("2 :bits", BinarySizeOptions.UseIecStandard | BinarySizeOptions.AllowLongUnits, provider: CultureInfo.InvariantCulture.WithBinaryUnitInfo(unitInfo)));
+
+        // Test flags.
+        Assert.AreEqual(new BinarySize(125952), BinarySize.Parse("123kilobytes", BinarySizeOptions.AllowLongUnitsOnly, NumberStyles.Number, CultureInfo.InvariantCulture));
+        Assert.AreEqual(new BinarySize(125952), BinarySize.Parse("123kb", BinarySizeOptions.AllowLongUnits, NumberStyles.Number, CultureInfo.InvariantCulture));
+        Assert.ThrowsException<FormatException>(() => BinarySize.Parse("2 kilobytes", CultureInfo.InvariantCulture));
+        Assert.ThrowsException<FormatException>(() => BinarySize.Parse("123kb", BinarySizeOptions.AllowLongUnitsOnly, NumberStyles.Number, CultureInfo.InvariantCulture));
+    }
+
+    [TestMethod]
+    public void TestParseDecimalLong()
+    {
+        Assert.AreEqual(new BinarySize(123), BinarySize.Parse("123 byte", BinarySizeOptions.UseIecStandard | BinarySizeOptions.AllowLongUnits, NumberStyles.Number, CultureInfo.InvariantCulture));
+        Assert.AreEqual(new BinarySize(123), BinarySize.Parse("123bytes", BinarySizeOptions.UseIecStandard | BinarySizeOptions.AllowLongUnits, NumberStyles.Number, CultureInfo.InvariantCulture));
+        Assert.AreEqual(new BinarySize(123000), BinarySize.Parse("123kilobytes", BinarySizeOptions.UseIecStandard | BinarySizeOptions.AllowLongUnits, NumberStyles.Number, CultureInfo.InvariantCulture));
+        Assert.AreEqual(new BinarySize(125952), BinarySize.Parse("123kibibytes", BinarySizeOptions.UseIecStandard | BinarySizeOptions.AllowLongUnits, NumberStyles.Number, CultureInfo.InvariantCulture));
+        Assert.AreEqual(new BinarySize(123000), BinarySize.Parse("123kilo", BinarySizeOptions.UseIecStandard | BinarySizeOptions.AllowLongUnits, NumberStyles.Number, CultureInfo.InvariantCulture));
+        Assert.AreEqual(new BinarySize(123000000), BinarySize.Parse("123megabytes", BinarySizeOptions.UseIecStandard | BinarySizeOptions.AllowLongUnits, NumberStyles.Number, CultureInfo.InvariantCulture));
+        Assert.AreEqual(new BinarySize(128974848), BinarySize.Parse("123mebibytes", BinarySizeOptions.UseIecStandard | BinarySizeOptions.AllowLongUnits, NumberStyles.Number, CultureInfo.InvariantCulture));
+        Assert.AreEqual(new BinarySize(128974848), BinarySize.Parse("123mebi", BinarySizeOptions.UseIecStandard | BinarySizeOptions.AllowLongUnits, NumberStyles.Number, CultureInfo.InvariantCulture));
+        Assert.AreEqual(new BinarySize(123000000), BinarySize.Parse("123mega", BinarySizeOptions.UseIecStandard | BinarySizeOptions.AllowLongUnits, NumberStyles.Number, CultureInfo.InvariantCulture));
+        Assert.AreEqual(new BinarySize(123000000000), BinarySize.Parse("123gigabytes", BinarySizeOptions.UseIecStandard | BinarySizeOptions.AllowLongUnits, NumberStyles.Number, CultureInfo.InvariantCulture));
+        Assert.AreEqual(new BinarySize(132070244352), BinarySize.Parse("123gibibytes", BinarySizeOptions.UseIecStandard | BinarySizeOptions.AllowLongUnits, NumberStyles.Number, CultureInfo.InvariantCulture));
+        Assert.AreEqual(new BinarySize(123000000000), BinarySize.Parse("123giga", BinarySizeOptions.UseIecStandard | BinarySizeOptions.AllowLongUnits, NumberStyles.Number, CultureInfo.InvariantCulture));
+        Assert.AreEqual(new BinarySize(123000000000000), BinarySize.Parse("123terabytes", BinarySizeOptions.UseIecStandard | BinarySizeOptions.AllowLongUnits, NumberStyles.Number, CultureInfo.InvariantCulture));
+        Assert.AreEqual(new BinarySize(135239930216448), BinarySize.Parse("123tebibytes", BinarySizeOptions.UseIecStandard | BinarySizeOptions.AllowLongUnits, NumberStyles.Number, CultureInfo.InvariantCulture));
+        Assert.AreEqual(new BinarySize(123000000000000), BinarySize.Parse("123tera", BinarySizeOptions.UseIecStandard | BinarySizeOptions.AllowLongUnits, NumberStyles.Number, CultureInfo.InvariantCulture));
+        Assert.AreEqual(new BinarySize(123000000000000000), BinarySize.Parse("123petabytes", BinarySizeOptions.UseIecStandard | BinarySizeOptions.AllowLongUnits, NumberStyles.Number, CultureInfo.InvariantCulture));
+        Assert.AreEqual(new BinarySize(138485688541642752), BinarySize.Parse("123pebibytes", BinarySizeOptions.UseIecStandard | BinarySizeOptions.AllowLongUnits, NumberStyles.Number, CultureInfo.InvariantCulture));
+        Assert.AreEqual(new BinarySize(123000000000000000), BinarySize.Parse("123peta", BinarySizeOptions.UseIecStandard | BinarySizeOptions.AllowLongUnits, NumberStyles.Number, CultureInfo.InvariantCulture));
+        Assert.AreEqual(new BinarySize(5500000000000000000), BinarySize.Parse("5.5exabytes", BinarySizeOptions.UseIecStandard | BinarySizeOptions.AllowLongUnits, NumberStyles.Number, CultureInfo.InvariantCulture));
+        Assert.AreEqual(new BinarySize(6341068275337658368), BinarySize.Parse("5.5exbibytes", BinarySizeOptions.UseIecStandard | BinarySizeOptions.AllowLongUnits, NumberStyles.Number, CultureInfo.InvariantCulture));
+        Assert.AreEqual(new BinarySize(5500000000000000000), BinarySize.Parse("5.5exa", BinarySizeOptions.UseIecStandard | BinarySizeOptions.AllowLongUnits, NumberStyles.Number, CultureInfo.InvariantCulture));
+    }
+
 
     [TestMethod]
     public void TestToString()
