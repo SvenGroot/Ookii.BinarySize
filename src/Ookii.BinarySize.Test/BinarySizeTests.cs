@@ -128,6 +128,8 @@ public class BinarySizeTests
         Assert.AreEqual(new BinarySize(138485688541642752), result);
         Assert.IsTrue(BinarySize.TryParse(" 123 PB ", CultureInfo.InvariantCulture, out result));
         Assert.AreEqual(new BinarySize(138485688541642752), result);
+        Assert.IsTrue(BinarySize.TryParse(" 123 pb ", CultureInfo.InvariantCulture, out result));
+        Assert.AreEqual(new BinarySize(138485688541642752), result);
 
         // Negative
         Assert.IsTrue(BinarySize.TryParse("-123.5KB", CultureInfo.InvariantCulture, out result));
@@ -234,6 +236,8 @@ public class BinarySizeTests
         Assert.AreEqual(new BinarySize(123), BinarySize.Parse("123 byte", BinarySizeOptions.AllowLongUnits, NumberStyles.Number, CultureInfo.InvariantCulture));
         Assert.AreEqual(new BinarySize(123), BinarySize.Parse("123 bytes", BinarySizeOptions.AllowLongUnits, NumberStyles.Number, CultureInfo.InvariantCulture));
         Assert.AreEqual(new BinarySize(125952), BinarySize.Parse("123kilobytes", BinarySizeOptions.AllowLongUnits, NumberStyles.Number, CultureInfo.InvariantCulture));
+        Assert.AreEqual(new BinarySize(125952), BinarySize.Parse("123Kilobytes", BinarySizeOptions.AllowLongUnits, NumberStyles.Number, CultureInfo.InvariantCulture));
+        Assert.AreEqual(new BinarySize(125952), BinarySize.Parse("123kiloBytes", BinarySizeOptions.AllowLongUnits, NumberStyles.Number, CultureInfo.InvariantCulture));
         Assert.AreEqual(new BinarySize(125952), BinarySize.Parse("123kibibytes", BinarySizeOptions.AllowLongUnits, NumberStyles.Number, CultureInfo.InvariantCulture));
         Assert.AreEqual(new BinarySize(125952), BinarySize.Parse("123kilo", BinarySizeOptions.AllowLongUnits, NumberStyles.Number, CultureInfo.InvariantCulture));
         Assert.AreEqual(new BinarySize(128974848), BinarySize.Parse("123megabytes", BinarySizeOptions.AllowLongUnits, NumberStyles.Number, CultureInfo.InvariantCulture));
@@ -313,6 +317,32 @@ public class BinarySizeTests
         Assert.AreEqual(new BinarySize(5500000000000000000), BinarySize.Parse("5.5exa", BinarySizeOptions.UseIecStandard | BinarySizeOptions.AllowLongUnits, NumberStyles.Number, CultureInfo.InvariantCulture));
     }
 
+    [TestMethod]
+    public void TestParseCompareOptions()
+    {
+        // Make comparisons case sensitive to test custom options.
+        var unitInfo = new BinaryUnitInfo()
+        {
+            CompareOptions = CompareOptions.None,
+        };
+
+        var culture = CultureInfo.InvariantCulture.WithBinaryUnitInfo(unitInfo);
+        Assert.AreEqual(new BinarySize(125952), BinarySize.Parse("123KB", culture));
+        Assert.AreEqual(new BinarySize(125952), BinarySize.Parse("123kB", culture)); // Allowed because of short decimal kilo
+        Assert.ThrowsException<FormatException>(() => BinarySize.Parse("123Kb", culture));
+        Assert.AreEqual(new BinarySize(125952), BinarySize.Parse("123kilobytes", BinarySizeOptions.AllowLongUnits, NumberStyles.Number, culture));
+        Assert.ThrowsException<FormatException>(() => BinarySize.Parse("123Kilobytes", BinarySizeOptions.AllowLongUnits, NumberStyles.Number, culture));
+        Assert.ThrowsException<FormatException>(() => BinarySize.Parse("123kiloBytes", BinarySizeOptions.AllowLongUnits, NumberStyles.Number, culture));
+
+        Assert.IsTrue(BinarySize.TryParse("123KB", culture, out BinarySize result));
+        Assert.IsTrue(BinarySize.TryParse("123kB", culture, out result));
+        Assert.IsFalse(BinarySize.TryParse("123Kb", culture, out _));
+        Assert.AreEqual(new BinarySize(125952), result);
+        Assert.IsTrue(BinarySize.TryParse("123kilobytes", BinarySizeOptions.AllowLongUnits, NumberStyles.Number, culture, out result));
+        Assert.AreEqual(new BinarySize(125952), result);
+        Assert.IsFalse(BinarySize.TryParse("123Kilobytes", BinarySizeOptions.AllowLongUnits, NumberStyles.Number, culture, out _));
+        Assert.IsFalse(BinarySize.TryParse("123kiloBytes", BinarySizeOptions.AllowLongUnits, NumberStyles.Number, culture, out _));
+    }
 
     [TestMethod]
     public void TestToString()

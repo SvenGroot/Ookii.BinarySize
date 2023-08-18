@@ -23,6 +23,7 @@ namespace Ookii;
 public class BinaryUnitInfo : ICloneable, IFormatProvider
 {
     private static readonly BinaryUnitInfo _invariantInfo = new() { IsReadOnly = true };
+    private CompareOptions _compareOptions = CompareOptions.IgnoreCase;
     private string _shortByte = "B";
     private string _shortBytes = "B";
     private string _shortConnector = "";
@@ -77,6 +78,24 @@ public class BinaryUnitInfo : ICloneable, IFormatProvider
     /// <see langword="false"/>.
     /// </value>
     public bool IsReadOnly { get; private set; }
+
+    /// <summary>
+    /// Gets or sets the options to use for string comparisons when parsing <see cref="BinarySize"/>
+    /// values.
+    /// </summary>
+    /// <value>
+    /// A bitwise combination of the values of the <see cref="System.Globalization.CompareOptions"/>
+    /// enumeration. The default value is <see cref="CompareOptions.IgnoreCase" qualifyHint="true"/>.
+    /// </value>
+    public CompareOptions CompareOptions
+    {
+        get => _compareOptions;
+        set
+        {
+            CheckReadOnly();
+            _compareOptions = value;
+        }
+    }
 
     /// <summary>
     /// Gets or sets the abbreviated version of the byte unit, singular.
