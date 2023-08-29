@@ -79,7 +79,7 @@ void PrintSize(BinarySize size, CultureInfo culture)
 {
     // Format strings are unchanged regardless of culture or units.
     Write(culture, $"Full unit: {size:#.# Sbyte}");
-    Write(culture, $"Full units (IEC): {size:0.# Sibyte}");
+    Write(culture, $"Full unit (IEC): {size:0.# Sibyte}");
     Write(culture, $"Abbreviated unit: {size:0.# SB}");
     Write(culture, $"Abbreviated unit (IEC): {size:0.# SiB}");
 }

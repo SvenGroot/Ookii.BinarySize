@@ -45,6 +45,6 @@ Ookii.CommandLine.dll: 197 KiB
 Total: 348 KiB
 ```
 
-[`BinarySize`]: https://www.ookii.org/docs/binarysize-1.0/html/T_Ookii_BinarySize.htm
-[`Parse()`]: https://www.ookii.org/docs/binarysize-1.0/html/Overload_Ookii_IecBinarySize_Parse.htm
-[`Sum()`]: https://www.ookii.org/docs/binarysize-1.0/html/Overload_Ookii_EnumerableExtensions_Sum.htm
+[`BinarySize`]: https://www.ookii.org/docs/binarysize-1.1/html/T_Ookii_BinarySize.htm
+[`Parse()`]: https://www.ookii.org/docs/binarysize-1.1/html/Overload_Ookii_IecBinarySize_Parse.htm
+[`Sum()`]: https://www.ookii.org/docs/binarysize-1.1/html/Overload_Ookii_EnumerableExtensions_Sum.htm

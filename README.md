@@ -174,7 +174,7 @@ Just as with formatting, the default behavior is to treat both SI and IEC units 
 can be seen by the values for "10 KB" and "5G".
 
 To use the IEC standard of interpreting SI units as powers of ten, we can use the
-`BinarySizeOptions.UseIecStandard` flag.
+[`BinarySizeOptions.UseIecStandard`][] flag.
 
 ```csharp
 var values = new[] { "100", "100B", "10 KB", "2.5 MiB", "5G" };
@@ -203,8 +203,8 @@ instead use the [`IecBinarySize`][] structure; this is a wrapper around [`Binary
 defaults to this parsing behavior.
 
 By default, parsing only accepts abbreviated units. To also allow parsing of full units (e.g.
-"kilobytes"), use the `BinarySizeOptions.AllowLongUnits` flag. Use the
-`BinarySizeOptions.AllowLongUnitsOnly` flag to disallow the use of abbreviated units, and accept
+"kilobytes"), use the [`BinarySizeOptions.AllowLongUnits`][] flag. Use the
+[`BinarySizeOptions.AllowLongUnitsOnly`][] flag to disallow the use of abbreviated units, and accept
 only unabbreviated ones. Both singular and plural units will be accepted regardless of the actual
 value, and case is ignored.
 
@@ -226,27 +226,27 @@ Which gives this output.
 '5giga' == 5368709120 bytes
 ```
 
-This can also be combined with the `BinarySizeOptions.UseIecStandard` flag.
+This can also be combined with the [`BinarySizeOptions.UseIecStandard`][] flag.
 
 ## Localization
 
 By default, Ookii.BinarySize uses English-language units, regardless of the culture used for
 formatting or parsing. However, it's possible to create custom localized units using the
-`BinaryUnitInfo` class.
+[`BinaryUnitInfo`][] class.
 
-The `BinaryUnitInfo` class defines the strings used for both the abbreviated (short) and
+The [`BinaryUnitInfo`][] class defines the strings used for both the abbreviated (short) and
 unabbreviated (long) versions of base unit ("B" or "byte"), and the various SI and IEC prefixes.
-When using a custom `BinaryUnitInfo`, these strings will be used instead of the defaults for both
-parsing and formatting. The `BinaryUnitInfo` class also allows you to add a separator in between
+When using a custom [`BinaryUnitInfo`][], these strings will be used instead of the defaults for both
+parsing and formatting. The [`BinaryUnitInfo`][] class also allows you to add a separator in between
 the prefix and base unit, and to specify how string comparisons are performed when parsing.
 
-`BinaryUnitInfo` implements the `IFormatProvider` interface, so it can be used directly with the
-`Parse()` and `ToString()` methods. If this is done, the current culture is used for number
+[`BinaryUnitInfo`][] implements the [`IFormatProvider`][] interface, so it can be used directly with the
+[`Parse()`][] and [`ToString()`][ToString()_0] methods. If this is done, the current culture is used for number
 formatting.
 
-To use an explicitly culture in combination with a custom `BinaryUnitInfo` object, you can use the
-`WithBinaryUnitInfo()` extension method. This returns a new `CultureInfo` object that wraps the
-original one, but also supports the provided `BinaryUnitInfo` object.
+To use an explicitly culture in combination with a custom [`BinaryUnitInfo`][] object, you can use the
+[`WithBinaryUnitInfo()`][] extension method. This returns a new [`CultureInfo`][] object that wraps the
+original one, but also supports the provided [`BinaryUnitInfo`][] object.
 
 For an example, check out the [localization sample](src/Samples/Localization/).
 
@@ -314,39 +314,48 @@ The class library documentation is generated using [Sandcastle Help File Builder
 - [Class library documentation](https://www.ookii.org/Link/BinarySizeDoc)
 - [Samples](src/Samples)
 
-[`AsExbi`]: https://www.ookii.org/docs/binarysize-1.0/html/P_Ookii_BinarySize_AsExbi.htm
-[`AsGibi`]: https://www.ookii.org/docs/binarysize-1.0/html/P_Ookii_BinarySize_AsGibi.htm
-[`AsKibi`]: https://www.ookii.org/docs/binarysize-1.0/html/P_Ookii_BinarySize_AsKibi.htm
-[`AsMebi`]: https://www.ookii.org/docs/binarysize-1.0/html/P_Ookii_BinarySize_AsMebi.htm
-[`AsPebi`]: https://www.ookii.org/docs/binarysize-1.0/html/P_Ookii_BinarySize_AsPebi.htm
-[`AsTebi`]: https://www.ookii.org/docs/binarysize-1.0/html/P_Ookii_BinarySize_AsTebi.htm
-[`BinarySize.Parse()`]: https://www.ookii.org/docs/binarysize-1.0/html/Overload_Ookii_BinarySize_Parse.htm
-[`BinarySize.ToString()`]: https://www.ookii.org/docs/binarysize-1.0/html/M_Ookii_BinarySize_ToString_1.htm
-[`BinarySize.TryParse()`]: https://www.ookii.org/docs/binarysize-1.0/html/Overload_Ookii_BinarySize_TryParse.htm
-[`BinarySize`]: https://www.ookii.org/docs/binarysize-1.0/html/T_Ookii_BinarySize.htm
-[`BinarySizeOptions`]: https://www.ookii.org/docs/binarysize-1.0/html/T_Ookii_BinarySizeOptions.htm
-[`Exbi`]: https://www.ookii.org/docs/binarysize-1.0/html/F_Ookii_BinarySize_Exbi.htm
-[`FromExbi()`]: https://www.ookii.org/docs/binarysize-1.0/html/M_Ookii_BinarySize_FromExbi.htm
-[`FromGibi()`]: https://www.ookii.org/docs/binarysize-1.0/html/M_Ookii_BinarySize_FromGibi.htm
-[`FromKibi()`]: https://www.ookii.org/docs/binarysize-1.0/html/M_Ookii_BinarySize_FromKibi.htm
-[`FromMebi()`]: https://www.ookii.org/docs/binarysize-1.0/html/M_Ookii_BinarySize_FromMebi.htm
-[`FromPebi()`]: https://www.ookii.org/docs/binarysize-1.0/html/M_Ookii_BinarySize_FromPebi.htm
-[`FromTebi()`]: https://www.ookii.org/docs/binarysize-1.0/html/M_Ookii_BinarySize_FromTebi.htm
-[`GetHashCode()`]: https://www.ookii.org/docs/binarysize-1.0/html/M_Ookii_BinarySize_GetHashCode.htm
-[`Gibi`]: https://www.ookii.org/docs/binarysize-1.0/html/F_Ookii_BinarySize_Gibi.htm
+[`AsExbi`]: https://www.ookii.org/docs/binarysize-1.1/html/P_Ookii_BinarySize_AsExbi.htm
+[`AsGibi`]: https://www.ookii.org/docs/binarysize-1.1/html/P_Ookii_BinarySize_AsGibi.htm
+[`AsKibi`]: https://www.ookii.org/docs/binarysize-1.1/html/P_Ookii_BinarySize_AsKibi.htm
+[`AsMebi`]: https://www.ookii.org/docs/binarysize-1.1/html/P_Ookii_BinarySize_AsMebi.htm
+[`AsPebi`]: https://www.ookii.org/docs/binarysize-1.1/html/P_Ookii_BinarySize_AsPebi.htm
+[`AsTebi`]: https://www.ookii.org/docs/binarysize-1.1/html/P_Ookii_BinarySize_AsTebi.htm
+[`BinarySize.Parse()`]: https://www.ookii.org/docs/binarysize-1.1/html/Overload_Ookii_BinarySize_Parse.htm
+[`BinarySize.ToString()`]: https://www.ookii.org/docs/binarysize-1.1/html/M_Ookii_BinarySize_ToString_1.htm
+[`BinarySize.TryParse()`]: https://www.ookii.org/docs/binarysize-1.1/html/Overload_Ookii_BinarySize_TryParse.htm
+[`BinarySize`]: https://www.ookii.org/docs/binarysize-1.1/html/T_Ookii_BinarySize.htm
+[`BinarySizeOptions.AllowLongUnits`]: https://www.ookii.org/docs/binarysize-1.1/html/T_Ookii_BinarySizeOptions.htm
+[`BinarySizeOptions.AllowLongUnitsOnly`]: https://www.ookii.org/docs/binarysize-1.1/html/T_Ookii_BinarySizeOptions.htm
+[`BinarySizeOptions.UseIecStandard`]: https://www.ookii.org/docs/binarysize-1.1/html/T_Ookii_BinarySizeOptions.htm
+[`BinarySizeOptions`]: https://www.ookii.org/docs/binarysize-1.1/html/T_Ookii_BinarySizeOptions.htm
+[`BinaryUnitInfo`]: https://www.ookii.org/docs/binarysize-1.1/html/T_Ookii_BinaryUnitInfo.htm
+[`CultureInfo`]: https://learn.microsoft.com/dotnet/api/system.globalization.cultureinfo
+[`Exbi`]: https://www.ookii.org/docs/binarysize-1.1/html/F_Ookii_BinarySize_Exbi.htm
+[`FromExbi()`]: https://www.ookii.org/docs/binarysize-1.1/html/M_Ookii_BinarySize_FromExbi.htm
+[`FromGibi()`]: https://www.ookii.org/docs/binarysize-1.1/html/M_Ookii_BinarySize_FromGibi.htm
+[`FromKibi()`]: https://www.ookii.org/docs/binarysize-1.1/html/M_Ookii_BinarySize_FromKibi.htm
+[`FromMebi()`]: https://www.ookii.org/docs/binarysize-1.1/html/M_Ookii_BinarySize_FromMebi.htm
+[`FromPebi()`]: https://www.ookii.org/docs/binarysize-1.1/html/M_Ookii_BinarySize_FromPebi.htm
+[`FromTebi()`]: https://www.ookii.org/docs/binarysize-1.1/html/M_Ookii_BinarySize_FromTebi.htm
+[`GetHashCode()`]: https://www.ookii.org/docs/binarysize-1.1/html/M_Ookii_BinarySize_GetHashCode.htm
+[`Gibi`]: https://www.ookii.org/docs/binarysize-1.1/html/F_Ookii_BinarySize_Gibi.htm
 [`IAsyncEnumerable<T>`]: https://learn.microsoft.com/dotnet/api/system.collections.generic.iasyncenumerable-1
 [`IComparable<T>`]: https://learn.microsoft.com/dotnet/api/system.icomparable-1
-[`IecBinarySize`]: https://www.ookii.org/docs/binarysize-1.0/html/T_Ookii_IecBinarySize.htm
+[`IecBinarySize`]: https://www.ookii.org/docs/binarysize-1.1/html/T_Ookii_IecBinarySize.htm
 [`IEnumerable<T>`]: https://learn.microsoft.com/dotnet/api/system.collections.generic.ienumerable-1
 [`IEquatable<T>`]: https://learn.microsoft.com/dotnet/api/system.iequatable-1
+[`IFormatProvider`]: https://learn.microsoft.com/dotnet/api/system.iformatprovider
 [`Int64`]: https://learn.microsoft.com/dotnet/api/system.int64
 [`ISpanFormattable`]: https://learn.microsoft.com/dotnet/api/system.ispanformattable
 [`ISpanParsable<TSelf>`]: https://learn.microsoft.com/dotnet/api/system.ispanparsable-1
 [`IXmlSerializable`]: https://learn.microsoft.com/dotnet/api/system.xml.serialization.ixmlserializable
 [`JsonConverter`]: https://learn.microsoft.com/dotnet/api/system.text.json.serialization.jsonconverter
-[`Kibi`]: https://www.ookii.org/docs/binarysize-1.0/html/F_Ookii_BinarySize_Kibi.htm
-[`Mebi`]: https://www.ookii.org/docs/binarysize-1.0/html/F_Ookii_BinarySize_Mebi.htm
-[`Pebi`]: https://www.ookii.org/docs/binarysize-1.0/html/F_Ookii_BinarySize_Pebi.htm
+[`Kibi`]: https://www.ookii.org/docs/binarysize-1.1/html/F_Ookii_BinarySize_Kibi.htm
+[`Mebi`]: https://www.ookii.org/docs/binarysize-1.1/html/F_Ookii_BinarySize_Mebi.htm
+[`Parse()`]: https://www.ookii.org/docs/binarysize-1.1/html/Overload_Ookii_IecBinarySize_Parse.htm
+[`Pebi`]: https://www.ookii.org/docs/binarysize-1.1/html/F_Ookii_BinarySize_Pebi.htm
 [`ReadOnlySpan<char>`]: https://learn.microsoft.com/dotnet/api/system.readonlyspan-1
-[`Tebi`]: https://www.ookii.org/docs/binarysize-1.0/html/F_Ookii_BinarySize_Tebi.htm
+[`Tebi`]: https://www.ookii.org/docs/binarysize-1.1/html/F_Ookii_BinarySize_Tebi.htm
 [`TypeConverter`]: https://learn.microsoft.com/dotnet/api/system.componentmodel.typeconverter
+[`WithBinaryUnitInfo()`]: https://www.ookii.org/docs/binarysize-1.1/html/M_Ookii_CultureInfoExtensions_WithBinaryUnitInfo.htm
+[ToString()_0]: https://www.ookii.org/docs/binarysize-1.1/html/Overload_Ookii_BinarySize_ToString.htm
