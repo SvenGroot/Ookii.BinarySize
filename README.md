@@ -4,8 +4,9 @@ Ookii.BinarySize is a modern library for parsing and displaying quantities of by
 human-readable representation.
 
 It provides functionality to [parse numeric values](#parsing) that end with a multiple-byte unit,
-such as B, KB, MiB, and so on, and to [format them for display](#formatting) in the same way. It can automatically
-choose the best unit, or you can choose the one you want, based on the format string.
+such as B, KB, MiB, kilobyte, mebibytes, and so on, and to [format them for display](#formatting) in
+the same way. It can automatically choose the best unit, or you can choose the one you want, based
+on the format string.
 
 - Supports units with SI prefixes ("KB", "MB", "GB", "TB", "PB", and "EB"), and IEC prefixes
   ("KiB", "MiB", "GiB", "TiB", "PiB", and "EiB"), with and without the "B".

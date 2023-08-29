@@ -21,8 +21,9 @@
     <Description>Ookii.BinarySize provides parsing and formatting quantities of bytes using human-readable representation.
 
 - Supports SI (KB, MB, GB, etc.) and IEC (KiB, MiB, GiB) size prefixes.
+- Also supports unabbreviated units such as kilobyte, megabyte, kibibyte, mebibyte, etc.
 - Optionally use decimal SI prefixes.
-- Fully customizable formatting, with automatic size prefix selection.
+- Fully customizable formatting, with automatic size prefix selection and localizable units.
 - Supports values up to approximately positive and negative 8 EiB, using Int64 (long) to store the value.
 - Supports math and binary operators, and .Net 7 generic math.
 - Supports .Net Standard 2.0, .Net Standard 2.1, and .Net 6.0 and up.
