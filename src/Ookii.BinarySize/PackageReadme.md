@@ -14,10 +14,10 @@ string.
   "gigabyte", "terabyte", "petabyte", and "exabyte", and their IEC equivalents "kibibyte",
   "mebibyte", "gibibyte", "tebibyte", "pebibyte", and "exbibyte".
 - Interpret SI prefixes as either [powers of two or powers of ten](https://en.wikipedia.org/wiki/Byte#Multiple-byte_units).
-- Parse and store values up to approximately positive and negative 8 EiB, using [`Int64`][] (`long`)
+- Parse and store values up to approximately positive and negative 8 EiB, using `Int64` (`long`)
   as the underlying storage.
-- Support for [localizing units and prefixes](#localization).
-- Provided as a library for [.Net Standard 2.0, .Net Standard 2.1, and .Net 6.0 and up](#requirements).
+- Support for localizing units and prefixes.
+- Provided as a library for .Net Standard 2.0, .Net Standard 2.1, and .Net 6.0 and up.
 - Implements arithmetic and binary operators, and supports .Net 7 generic math.
 - Trim-friendly.
 
