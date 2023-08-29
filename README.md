@@ -9,9 +9,13 @@ choose the best unit, or you can choose the one you want, based on the format st
 
 - Supports units with SI prefixes ("KB", "MB", "GB", "TB", "PB", and "EB"), and IEC prefixes
   ("KiB", "MiB", "GiB", "TiB", "PiB", and "EiB"), with and without the "B".
+- Also supports unabbreviated units for both parsing and formatting: "byte", "kilobyte", "megabyte",
+  "gigabyte", "terabyte", "petabyte", and "exabyte", and their IEC equivalents "kibibyte",
+  "mebibyte", "gibibyte", "tebibyte", "pebibyte", and "exbibyte".
 - Interpret SI prefixes as either [powers of two or powers of ten](https://en.wikipedia.org/wiki/Byte#Multiple-byte_units).
 - Parse and store values up to approximately positive and negative 8 EiB, using [`Int64`][] (`long`)
   as the underlying storage.
+- Support for [localizing units and prefixes](#localization).
 - Provided as a library for [.Net Standard 2.0, .Net Standard 2.1, and .Net 6.0 and up](#requirements).
 - Implements arithmetic and binary operators, and supports .Net 7 generic math.
 - Trim-friendly.
@@ -50,9 +54,13 @@ multi-byte unit, to use default number formatting followed by that unit, or it c
 format string followed by a unit. Spaces around the unit are preserved. For example "KB", " MiB",
 "#.0 G", as well as simply "B", are all accepted format strings.
 
+To use unabbreviated units, end the format string with "byte". This will automatically expand the
+unit and pick between the singular and plural version of "byte" or "bytes". For example, "Mibyte".
+
 To automatically pick the largest unit where the value is a whole number, use "A" instead of an
 explicit size prefix, or use "S" to pick the largest prefix where the value is larger than 1, but
-may have a fractional component. The default format is equivalent to " AiB".
+may have a fractional component. This also works with long units; e.g. "Abyte" or "Sibyte". The
+default format is equivalent to " AiB".
 
 For example, the following displays a value using several different formats:
 
@@ -63,6 +71,7 @@ Console.WriteLine($"Default formatting: {value}");
 Console.WriteLine($"Automatic formatting: {value: AB}");
 Console.WriteLine($"Shortest formatting: {value:#.0 SiB}");
 Console.WriteLine($"Explicit formatting: {value:#,###Ki}");
+Console.WriteLine($"Unabbreviated formatting: {value:#.0 Sibyte}");
 ```
 
 This outputs the following:
@@ -73,6 +82,7 @@ Default formatting: 2560 MiB
 Automatic formatting: 2560 MB
 Shortest formatting: 2.5 GiB
 Explicit formatting: 2,621,440Ki
+Unabbreviated formatting: 2.5 gibibytes
 ```
 
 In the example above, the default format displays the value in MiB because it is not a whole number
@@ -85,13 +95,13 @@ MB is equal to 1 MiB, both equaling 1,048,576 bytes, and so on.
 If you wish to use the IEC standard where only IEC units are powers of two, and SI units are always
 powers of ten, this can be done by using a lower-case unit prefix in the format string, without
 including an 'i'. This applies to explicit units ("k", "m", "g", "t", "p" and "e"), as well as the
-automatic units "a" and "s".
+automatic units "a" and "s", and works with both abbreviated and unabbreviated units.
 
 With this option, 1 kB equals 1,000 bytes, 1 MB equals 1,000,000 bytes, and so on.
 
-The unit prefixes will always be output as uppercase, even if they are lowercase in the format
-string. The only exception is the decimal version of "kilo", which is a lowercase "k" to conform to
-the SI standard.
+The abbreviated unit prefixes will always be output as uppercase, even if they are lowercase in the
+format string. The only exception is the decimal version of "kilo", which is a lowercase "k" to
+conform to the SI standard.
 
 ```csharp
 var value = BinarySize.FromGibi(2.5);
@@ -99,6 +109,7 @@ Console.WriteLine($"{value: B} is equal to (decimal):");
 Console.WriteLine($"Automatic formatting: {value: aB}");
 Console.WriteLine($"Shortest formatting: {value:#.0 sB}");
 Console.WriteLine($"Explicit formatting: {value:#,###k}");
+Console.WriteLine($"Unabbreviated formatting: {value:#,### sbyte}");
 Console.WriteLine();
 
 value = (BinarySize)2500000000;
@@ -106,6 +117,7 @@ Console.WriteLine($"And {value: B} is equal to (decimal):");
 Console.WriteLine($"Automatic formatting: {value: aB}");
 Console.WriteLine($"Shortest formatting: {value:#.0 sB}");
 Console.WriteLine($"Explicit formatting: {value:#,###k}");
+Console.WriteLine($"Unabbreviated formatting: {value:#,### sbyte}");
 ```
 
 This outputs the following:
@@ -115,11 +127,13 @@ This outputs the following:
 Automatic formatting: 2684354560 B
 Shortest formatting: 2.7 GB
 Explicit formatting: 2,684,355k
+Unabbreviated formatting: 2.7 gigabytes
 
 And 2500000000 B is equal to (decimal):
 Automatic formatting: 2500 MB
 Shortest formatting: 2.5 GB
 Explicit formatting: 2,500,000k
+Unabbreviated formatting: 2.5 gigabytes
 ```
 
 Note that using "aB" formatted 2.5 GiB as plain bytes, since there is no higher decimal prefix that
@@ -160,14 +174,14 @@ Just as with formatting, the default behavior is to treat both SI and IEC units 
 can be seen by the values for "10 KB" and "5G".
 
 To use the IEC standard of interpreting SI units as powers of ten, we can use the
-[`BinarySizeOptions`][] enumeration.
+`BinarySizeOptions.UseIecStandard` flag.
 
 ```csharp
 var values = new[] { "100", "100B", "10 KB", "2.5 MiB", "5G" };
 foreach (var value in values)
 {
     var size = BinarySize.Parse(value, BinarySizeOptions.UseIecStandard, NumberStyles.Number, CultureInfo.InvariantCulture);
-    Console.WriteLine($"'{value}' == {size.Value} bytes");
+    Console.WriteLine($"'{value}' == {size: byte}");
 }
 ```
 
@@ -187,6 +201,54 @@ If you want to always treat SI units as powers of ten when parsing, or do so in 
 cannot specify a [`BinarySizeOptions`][] value (such as a value that is being serialized), you can
 instead use the [`IecBinarySize`][] structure; this is a wrapper around [`BinarySize`][] which
 defaults to this parsing behavior.
+
+By default, parsing only accepts abbreviated units. To also allow parsing of full units (e.g.
+"kilobytes"), use the `BinarySizeOptions.AllowLongUnits` flag. Use the
+`BinarySizeOptions.AllowLongUnitsOnly` flag to disallow the use of abbreviated units, and accept
+only unabbreviated ones. Both singular and plural units will be accepted regardless of the actual
+value, and case is ignored.
+
+```csharp
+var values = new[] { "100 bytes", "10 Kilobytes", "2.5 mebibyte", "5giga" };
+foreach (var value in values)
+{
+    var size = BinarySize.Parse(value, BinarySizeOptions.AllowLongUnits, NumberStyles.Number, CultureInfo.InvariantCulture);
+    Console.WriteLine($"'{value}' == {size: byte}");
+}
+```
+
+Which gives this output.
+
+```text
+'100 bytes' == 100 bytes
+'10 Kilobytes' == 10240 bytes
+'2.5 mebibyte' == 2621440 bytes
+'5giga' == 5368709120 bytes
+```
+
+This can also be combined with the `BinarySizeOptions.UseIecStandard` flag.
+
+## Localization
+
+By default, Ookii.BinarySize uses English-language units, regardless of the culture used for
+formatting or parsing. However, it's possible to create custom localized units using the
+`BinaryUnitInfo` class.
+
+The `BinaryUnitInfo` class defines the strings used for both the abbreviated (short) and
+unabbreviated (long) versions of base unit ("B" or "byte"), and the various SI and IEC prefixes.
+When using a custom `BinaryUnitInfo`, these strings will be used instead of the defaults for both
+parsing and formatting. The `BinaryUnitInfo` class also allows you to add a separator in between
+the prefix and base unit, and to specify how string comparisons are performed when parsing.
+
+`BinaryUnitInfo` implements the `IFormatProvider` interface, so it can be used directly with the
+`Parse()` and `ToString()` methods. If this is done, the current culture is used for number
+formatting.
+
+To use an explicitly culture in combination with a custom `BinaryUnitInfo` object, you can use the
+`WithBinaryUnitInfo()` extension method. This returns a new `CultureInfo` object that wraps the
+original one, but also supports the provided `BinaryUnitInfo` object.
+
+For an example, check out the [localization sample](src/Samples/Localization/).
 
 ## Other features
 

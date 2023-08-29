@@ -32,4 +32,4 @@ Abbreviated unit: 128.5 MB
 Abbreviated unit (IEC): 128.5 MiB
 ```
 
-For more information, see the [Localization documentation](TODO).
+For more information, see the [Localization documentation](../../../README.md#localization).
