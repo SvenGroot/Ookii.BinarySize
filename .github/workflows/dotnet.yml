@@ -24,6 +24,8 @@ jobs:
         # Workaround for https://github.com/microsoft/vstest/issues/4549 with 7.0.400.
         # Revert once a newer version is available.
         dotnet-version: 7.0.307
+    - name: Set SDK version
+      run: dotnet new globaljson --sdk-version 7.0.307
     - name: Restore dependencies
       run: dotnet restore src
     - name: Build
