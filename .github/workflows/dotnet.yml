@@ -25,7 +25,8 @@ jobs:
         # Revert once a newer version is available.
         dotnet-version: 7.0.307
     - name: Set SDK version
-      run: dotnet new globaljson --sdk-version 7.0.307    - name: Restore dependencies
+      run: dotnet new globaljson --sdk-version 7.0.307
+    - name: Restore dependencies
       run: dotnet restore src
     - name: Build
       run: dotnet build src --no-restore --configuration Release
