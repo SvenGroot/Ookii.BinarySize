@@ -4,9 +4,8 @@ Ookii.BinarySize is a modern library for parsing and displaying quantities of by
 human-readable representation.
 
 It provides functionality to parse numeric values that end with a multiple-byte unit, such as B, KB,
-MiB, kilobyte, mebibytes, and so on, and so on, and to format them for display in the same way. It
-can automatically choose the best unit, or you can choose the one you want, based on the format
-string.
+MiB, kilobyte, mebibytes, and so on, and to format them for display in the same way. It can
+automatically choose the best unit, or you can choose the one you want, based on the format string.
 
 - Supports units with SI prefixes ("KB", "MB", "GB", "TB", "PB", and "EB"), and IEC prefixes
   ("KiB", "MiB", "GiB", "TiB", "PiB", and "EiB"), with and without the "B".
@@ -17,7 +16,6 @@ string.
 - Parse and store values up to approximately positive and negative 8 EiB, using `Int64` (`long`)
   as the underlying storage.
 - Support for localizing units and prefixes.
-- Provided as a library for .Net Standard 2.0, .Net Standard 2.1, and .Net 6.0 and up.
 - Implements arithmetic and binary operators, and supports .Net 7 generic math.
 - Trim-friendly.
 
