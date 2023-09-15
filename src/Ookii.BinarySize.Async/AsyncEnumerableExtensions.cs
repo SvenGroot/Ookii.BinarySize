@@ -54,7 +54,7 @@ public static class AsyncEnumerableExtensions
     /// values in the sequence.
     /// </returns>
     /// <exception cref="ArgumentNullException">
-    /// <paramref name="source"/> is <see langword="null"/>.
+    /// <paramref name="source"/> or <paramref name="selector"/> is <see langword="null"/>.
     /// </exception>
     /// <exception cref="OverflowException">
     /// The sum is larger than <see cref="BinarySize.MaxValue" qualifyHint="true"/>.
@@ -66,6 +66,11 @@ public static class AsyncEnumerableExtensions
     /// </remarks>
     public static async ValueTask<BinarySize> SumAsync<TSource>(this IAsyncEnumerable<TSource> source, Func<TSource, BinarySize> selector, CancellationToken cancellationToken = default)
     {
+        if (selector == null)
+        {
+            throw new ArgumentNullException(nameof(selector));
+        }
+
         var result = await source.SumAsync(s => selector(s).Value, cancellationToken);
         return (BinarySize)result;
     }
@@ -119,7 +124,7 @@ public static class AsyncEnumerableExtensions
     /// values in the sequence.
     /// </returns>
     /// <exception cref="ArgumentNullException">
-    /// <paramref name="source"/> is <see langword="null"/>.
+    /// <paramref name="source"/> or <paramref name="selector"/> is <see langword="null"/>.
     /// </exception>
     /// <exception cref="OverflowException">
     /// The sum is larger than <see cref="BinarySize.MaxValue" qualifyHint="true"/>.
@@ -133,6 +138,11 @@ public static class AsyncEnumerableExtensions
     /// </remarks>
     public static async ValueTask<BinarySize?> SumAsync<TSource>(this IAsyncEnumerable<TSource> source, Func<TSource, BinarySize?> selector, CancellationToken cancellationToken = default)
     {
+        if (selector == null)
+        {
+            throw new ArgumentNullException(nameof(selector));
+        }
+
         var result = await source.SumAsync(s => selector(s)?.Value, cancellationToken);
         return (BinarySize?)result;
     }
@@ -179,13 +189,18 @@ public static class AsyncEnumerableExtensions
     /// values in the sequence.
     /// </returns>
     /// <exception cref="ArgumentNullException">
-    /// <paramref name="source"/> is <see langword="null"/>.
+    /// <paramref name="source"/> or <paramref name="selector"/> is <see langword="null"/>.
     /// </exception>
     /// <exception cref="InvalidOperationException">
     /// <paramref name="source"/> contains no elements.
     /// </exception>
     public static async ValueTask<BinarySize> AverageAsync<TSource>(this IAsyncEnumerable<TSource> source, Func<TSource, BinarySize> selector, CancellationToken cancellationToken = default)
     {
+        if (selector == null)
+        {
+            throw new ArgumentNullException(nameof(selector));
+        }
+
         var result = await source.AverageAsync(s => (decimal)selector(s).Value, cancellationToken);
         return (BinarySize)result;
     }
@@ -233,10 +248,15 @@ public static class AsyncEnumerableExtensions
     /// or contains only values that are <see langword="null"/>.
     /// </returns>
     /// <exception cref="ArgumentNullException">
-    /// <paramref name="source"/> is <see langword="null"/>.
+    /// <paramref name="source"/> or <paramref name="selector"/> is <see langword="null"/>.
     /// </exception>
     public static async ValueTask<BinarySize?> AverageAsync<TSource>(this IAsyncEnumerable<TSource> source, Func<TSource, BinarySize?> selector, CancellationToken cancellationToken = default)
     {
+        if (selector == null)
+        {
+            throw new ArgumentNullException(nameof(selector));
+        }
+
         var result = await source.AverageAsync(s => (decimal?)selector(s)?.Value, cancellationToken);
         return (BinarySize?)(long?)result;
     }
