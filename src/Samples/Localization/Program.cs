@@ -39,7 +39,8 @@ var unitInfo = new BinaryUnitInfo()
     LongTebi = "tébi",
     LongPeta = "péta",
     LongPebi = "pébi",
-    // For short (abbreivated) units, only "B" is replaced with "o" in French. The prefixes are the same.
+    // For short (abbreviated) units, only "B" is replaced with "o" in French. The prefixes are the
+    // same.
     ShortByte = "o",
     ShortBytes = "o",
 };

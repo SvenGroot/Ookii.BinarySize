@@ -110,7 +110,7 @@ Console.WriteLine($"{value: B} is equal to (decimal):");
 Console.WriteLine($"Automatic formatting: {value: aB}");
 Console.WriteLine($"Shortest formatting: {value:#.0 sB}");
 Console.WriteLine($"Explicit formatting: {value:#,###k}");
-Console.WriteLine($"Unabbreviated formatting: {value:#,### sbyte}");
+Console.WriteLine($"Unabbreviated formatting: {value:#.0 sbyte}");
 Console.WriteLine();
 
 value = (BinarySize)2500000000;
@@ -118,7 +118,7 @@ Console.WriteLine($"And {value: B} is equal to (decimal):");
 Console.WriteLine($"Automatic formatting: {value: aB}");
 Console.WriteLine($"Shortest formatting: {value:#.0 sB}");
 Console.WriteLine($"Explicit formatting: {value:#,###k}");
-Console.WriteLine($"Unabbreviated formatting: {value:#,### sbyte}");
+Console.WriteLine($"Unabbreviated formatting: {value:#.0 sbyte}");
 ```
 
 This outputs the following:
@@ -237,19 +237,44 @@ formatting or parsing. However, it's possible to create custom localized units u
 
 The [`BinaryUnitInfo`][] class defines the strings used for both the abbreviated (short) and
 unabbreviated (long) versions of base unit ("B" or "byte"), and the various SI and IEC prefixes.
-When using a custom [`BinaryUnitInfo`][], these strings will be used instead of the defaults for both
-parsing and formatting. The [`BinaryUnitInfo`][] class also allows you to add a separator in between
-the prefix and base unit, and to specify how string comparisons are performed when parsing.
+When using a custom [`BinaryUnitInfo`][], these strings will be used instead of the defaults for
+both parsing and formatting. The [`BinaryUnitInfo`][] class also allows you to add a separator in
+between the prefix and base unit, and to specify how string comparisons are performed when parsing.
 
-[`BinaryUnitInfo`][] implements the [`IFormatProvider`][] interface, so it can be used directly with the
-[`Parse()`][] and [`ToString()`][ToString()_0] methods. If this is done, the current culture is used for number
-formatting.
+[`BinaryUnitInfo`][] implements the [`IFormatProvider`][] interface, so it can be used directly with
+the [`Parse()`][] and [`ToString()`][ToString()_0] methods. If this is done, the current culture is
+used for number formatting.
 
-To use an explicitly culture in combination with a custom [`BinaryUnitInfo`][] object, you can use the
-[`WithBinaryUnitInfo()`][] extension method. This returns a new [`CultureInfo`][] object that wraps the
-original one, but also supports the provided [`BinaryUnitInfo`][] object.
+To use an explicit culture in combination with a custom [`BinaryUnitInfo`][] object, you can use the
+[`WithBinaryUnitInfo()`][] extension method. This returns a new [`CultureInfo`][] object that wraps
+the original one, but also supports the provided [`BinaryUnitInfo`][] object.
 
-For an example, check out the [localization sample](src/Samples/Localization/).
+For example, the below creates a custom [`BinaryUnitInfo`][] using French units, and combines it
+with a French [`CultureInfo`][] to use the appropriate number formatting.
+
+```csharp
+var unitInfo = new BinaryUnitInfo()
+{
+    LongByte = "octet",
+    LongBytes = "octets",
+    LongConnector = "-",
+    LongMega = "méga",
+    LongMebi = "mébi",
+    LongTera = "téra",
+    LongTebi = "tébi",
+    LongPeta = "péta",
+    LongPebi = "pébi",
+    // For short (abbreviated) units, only "B" is replaced with "o" in French. The prefixes are the
+    // same.
+    ShortByte = "o",
+    ShortBytes = "o",
+};
+
+var culture = CultureInfo.GetCultureInfo("fr-FR").WithBinaryUnitInfo(unitInfo);
+var stringValue = binarySizeValue.ToString(" Sibyte", culture);
+```
+
+For a complete example, check out the [localization sample](src/Samples/Localization/).
 
 ## Other features
 
@@ -277,7 +302,7 @@ others, because they provide a [`TypeConverter`][], a [`JsonConverter`][], and i
 
 Ookii.BinarySize also supports modern .Net functionality. It supports parsing from a
 [`ReadOnlySpan<char>`][], and formatting with [`ISpanFormattable`][]. The .Net 7.0 version of the
-assembly also implements [`ISpanParsable<TSelf>`][], and supports the interfaces for
+library also implements [`ISpanParsable<TSelf>`][], and supports the interfaces for
 [generic math](https://learn.microsoft.com/dotnet/standard/generics/math).
 
 ## Requirements
