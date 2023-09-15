@@ -32,6 +32,7 @@ public class IecIecBinarySizeTests
         var size = new IecBinarySize(BinarySize.FromMebi(123));
         Assert.AreEqual(size.ToString(null, null), size.ToString());
         Assert.AreEqual("123MB", size.ToString("MB", CultureInfo.InvariantCulture));
+        Assert.AreEqual("123megabytes", size.ToString("MByte", CultureInfo.InvariantCulture));
     }
 
 #if NET6_0_OR_GREATER

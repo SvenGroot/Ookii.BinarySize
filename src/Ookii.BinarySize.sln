@@ -17,9 +17,11 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Samples", "Samples", "{06C1
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Configuration", "Samples\Configuration\Configuration.csproj", "{E269FBDC-C49D-4CFB-AA74-D4D863EF7EE0}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ListDirectory", "Samples\ListDirectory\ListDirectory.csproj", "{76328AE6-4B61-4EAB-B3F0-CC4D9298860C}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ListDirectory", "Samples\ListDirectory\ListDirectory.csproj", "{76328AE6-4B61-4EAB-B3F0-CC4D9298860C}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Ookii.BinarySize.Async", "Ookii.BinarySize.Async\Ookii.BinarySize.Async.csproj", "{EC5EE095-60E5-41FE-899F-38545C09F829}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Ookii.BinarySize.Async", "Ookii.BinarySize.Async\Ookii.BinarySize.Async.csproj", "{EC5EE095-60E5-41FE-899F-38545C09F829}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Localization", "Samples\Localization\Localization.csproj", "{C8D5326D-8B2D-4DCD-9E8B-BDE19108C5F7}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -47,6 +49,10 @@ Global
 		{EC5EE095-60E5-41FE-899F-38545C09F829}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{EC5EE095-60E5-41FE-899F-38545C09F829}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{EC5EE095-60E5-41FE-899F-38545C09F829}.Release|Any CPU.Build.0 = Release|Any CPU
+		{C8D5326D-8B2D-4DCD-9E8B-BDE19108C5F7}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C8D5326D-8B2D-4DCD-9E8B-BDE19108C5F7}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C8D5326D-8B2D-4DCD-9E8B-BDE19108C5F7}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C8D5326D-8B2D-4DCD-9E8B-BDE19108C5F7}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -54,6 +60,7 @@ Global
 	GlobalSection(NestedProjects) = preSolution
 		{E269FBDC-C49D-4CFB-AA74-D4D863EF7EE0} = {06C16EF0-858C-4DDC-81F2-7B67BA3BCC5D}
 		{76328AE6-4B61-4EAB-B3F0-CC4D9298860C} = {06C16EF0-858C-4DDC-81F2-7B67BA3BCC5D}
+		{C8D5326D-8B2D-4DCD-9E8B-BDE19108C5F7} = {06C16EF0-858C-4DDC-81F2-7B67BA3BCC5D}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {9F37B80E-3D82-4597-BA38-9FF85B69D9A5}

@@ -55,9 +55,39 @@ public readonly partial struct BinarySize : IEquatable<BinarySize>, IComparable<
         public ReadOnlySpan<char> Whitespace { get; set; }
         public ReadOnlySpan<char> Trailing { get; set; }
         public long Factor { get; set; }
-        public char ScaleChar { get; set; }
         public bool HasIecChar { get; set; }
         public bool HasByteChar { get; set; }
+        public bool UseDecimal { get; set; }
+        public bool IsLong { get; set; }
+    }
+
+    private ref struct FactorInfo
+    {
+        private ReadOnlySpan<char> _value;
+
+        public ReadOnlySpan<char> Value
+        {
+            get => _value;
+            set => _value = value;
+        }
+
+        public long Factor { get; set; }
+        public CompareInfo CompareInfo { get; set; }
+        public CompareOptions CompareOptions { get; set; }
+
+        public bool TrimSuffix(string suffix)
+            => SpanExtensions.TrimSuffix(ref _value, suffix, CompareInfo, CompareOptions);
+
+        public bool CheckUnitPrefix(string unit, long factor)
+        {
+            if (TrimSuffix(unit))
+            {
+                Factor = factor;
+                return true;
+            }
+
+            return false;
+        }
     }
 
     #endregion
@@ -104,10 +134,8 @@ public readonly partial struct BinarySize : IEquatable<BinarySize>, IComparable<
     private const long ShortestFactor = -2;
     private const long DecimalAutoFactor = -3;
     private const long DecimalShortestFactor = -4;
-    private const char IecChar = 'i';
-    private const char ByteChar = 'B';
 
-    private static readonly char[] _scalingChars =   new[] { 'E',  'P',  'T',  'G',  'M',  'K',
+    private static readonly char[] _scalingChars = new[] { 'E',  'P',  'T',  'G',  'M',  'K',
                                                              'e',  'p',  't',  'g',  'm',  'k', 'A', 'S', 'a', 's' };
     private static readonly long[] _scalingFactors = new[] { Exbi, Pebi, Tebi, Gibi, Mebi, Kibi,
                                                              Exa,  Peta, Tera, Giga, Mega, Kilo, AutoFactor, ShortestFactor, DecimalAutoFactor, DecimalShortestFactor };
@@ -311,7 +339,26 @@ public readonly partial struct BinarySize : IEquatable<BinarySize>, IComparable<
     /// <para>
     ///   The input must contain a number, followed by one of the following units: "B", "KB", "KiB",
     ///   "MB", "MiB", "GB", "GiB", "TB", "TiB", "PB", "PiB", "EB", or "EiB". The "B" may be
-    ///   omitted, and the casing of the unit and any surrounding whitespace is ignored.
+    ///   omitted, and any surrounding whitespace is ignored.
+    /// </para>
+    /// <para>
+    ///   Depending on the value of <paramref name="options"/>, the use of long units may also be
+    ///   allowed: "byte", "kilobyte", "kibibyte", "megabyte", "mebibyte", "gigabyte", "gibibyte",
+    ///   "terabyte", "tebibyte", "petabyte", "pebibyte", "exabyte", or "exbibyte". The "byte"
+    ///   suffix may be ommitted, and may also be the plural "bytes", regardless of whether the
+    ///   number is actually plural or not.
+    /// </para>
+    /// <para>
+    ///   The units listed above are the default, invariant units based on the English language.
+    ///   You can parse localized units by using the <see cref="BinaryUnitInfo"/> class with the
+    ///   <paramref name="provider"/> parameter, either directly or together with a <see cref="CultureInfo"/>
+    ///   object through the <see cref="CultureInfoExtensions.WithBinaryUnitInfo" qualifyHint="true"/>
+    ///   method.
+    /// </para>
+    /// <para>
+    ///   The case of the units in <paramref name="s"/> is ignored by default. Use the
+    ///   <see cref="BinaryUnitInfo.CompareOptions" qualifyHint="true"/> property to customize how
+    ///   units are matched.
     /// </para>
     /// <para>
     ///   The size of 1 KiB always equals 1024 bytes, and 1 MiB is  1,048,576 bytes, and so on.
@@ -341,14 +388,14 @@ public readonly partial struct BinarySize : IEquatable<BinarySize>, IComparable<
             return Zero;
         }
 
-        var result = TrimSuffix(s, options);
+        var factor = ParseUnit(ref s, provider, options);
 #if NET6_0_OR_GREATER
-        var size = decimal.Parse(result.Trimmed, style, provider);
+        var size = decimal.Parse(s, style, provider);
 #else
-        var size = decimal.Parse(result.Trimmed.ToString(), style, provider);
+        var size = decimal.Parse(s.ToString(), style, provider);
 #endif
 
-        return new BinarySize(checked((long)(size * result.Factor)));
+        return new BinarySize(checked((long)(size * factor)));
     }
 
     /// <summary>
@@ -369,7 +416,19 @@ public readonly partial struct BinarySize : IEquatable<BinarySize>, IComparable<
     /// <para>
     ///   The input must contain a number, followed by one of the following units: "B", "KB", "KiB",
     ///   "MB", "MiB", "GB", "GiB", "TB", "TiB", "PB", "PiB", "EB", or "EiB". The "B" may be
-    ///   omitted, and the casing of the unit and any surrounding whitespace is ignored.
+    ///   omitted, and any surrounding whitespace is ignored.
+    /// </para>
+    /// <para>
+    ///   The units listed above are the default, invariant units based on the English language.
+    ///   You can parse localized units by using the <see cref="BinaryUnitInfo"/> class with the
+    ///   <paramref name="provider"/> parameter, either directly or together with a <see cref="CultureInfo"/>
+    ///   object through the <see cref="CultureInfoExtensions.WithBinaryUnitInfo" qualifyHint="true"/>
+    ///   method.
+    /// </para>
+    /// <para>
+    ///   The case of the units in <paramref name="s"/> is ignored by default. Use the
+    ///   <see cref="BinaryUnitInfo.CompareOptions" qualifyHint="true"/> property to customize how
+    ///   units are matched.
     /// </para>
     /// <para>
     ///   This method uses the definition that "1 KB" == 1024 bytes, identical to "1 KiB", and "1
@@ -420,11 +479,11 @@ public readonly partial struct BinarySize : IEquatable<BinarySize>, IComparable<
             return true;
         }
 
-        var trim = TrimSuffix(s, options);
+        var factor = ParseUnit(ref s, provider, options);
 #if NET6_0_OR_GREATER
-        var success = decimal.TryParse(trim.Trimmed, style, provider, out var size);
+        var success = decimal.TryParse(s, style, provider, out var size);
 #else
-        var success = decimal.TryParse(trim.Trimmed.ToString(), style, provider, out var size);
+        var success = decimal.TryParse(s.ToString(), style, provider, out var size);
 #endif
 
         if (!success)
@@ -435,7 +494,7 @@ public readonly partial struct BinarySize : IEquatable<BinarySize>, IComparable<
 
         try
         {
-            result = new BinarySize(checked((long)(size * trim.Factor)));
+            result = new BinarySize(checked((long)(size * factor)));
             return true;
         }
         catch (OverflowException)
@@ -465,7 +524,7 @@ public readonly partial struct BinarySize : IEquatable<BinarySize>, IComparable<
     /// <para>
     ///   The input must contain a number, followed by one of the following units: "B", "KB", "KiB",
     ///   "MB", "MiB", "GB", "GiB", "TB", "TiB", "PB", "PiB", "EB", or "EiB". The "B" may be
-    ///   omitted, and the casing of the unit and any surrounding whitespace is ignored.
+    ///   omitted, and any surrounding whitespace is ignored.
     /// </para>
     /// <para>
     ///   This method uses the definition that "1 KB" == 1024 bytes, identical to "1 KiB", and "1
@@ -473,11 +532,46 @@ public readonly partial struct BinarySize : IEquatable<BinarySize>, IComparable<
     ///   are treated as powers of ten, use the <see cref="TryParse(ReadOnlySpan{char}, BinarySizeOptions, NumberStyles, IFormatProvider?, out BinarySize)"/>
     ///   method.
     /// </para>
+    /// <para>
+    ///   The units listed above are the default, invariant units based on the English language.
+    ///   You can parse localized units by using the <see cref="BinaryUnitInfo"/> class with the
+    ///   <paramref name="provider"/> parameter, either directly or together with a <see cref="CultureInfo"/>
+    ///   object through the <see cref="CultureInfoExtensions.WithBinaryUnitInfo" qualifyHint="true"/>
+    ///   method.
+    /// </para>
+    /// <para>
+    ///   The case of the units in <paramref name="s"/> is ignored by default. Use the
+    ///   <see cref="BinaryUnitInfo.CompareOptions" qualifyHint="true"/> property to customize how
+    ///   units are matched.
+    /// </para>
     /// </remarks>
     public static bool TryParse(ReadOnlySpan<char> s, IFormatProvider? provider, out BinarySize result)
         => TryParse(s, BinarySizeOptions.Default, NumberStyles.Number, provider, out result);
 
     /// <inheritdoc cref="TryParse(ReadOnlySpan{char}, IFormatProvider?, out BinarySize)"/>
+    /// <remarks>
+    /// <para>
+    ///   The input must contain a number, followed by one of the following units: "B", "KB", "KiB",
+    ///   "MB", "MiB", "GB", "GiB", "TB", "TiB", "PB", "PiB", "EB", or "EiB". The "B" may be
+    ///   omitted, and any surrounding whitespace is ignored.
+    /// </para>
+    /// <para>
+    ///   This method uses the definition that "1 KB" == 1024 bytes, identical to "1 KiB", and "1
+    ///   MB" == "1 MiB" == 1048576 bytes, and so on. To use the IEC standard where SI prefixes
+    ///   are treated as powers of ten, use the <see cref="TryParse(ReadOnlySpan{char}, BinarySizeOptions, NumberStyles, IFormatProvider?, out BinarySize)"/>
+    ///   method.
+    /// </para>
+    /// <para>
+    ///   The units listed above are the default, invariant units based on the English language.
+    ///   You can parse localized units by using the <see cref="BinaryUnitInfo"/> class with the
+    ///   <see cref="TryParse(ReadOnlySpan{char}, IFormatProvider?, out BinarySize)"/> method.
+    /// </para>
+    /// <para>
+    ///   The case of the units in <paramref name="s"/> is ignored by default. Use the
+    ///   <see cref="BinaryUnitInfo.CompareOptions" qualifyHint="true"/> property to customize how
+    ///   units are matched.
+    /// </para>
+    /// </remarks>
     public static bool TryParse(ReadOnlySpan<char> s, out BinarySize result)
         => TryParse(s, BinarySizeOptions.Default, NumberStyles.Number, null, out result);
 
@@ -545,13 +639,25 @@ public readonly partial struct BinarySize : IEquatable<BinarySize>, IComparable<
     /// <para>
     ///   The input must contain a number, followed by one of the following units: "B", "KB", "KiB",
     ///   "MB", "MiB", "GB", "GiB", "TB", "TiB", "PB", "PiB", "EB", or "EiB". The "B" may be
-    ///   omitted, and the casing of the unit and any surrounding whitespace is ignored.
+    ///   omitted, and any surrounding whitespace is ignored.
     /// </para>
     /// <para>
     ///   This method uses the definition that "1 KB" == 1024 bytes, identical to "1 KiB", and "1
     ///   MB" == "1 MiB" == 1048576 bytes, and so on. To use the IEC standard where SI prefixes
     ///   are treated as powers of ten, use the <see cref="TryParse(string, BinarySizeOptions, NumberStyles, IFormatProvider?, out BinarySize)"/>
     ///   method.
+    /// </para>
+    /// <para>
+    ///   The units listed above are the default, invariant units based on the English language.
+    ///   You can parse localized units by using the <see cref="BinaryUnitInfo"/> class with the
+    ///   <paramref name="provider"/> parameter, either directly or together with a <see cref="CultureInfo"/>
+    ///   object through the <see cref="CultureInfoExtensions.WithBinaryUnitInfo" qualifyHint="true"/>
+    ///   method.
+    /// </para>
+    /// <para>
+    ///   The case of the units in <paramref name="s"/> is ignored by default. Use the
+    ///   <see cref="BinaryUnitInfo.CompareOptions" qualifyHint="true"/> property to customize how
+    ///   units are matched.
     /// </para>
     /// </remarks>
 #if NET6_0_OR_GREATER
@@ -562,6 +668,29 @@ public readonly partial struct BinarySize : IEquatable<BinarySize>, IComparable<
         => TryParse(s, BinarySizeOptions.Default, NumberStyles.Number, provider, out result);
 
     /// <inheritdoc cref="TryParse(string?, IFormatProvider?, out BinarySize)"/>
+    /// <remarks>
+    /// <para>
+    ///   The input must contain a number, followed by one of the following units: "B", "KB", "KiB",
+    ///   "MB", "MiB", "GB", "GiB", "TB", "TiB", "PB", "PiB", "EB", or "EiB". The "B" may be
+    ///   omitted, and any surrounding whitespace is ignored.
+    /// </para>
+    /// <para>
+    ///   This method uses the definition that "1 KB" == 1024 bytes, identical to "1 KiB", and "1
+    ///   MB" == "1 MiB" == 1048576 bytes, and so on. To use the IEC standard where SI prefixes
+    ///   are treated as powers of ten, use the <see cref="TryParse(ReadOnlySpan{char}, BinarySizeOptions, NumberStyles, IFormatProvider?, out BinarySize)"/>
+    ///   method.
+    /// </para>
+    /// <para>
+    ///   The units listed above are the default, invariant units based on the English language.
+    ///   You can parse localized units by using the <see cref="BinaryUnitInfo"/> class with the
+    ///   <see cref="TryParse(string, IFormatProvider?, out BinarySize)"/> method.
+    /// </para>
+    /// <para>
+    ///   The case of the units in <paramref name="s"/> is ignored by default. Use the
+    ///   <see cref="BinaryUnitInfo.CompareOptions" qualifyHint="true"/> property to customize how
+    ///   units are matched.
+    /// </para>
+    /// </remarks>
 #if NET6_0_OR_GREATER
     public static bool TryParse([NotNullWhen(true)] string? s, out BinarySize result)
 #else
@@ -616,13 +745,25 @@ public readonly partial struct BinarySize : IEquatable<BinarySize>, IComparable<
     /// <para>
     ///   The input must contain a number, followed by one of the following units: "B", "KB", "KiB",
     ///   "MB", "MiB", "GB", "GiB", "TB", "TiB", "PB", "PiB", "EB", or "EiB". The "B" may be
-    ///   omitted, and the casing of the unit and any surrounding whitespace is ignored.
+    ///   omitted, and any surrounding whitespace is ignored.
     /// </para>
     /// <para>
     ///   This method uses the definition that "1 KB" == 1024 bytes, identical to "1 KiB", and "1
     ///   MB" == "1 MiB" == 1048576 bytes, and so on. To use the IEC standard where SI prefixes
     ///   are treated as powers of ten, use the <see cref="Parse(string, BinarySizeOptions, NumberStyles, IFormatProvider?)"/>
     ///   method.
+    /// </para>
+    /// <para>
+    ///   The units listed above are the default, invariant units based on the English language.
+    ///   You can parse localized units by using the <see cref="BinaryUnitInfo"/> class with the
+    ///   <paramref name="provider"/> parameter, either directly or together with a <see cref="CultureInfo"/>
+    ///   object through the <see cref="CultureInfoExtensions.WithBinaryUnitInfo" qualifyHint="true"/>
+    ///   method.
+    /// </para>
+    /// <para>
+    ///   The case of the units in <paramref name="s"/> is ignored by default. Use the
+    ///   <see cref="BinaryUnitInfo.CompareOptions" qualifyHint="true"/> property to customize how
+    ///   units are matched.
     /// </para>
     /// </remarks>
     public static BinarySize Parse(string s, IFormatProvider? provider)
@@ -643,10 +784,41 @@ public readonly partial struct BinarySize : IEquatable<BinarySize>, IComparable<
             return false;
         }
 
-        return destination.TryAppend(ref charsWritten, suffix.Whitespace) &&
-            (suffix.ScaleChar == '\0' || destination.TryAppend(ref charsWritten, suffix.ScaleChar)) &&
-            (!suffix.HasIecChar || destination.TryAppend(ref charsWritten, IecChar)) &&
-            (!suffix.HasByteChar || destination.TryAppend(ref charsWritten, ByteChar)) &&
+        var unitInfo = GetUnitInfo(provider);
+        var scale = GetUnitScale(suffix, unitInfo);
+
+        if (!destination.TryAppend(ref charsWritten, suffix.Whitespace))
+        {
+            return false;
+        }
+
+        if (scale != null)
+        {
+            if (!destination.TryAppend(ref charsWritten, scale.AsSpan()))
+            {
+                return false;
+            }
+
+            var connector = suffix.IsLong ? unitInfo.LongConnector : unitInfo.ShortConnector;
+            if (suffix.HasByteChar && !destination.TryAppend(ref charsWritten, connector))
+            {
+                return false;
+            }
+        }
+
+        string unit;
+        if (suffix.IsLong)
+        {
+            unit = scaledValue == 1 ? unitInfo.LongByte : unitInfo.LongBytes;
+        }
+        else
+        {
+            unit = scaledValue == 1 ? unitInfo.ShortByte : unitInfo.ShortBytes;
+        }
+
+        // Note: this does not account for the possibility that a not-exactly-one value is
+        // rounded to 1 by the number format.
+        return (!suffix.HasByteChar || destination.TryAppend(ref charsWritten, unit)) &&
             destination.TryAppend(ref charsWritten, suffix.Trailing);
     }
 
@@ -699,9 +871,10 @@ public readonly partial struct BinarySize : IEquatable<BinarySize>, IComparable<
     ///     <term>K[i][B], M[i][B], G[i][B], T[i][B], P[i][B], E[i][B]</term>
     ///     <description>
     ///       The output will be formatted as kibibytes, mebibytes, gibibytes, tebibytes, pebibytes,
-    ///       or exibytes respectively, with an optional 'i' for IEC units, and an optional 'B'. For
-    ///       these units, SI prefixes without the 'i' character are treated as binary prefixes, so
-    ///       1 KB equals 1 KiB equals 1,024 bytes, and so on. For example, "1.5KiB", or "2Mi" or "42TB". 
+    ///       or exbibytes respectively, with an optional 'i' for IEC units, and an optional 'B'.
+    ///       For these units, SI prefixes without the 'i' character are treated as binary prefixes,
+    ///       so 1 KB equals 1 KiB equals 1,024 bytes, and so on. For example, "1.5KiB", or "2Mi" or
+    ///       "42TB".
     ///     </description>
     ///   </item>
     ///   <item>
@@ -711,17 +884,16 @@ public readonly partial struct BinarySize : IEquatable<BinarySize>, IComparable<
     ///       megabytes, gigabytes, terabytes, petabytes, or exabytes respectively, followed by an
     ///       optional 'B'. In this case, 1 kB equals 1,000 bytes, 1 MB equals 1,000,000 bytes, and
     ///       so on. The unit prefix will be capitalized in the output, except for "k" which should
-    ///       be lower case as an SI prefix. For example, "1.5kB", or "2M" or "42T".
+    ///       be lower case as an SI prefix. For example, "1.5kB", or "2M" or "42TB".
     ///     </description>
     ///   </item>
     ///   <item>
     ///     <term>A[i][B]</term>
     ///     <description>
     ///       Automatically select the largest prefix in which the value can be represented without
-    ///       fractions, optionally followed by an 'i' and/or a 'B'. The former variant uses binary
-    ///       units, while the latter uses decimal. For example, 1,572,864 bytes would be formatted
-    ///       as "1536KiB", "1536Ki", "1536KB", or "1536K"; if using decimal it would be "1572864B",
-    ///       since there is no higher factor.
+    ///       fractions, optionally followed by an 'i' and/or a 'B'. For example, 1,572,864 bytes
+    ///       would be formatted as "1536KiB" ("AiB"), "1536Ki" ("Ai"), "1536KB" ("AB"), or "1536K"
+    ///       ("A").
     ///     </description>
     ///   </item>
     ///   <item>
@@ -729,7 +901,7 @@ public readonly partial struct BinarySize : IEquatable<BinarySize>, IComparable<
     ///     <description>
     ///       Automatically select the largest decimal prefix in which the value can be represented without
     ///       fractions, optionally followed by a 'B'. For example, 1,500,000 bytes would be formatted
-    ///       as "1500kB", or "1500k".
+    ///       as "1500kB" ("aB"), or "1500k" ("a").
     ///     </description>
     ///   </item>
     ///   <item>
@@ -737,7 +909,8 @@ public readonly partial struct BinarySize : IEquatable<BinarySize>, IComparable<
     ///     <description>
     ///       Automatically select the largest prefix where the value is at least 1, allowing the
     ///       use of fractional values, optionally followed by an 'i' and/or a 'B'. For example,
-    ///       1,572,864 bytes would be formatted as "1.5MiB", "1.5Mi", "1.5MB" or "1.5M".
+    ///       1,572,864 bytes would be formatted as "1.5MiB" ("SiB"), "1.5Mi" ("Si"), "1.5MB" ("SB")
+    ///       or "1.5M" ("S").
     ///     </description>
     ///   </item>
     ///   <item>
@@ -745,7 +918,27 @@ public readonly partial struct BinarySize : IEquatable<BinarySize>, IComparable<
     ///     <description>
     ///       Automatically select the largest decimal prefix where the value is at least 1,
     ///       allowing the use of fractional values, optionally followed by a 'B'. For
-    ///       example, 1,500,000 bytes would be formatted as "1.5MB", or "1.5M".
+    ///       example, 1,500,000 bytes would be formatted as "1.5MB" (sB), or "1.5M" (s).
+    ///     </description>
+    ///   </item>
+    ///   <item>
+    ///     <term>
+    ///       byte, K[i]byte, M[i]byte, G[i]byte, T[i]byte, P[i]byte, E[i]byte, A[i]byte,
+    ///       S[i]byte
+    ///     </term>
+    ///     <description>
+    ///       Format the output using the specified or automatic unit, using the long form of the
+    ///       unit (e.g. "kilobytes" or "mebibytes"). IEC prefixes will be used if the 'i' is
+    ///       present, and all prefixes are treated as binary prefixes.
+    ///     </description>
+    ///   </item>
+    ///   <item>
+    ///     <term>
+    ///       kbyte, mbyte, gbyte, tbyte, pbyte, ebyte, abyte, sbyte
+    ///     </term>
+    ///     <description>
+    ///       Format the output using the specified or automatic SI unit, using the long form of the
+    ///       unit (e.g. "kilobytes" or "megabytes"), and using decimal prefixes.
     ///     </description>
     ///   </item>
     /// </list>
@@ -759,9 +952,38 @@ public readonly partial struct BinarySize : IEquatable<BinarySize>, IComparable<
     /// </para>
     /// <note>
     ///   Since "G" by itself is the general format specifier, it cannot be used to format as
-    ///   gibibytes; use "GG" instead for this purpose. Using "G" with leading white space or a
+    ///   gibibytes; use "GG" instead for this purpose. Using " G" with leading white space or a
     ///   number format will work correctly.
     /// </note>
+    /// <para>
+    ///   The actual units used when formatting are determined by the <see cref="BinaryUnitInfo"/>
+    ///   object provided by the <paramref name="formatProvider"/>, or the value of the
+    ///   <see cref="BinaryUnitInfo.InvariantInfo" qualifyHint="true"/> property if the provider
+    ///   doesn't support this type.
+    /// </para>
+    /// <para>
+    ///   The properties defining abbreviated units, such as <see cref="BinaryUnitInfo.ShortByte" qualifyHint="true"/>,
+    ///   <see cref="BinaryUnitInfo.ShortKibi" qualifyHint="true"/> or <see cref="BinaryUnitInfo.ShortKilo" qualifyHint="true"/>
+    ///   are used for all format strings, except those that end in "byte", which use the
+    ///   full units, defined by properties such as <see cref="BinaryUnitInfo.LongByte" qualifyHint="true"/>,
+    ///   <see cref="BinaryUnitInfo.LongKibi" qualifyHint="true"/> or <see cref="BinaryUnitInfo.LongKilo" qualifyHint="true"/>.
+    /// </para>
+    /// <para>
+    ///   The <see cref="BinaryUnitInfo.ShortByte" qualifyHint="true"/> and <see cref="BinaryUnitInfo.LongByte" qualifyHint="true"/>
+    ///   property are only used if the value, when scaled to the prefix, is exactly one. For
+    ///   example, 1 B, 1 KiB, 1 PB, etc. Otherwise, the <see cref="BinaryUnitInfo.ShortBytes" qualifyHint="true"/>
+    ///   and <see cref="BinaryUnitInfo.LongBytes" qualifyHint="true"/> properties are used, which
+    ///   provide the plural versions. For the abbreviated units in the default, English-language
+    ///   version, these values are the same (both "B"), but for the full units they are different
+    ///   ("byte" and "bytes").
+    /// </para>
+    /// <para>
+    ///   If the value is not exactly one, but is rounded to one by the number format used, the
+    ///   <see cref="BinaryUnitInfo.LongByte" qualifyHint="true"/> and
+    ///   <see cref="BinaryUnitInfo.LongBytes" qualifyHint="true"/> properties are still used.
+    ///   For example, a value of 1.01 kibibytes, when using a format string of "0.# Sibyte", would be
+    ///   formatted as "1 kibibytes", using the plural version of the unit.
+    /// </para>
     /// </remarks>
     public string ToString(string? format, IFormatProvider? formatProvider = null)
     {
@@ -769,18 +991,29 @@ public readonly partial struct BinarySize : IEquatable<BinarySize>, IComparable<
         var result = new StringBuilder((format?.Length ?? 0) + 16);
         result.Append(scaledValue.ToString(suffix.Trimmed.ToString(), formatProvider));
         result.Append(suffix.Whitespace);
-        if (suffix.ScaleChar != '\0')
+        var unitInfo = GetUnitInfo(formatProvider);
+        var scale = GetUnitScale(suffix, unitInfo);
+        if (scale != null)
         {
-            result.Append(suffix.ScaleChar);
-            if (suffix.HasIecChar)
+            result.Append(scale);
+            if (suffix.HasByteChar)
             {
-                result.Append(IecChar);
+                result.Append(suffix.IsLong ? unitInfo.LongConnector : unitInfo.ShortConnector);
             }
         }
 
         if (suffix.HasByteChar)
         {
-            result.Append(ByteChar);
+            // Note: this does not account for the possibility that a not-exactly-one value is
+            // rounded to 1 by the number format.
+            if (suffix.IsLong)
+            {
+                result.Append(scaledValue == 1 ? unitInfo.LongByte : unitInfo.LongBytes);
+            }
+            else
+            {
+                result.Append(scaledValue == 1 ? unitInfo.ShortByte : unitInfo.ShortBytes);
+            }
         }
 
         result.Append(suffix.Trailing);
@@ -873,63 +1106,144 @@ public readonly partial struct BinarySize : IEquatable<BinarySize>, IComparable<
         writer.WriteString(ToString(null, CultureInfo.InvariantCulture));
     }
 
-    private static SuffixInfo TrimSuffix(ReadOnlySpan<char> value, BinarySizeOptions? options)
+    private static long ParseUnit(ref ReadOnlySpan<char> value, IFormatProvider? provider, BinarySizeOptions options)
+    {
+        var unitInfo = GetUnitInfo(provider);
+        var factor = new FactorInfo()
+        {
+            Value = value.TrimEnd(),
+            Factor = 1,
+            CompareInfo = provider is CultureInfo culture ? culture.CompareInfo : CultureInfo.CurrentCulture.CompareInfo,
+            CompareOptions = unitInfo.CompareOptions,
+        };
+
+        var unitFound = false;
+        var withConnector = factor.Value;
+        if (options.HasFlag(BinarySizeOptions.AllowLongUnits) || options.HasFlag(BinarySizeOptions.AllowLongUnitsOnly))
+        {
+            unitFound = factor.TrimSuffix(unitInfo.LongBytes) || factor.TrimSuffix(unitInfo.LongByte);
+            if (unitFound)
+            {
+                withConnector = factor.Value;
+                factor.TrimSuffix(unitInfo.LongConnector);
+            }
+        }
+
+        if (!unitFound && !options.HasFlag(BinarySizeOptions.AllowLongUnitsOnly))
+        {
+            if (factor.TrimSuffix(unitInfo.ShortBytes) || factor.TrimSuffix(unitInfo.ShortByte))
+            {
+                withConnector = factor.Value;
+                factor.TrimSuffix(unitInfo.ShortConnector);
+            }
+        }
+
+        var prefixFound = false;
+        var useDecimal = options.HasFlag(BinarySizeOptions.UseIecStandard);
+        if (options.HasFlag(BinarySizeOptions.AllowLongUnits) || options.HasFlag(BinarySizeOptions.AllowLongUnitsOnly))
+        {
+            prefixFound = factor.CheckUnitPrefix(unitInfo.LongKibi, Kibi)
+                || factor.CheckUnitPrefix(unitInfo.LongMebi, Mebi)
+                || factor.CheckUnitPrefix(unitInfo.LongGibi, Gibi)
+                || factor.CheckUnitPrefix(unitInfo.LongTebi, Tebi)
+                || factor.CheckUnitPrefix(unitInfo.LongPebi, Pebi)
+                || factor.CheckUnitPrefix(unitInfo.LongExbi, Exbi)
+                || factor.CheckUnitPrefix(unitInfo.LongKilo, useDecimal ? Kilo : Kibi)
+                || factor.CheckUnitPrefix(unitInfo.LongMega, useDecimal ? Mega : Mebi)
+                || factor.CheckUnitPrefix(unitInfo.LongMega, useDecimal ? Mega : Mebi)
+                || factor.CheckUnitPrefix(unitInfo.LongGiga, useDecimal ? Giga : Gibi)
+                || factor.CheckUnitPrefix(unitInfo.LongTera, useDecimal ? Tera : Tebi)
+                || factor.CheckUnitPrefix(unitInfo.LongPeta, useDecimal ? Peta : Pebi)
+                || factor.CheckUnitPrefix(unitInfo.LongExa, useDecimal ? Exa : Exbi);
+        }
+
+        if (!prefixFound && !options.HasFlag(BinarySizeOptions.AllowLongUnitsOnly))
+        {
+            prefixFound = factor.CheckUnitPrefix(unitInfo.ShortKibi, Kibi)
+                || factor.CheckUnitPrefix(unitInfo.ShortMebi, Mebi)
+                || factor.CheckUnitPrefix(unitInfo.ShortGibi, Gibi)
+                || factor.CheckUnitPrefix(unitInfo.ShortTebi, Tebi)
+                || factor.CheckUnitPrefix(unitInfo.ShortPebi, Pebi)
+                || factor.CheckUnitPrefix(unitInfo.ShortExbi, Exbi)
+                || factor.CheckUnitPrefix(unitInfo.ShortKilo, useDecimal ? Kilo : Kibi)
+                || factor.CheckUnitPrefix(unitInfo.ShortMega, useDecimal ? Mega : Mebi)
+                || factor.CheckUnitPrefix(unitInfo.ShortMega, useDecimal ? Mega : Mebi)
+                || factor.CheckUnitPrefix(unitInfo.ShortGiga, useDecimal ? Giga : Gibi)
+                || factor.CheckUnitPrefix(unitInfo.ShortTera, useDecimal ? Tera : Tebi)
+                || factor.CheckUnitPrefix(unitInfo.ShortPeta, useDecimal ? Peta : Pebi)
+                || factor.CheckUnitPrefix(unitInfo.ShortExa, useDecimal ? Exa : Exbi)
+                || factor.CheckUnitPrefix(unitInfo.ShortDecimalKilo, useDecimal ? Kilo : Kibi);
+        }
+
+        if (prefixFound)
+        {
+            value = factor.Value;
+        }
+        else
+        {
+            // Don't remove the connector if there was no recognized prefix before it.
+            value = withConnector;
+        }
+
+        return factor.Factor;
+    }
+
+    private static bool CheckUnitPrefix(ref ReadOnlySpan<char> value, string unit, CompareInfo info, CompareOptions compareOptions, long factor, ref long factorResult)
+    {
+        if (SpanExtensions.TrimSuffix(ref value, unit, info, compareOptions))
+        {
+            factorResult = factor;
+            return true;
+        }
+
+        return false;
+    }
+
+    private static SuffixInfo TrimFormatSuffix(ReadOnlySpan<char> value)
     {
         SuffixInfo result = new()
         {
-            Trimmed = value.TrimEnd(),
             Factor = 1,
         };
 
-        result.Trailing = value.Slice(result.Trimmed.Length);
-        if (result.Trimmed.Length == 0)
+        var trimmed = value.TrimEnd();
+        result.Trailing = value.Slice(trimmed.Length);
+        if (trimmed.Length == 0)
         {
             return result;
         }
 
-        // Suffix can use B.
-        char ch = result.Trimmed[result.Trimmed.Length - 1];
-        if (ch is 'B' or 'b')
+        // Suffix can use "byte" to indicate long units.
+        if (SpanExtensions.TrimSuffix(ref trimmed, "byte", StringComparison.OrdinalIgnoreCase))
         {
-            result.Trimmed = result.Trimmed.Slice(0, result.Trimmed.Length - 1);
+            result.HasByteChar = true;
+            result.IsLong = true;
+        }
+        else if (SpanExtensions.TrimSuffix(ref trimmed, "b", StringComparison.OrdinalIgnoreCase))
+        {
             result.HasByteChar = true;
         }
 
-        if (result.Trimmed.Length == 0)
+        if (trimmed.Length == 0)
         {
             return result;
         }
 
-        var index = result.Trimmed.Length - 1;
-        ch = result.Trimmed[index];
+        var index = trimmed.Length - 1;
+        var ch = trimmed[index];
 
         // The 'i' is only counted as an IEC char if there's a valid scale prefix before it.
-        if (result.Trimmed.Length > 1 && ch is 'I' or 'i')
+        if (trimmed.Length > 1 && ch is 'I' or 'i')
         {
             result.HasIecChar = true;
             --index;
         }
 
-        ch = result.Trimmed[index];
+        ch = trimmed[index];
         var prefixes = _scalingChars.AsSpan();
-        if (options is BinarySizeOptions o)
+        if (result.HasIecChar)
         {
-            // This is not a format string; trim off the auto prefixes.
-            prefixes = prefixes.Slice(0, prefixes.Length - 4);
-            if (o.HasFlag(BinarySizeOptions.UseIecStandard) && !result.HasIecChar)
-            {
-                // No 'i' and IEC mode, so treat it as decimal.
-                ch = char.ToLowerInvariant(ch);
-            }
-            else
-            {
-                // Default mode or an 'i', so treat it as binary.
-                ch = char.ToUpperInvariant(ch);
-            }
-        }
-        else if (result.HasIecChar)
-        {
-            // For format strings, force the use of binary regardless of case if 'i' is present.
+            // Force the use of binary regardless of case if 'i' is present.
             ch = char.ToUpperInvariant(ch);
         }
 
@@ -941,19 +1255,17 @@ public readonly partial struct BinarySize : IEquatable<BinarySize>, IComparable<
         }
         else
         {
-            result.Trimmed = result.Trimmed.Slice(0, index);
+            trimmed = trimmed.Slice(0, index);
             result.Factor = _scalingFactors[scaleIndex];
-            result.ScaleChar = prefixes[scaleIndex];
         }
 
         // Remove any whitespace between the number and the unit.
-        var trimmed = result.Trimmed.TrimEnd();
-        result.Whitespace = result.Trimmed.Slice(trimmed.Length);
-        result.Trimmed = trimmed;
+        result.Trimmed = trimmed.TrimEnd();
+        result.Whitespace = trimmed.Slice(result.Trimmed.Length);
         return result;
     }
 
-    private (long, char) DetermineAutomaticScalingFactor(long autoFactor)
+    private long DetermineAutomaticScalingFactor(long autoFactor)
     {
         // Check all factors except the automatic ones.
         var (allowRounding, useDecimal) = autoFactor switch
@@ -965,31 +1277,28 @@ public readonly partial struct BinarySize : IEquatable<BinarySize>, IComparable<
             _ => throw new ArgumentException(null, nameof(autoFactor)), // Should never be reached
         };
 
-        var chars = _scalingChars.AsSpan(0, _scalingChars.Length - 4);
-        var factors = _scalingFactors.AsSpan(0, chars.Length);
+        var factors = _scalingFactors.AsSpan(0, _scalingChars.Length - 4);
         if (useDecimal)
         {
-            chars = chars.Slice(chars.Length / 2);
             factors = factors.Slice(factors.Length / 2);
         }
         else
         {
-            chars = chars.Slice(0, chars.Length / 2);
             factors = factors.Slice(0, factors.Length / 2);
         }
 
         // Use the absolute value to select the correct unit for negative numbers.
         var value = Math.Abs(Value);
-        for (int index = 0; index < chars.Length; ++index)
+        for (int index = 0; index < factors.Length; ++index)
         {
             var factor = factors[index];
             if (value >= factor && (allowRounding || value % factor == 0))
             {
-                return (factor, chars[index]);
+                return factor;
             }
         }
 
-        return (1, '\0');
+        return 1;
     }
 
     private SuffixInfo ParseFormat(ReadOnlySpan<char> format, out decimal scaledValue)
@@ -1007,22 +1316,12 @@ public readonly partial struct BinarySize : IEquatable<BinarySize>, IComparable<
         }
         else
         {
-            suffix = TrimSuffix(format, null);
+            suffix = TrimFormatSuffix(format);
         }
 
         if (suffix.Factor < 0)
         {
-            (suffix.Factor, suffix.ScaleChar) = DetermineAutomaticScalingFactor(suffix.Factor);
-        }
-
-        // Always use upper case prefix when formatting, except if decimal kilo.
-        if (suffix.Factor == Kilo)
-        {
-            suffix.ScaleChar = char.ToLowerInvariant(suffix.ScaleChar);
-        }
-        else
-        {
-            suffix.ScaleChar = char.ToUpperInvariant(suffix.ScaleChar);
+            suffix.Factor = DetermineAutomaticScalingFactor(suffix.Factor);
         }
 
         // Don't include the 'i' if there's no scale prefix.
@@ -1043,10 +1342,77 @@ public readonly partial struct BinarySize : IEquatable<BinarySize>, IComparable<
 
     private static void ValidateOptions(BinarySizeOptions options)
     {
-        const BinarySizeOptions invalid = ~BinarySizeOptions.UseIecStandard;
+        const BinarySizeOptions invalid = 
+            ~(BinarySizeOptions.UseIecStandard | BinarySizeOptions.AllowLongUnits | BinarySizeOptions.AllowLongUnitsOnly);
+
         if ((options & invalid) != 0) 
         {
             throw new ArgumentException(Properties.Resources.InvalidOptions, nameof(options));
         }
+    }
+
+    private static BinaryUnitInfo GetUnitInfo(IFormatProvider? provider)
+    {
+        // Only check current culture if provider was not specified. If it was but has no unit info,
+        // we always use the invariant info.
+        provider ??= CultureInfo.CurrentCulture;
+        return (BinaryUnitInfo?)provider.GetFormat(typeof(BinaryUnitInfo)) ?? BinaryUnitInfo.InvariantInfo;
+    }
+
+    private static string? GetUnitScale(SuffixInfo suffix, BinaryUnitInfo unitInfo)
+    {
+        if (suffix.IsLong)
+        {
+            if (suffix.HasIecChar)
+            {
+                return suffix.Factor switch
+                {
+                    Kilo or Kibi => unitInfo.LongKibi,
+                    Mega or Mebi => unitInfo.LongMebi,
+                    Giga or Gibi => unitInfo.LongGibi,
+                    Tera or Tebi => unitInfo.LongTebi,
+                    Peta or Pebi => unitInfo.LongPebi,
+                    Exa or Exbi => unitInfo.LongExbi,
+                    _ => null,
+                };
+            }
+
+            return suffix.Factor switch
+            {
+                Kilo or Kibi => unitInfo.LongKilo,
+                Mega or Mebi => unitInfo.LongMega,
+                Giga or Gibi => unitInfo.LongGiga,
+                Tera or Tebi => unitInfo.LongTera,
+                Peta or Pebi => unitInfo.LongPeta,
+                Exa or Exbi => unitInfo.LongExa,
+                _ => null,
+            };
+        }
+
+        if (suffix.HasIecChar)
+        {
+            return suffix.Factor switch
+            {
+                Kilo or Kibi => unitInfo.ShortKibi,
+                Mega or Mebi => unitInfo.ShortMebi,
+                Giga or Gibi => unitInfo.ShortGibi,
+                Tera or Tebi => unitInfo.ShortTebi,
+                Peta or Pebi => unitInfo.ShortPebi,
+                Exa or Exbi => unitInfo.ShortExbi,
+                _ => null,
+            };
+        }
+
+        return suffix.Factor switch
+        {
+            Kilo => unitInfo.ShortDecimalKilo,
+            Kibi => unitInfo.ShortKilo,
+            Mega or Mebi => unitInfo.ShortMega,
+            Giga or Gibi => unitInfo.ShortGiga,
+            Tera or Tebi => unitInfo.ShortTera,
+            Peta or Pebi => unitInfo.ShortPeta,
+            Exa or Exbi => unitInfo.ShortExa,
+            _ => null,
+        };
     }
 }

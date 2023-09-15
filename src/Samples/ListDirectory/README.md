@@ -6,9 +6,10 @@ use of the [`Sum()`][] extension method.
 
 Files can be filtered by a minimum size using a command line argument, which also uses the
 [`BinarySize`][] structure to let the user use sizes with multiple-byte units on the command line.
-Command line parsing is done using [Ookii.CommandLine](https://github.com/SvenGroot/Ookii.CommandLine),
-which supports any type that can be converted from a string using a [`Parse()`][] method, so
-[`BinarySize`][] can be used without any further effort on our part.
+Command line parsing in this sample is done using
+[Ookii.CommandLine](https://github.com/SvenGroot/Ookii.CommandLine), which supports any type that
+can be converted from a string using a [`Parse()`][] method, so [`BinarySize`][] can be used without
+any further effort on our part.
 
 The current directory is listed by default, but a command line argument can also be used to specify
 a different one. You can also output the sizes using SI units, based on powers of ten, by passing
@@ -45,6 +46,6 @@ Ookii.CommandLine.dll: 197 KiB
 Total: 348 KiB
 ```
 
-[`BinarySize`]: https://www.ookii.org/docs/binarysize-1.0/html/T_Ookii_BinarySize.htm
-[`Parse()`]: https://www.ookii.org/docs/binarysize-1.0/html/Overload_Ookii_IecBinarySize_Parse.htm
-[`Sum()`]: https://www.ookii.org/docs/binarysize-1.0/html/Overload_Ookii_EnumerableExtensions_Sum.htm
+[`BinarySize`]: https://www.ookii.org/docs/binarysize-1.1/html/T_Ookii_BinarySize.htm
+[`Parse()`]: https://www.ookii.org/docs/binarysize-1.1/html/Overload_Ookii_IecBinarySize_Parse.htm
+[`Sum()`]: https://www.ookii.org/docs/binarysize-1.1/html/Overload_Ookii_EnumerableExtensions_Sum.htm

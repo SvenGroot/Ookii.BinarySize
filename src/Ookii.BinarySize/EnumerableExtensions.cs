@@ -39,7 +39,7 @@ public static class EnumerableExtensions
     /// <param name="selector">A transform function to apply to each element.</param>
     /// <returns>The sum of the values in the sequence.</returns>
     /// <exception cref="ArgumentNullException">
-    /// <paramref name="source"/> is <see langword="null"/>.
+    /// <paramref name="source"/> or <paramref name="selector"/> is <see langword="null"/>.
     /// </exception>
     /// <exception cref="OverflowException">
     /// The sum is larger than <see cref="BinarySize.MaxValue" qualifyHint="true"/>.
@@ -50,7 +50,14 @@ public static class EnumerableExtensions
     /// </para>
     /// </remarks>
     public static BinarySize Sum<TSource>(this IEnumerable<TSource> source, Func<TSource, BinarySize> selector)
-        => (BinarySize)source.Sum(s => selector(s).Value);
+    {
+        if (selector == null)
+        {
+            throw new ArgumentNullException(nameof(selector));
+        }
+
+        return (BinarySize)source.Sum(s => selector(s).Value);
+    }
 
     /// <summary>
     /// Computes the sum of a sequence of nullable <see cref="BinarySize"/> values.
@@ -86,7 +93,7 @@ public static class EnumerableExtensions
     /// <param name="selector">A transform function to apply to each element.</param>
     /// <returns>The sum of the values in the sequence.</returns>
     /// <exception cref="ArgumentNullException">
-    /// <paramref name="source"/> is <see langword="null"/>.
+    /// <paramref name="source"/> or <paramref name="selector"/> is <see langword="null"/>.
     /// </exception>
     /// <exception cref="OverflowException">
     /// The sum is larger than <see cref="BinarySize.MaxValue" qualifyHint="true"/>.
@@ -99,7 +106,14 @@ public static class EnumerableExtensions
     /// </para>
     /// </remarks>
     public static BinarySize? Sum<TSource>(this IEnumerable<TSource> source, Func<TSource, BinarySize?> selector)
-        => (BinarySize?)source.Sum(s => selector(s)?.Value);
+    {
+        if (selector == null)
+        {
+            throw new ArgumentNullException(nameof(selector));
+        }
+
+        return (BinarySize?)source.Sum(s => selector(s)?.Value);
+    }
 
     /// <summary>
     /// Computes the average of a sequence of <see cref="BinarySize"/> values.
@@ -128,13 +142,20 @@ public static class EnumerableExtensions
     /// <param name="selector">A transform function to apply to each element.</param>
     /// <returns>The average of the values in the sequence.</returns>
     /// <exception cref="ArgumentNullException">
-    /// <paramref name="source"/> is <see langword="null"/>.
+    /// <paramref name="source"/> or <paramref name="selector"/> is <see langword="null"/>.
     /// </exception>
     /// <exception cref="InvalidOperationException">
     /// <paramref name="source"/> contains no elements.
     /// </exception>
     public static BinarySize Average<TSource>(this IEnumerable<TSource> source, Func<TSource, BinarySize> selector)
-        => (BinarySize)source.Average(s => (decimal)selector(s).Value);
+    {
+        if (selector == null)
+        {
+            throw new ArgumentNullException(nameof(selector));
+        }
+
+        return (BinarySize)source.Average(s => (decimal)selector(s).Value);
+    }
 
     /// <summary>
     /// Computes the average of a sequence of nullable <see cref="BinarySize"/> values.
@@ -166,8 +187,15 @@ public static class EnumerableExtensions
     /// is empty or contains only values that are <see langword="null"/>.
     /// </returns>
     /// <exception cref="ArgumentNullException">
-    /// <paramref name="source"/> is <see langword="null"/>.
+    /// <paramref name="source"/> or <paramref name="selector"/> is <see langword="null"/>.
     /// </exception>
     public static BinarySize? Average<TSource>(this IEnumerable<TSource> source, Func<TSource, BinarySize?> selector)
-        => (BinarySize?)(long?)source.Average(s => (decimal?)selector(s)?.Value);
+    {
+        if (selector == null)
+        {
+            throw new ArgumentNullException(nameof(selector));
+        }
+
+        return (BinarySize?)(long?)source.Average(s => (decimal?)selector(s)?.Value);
+    }
 }

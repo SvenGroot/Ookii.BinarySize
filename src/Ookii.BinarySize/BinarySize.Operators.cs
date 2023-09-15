@@ -489,7 +489,7 @@ partial struct BinarySize
     public static BinarySize operator checked *(BinarySize left, BinarySize right) => (BinarySize)checked(left.Value * right.Value);
 
     /// <summary>
-    /// Multiplies a <see cref="BinarySize"/> value by a <see cref="long"/> in a checked context..
+    /// Multiplies a <see cref="BinarySize"/> value by a <see cref="long"/> in a checked context.
     /// </summary>
     /// <param name="left">The left operand.</param>
     /// <param name="right">The right operand.</param>
@@ -499,7 +499,7 @@ partial struct BinarySize
     public static BinarySize operator checked  *(BinarySize left, long right) => (BinarySize)checked(left.Value * right);
 
     /// <summary>
-    /// Multiplies a <see cref="long"/> value by a <see cref="BinarySize"/> in a checked context..
+    /// Multiplies a <see cref="long"/> value by a <see cref="BinarySize"/> in a checked context.
     /// </summary>
     /// <param name="left">The left operand.</param>
     /// <param name="right">The right operand.</param>
@@ -533,6 +533,9 @@ partial struct BinarySize
     /// <returns>
     /// The result of dividing <paramref name="left"/> by <paramref name="right"/>.
     /// </returns>
+    /// <exception cref="DivideByZeroException">
+    /// <paramref name="right"/> is zero.
+    /// </exception>
     public static BinarySize operator /(BinarySize left, long right) => (BinarySize)(left.Value / right);
 
     /// <summary>
@@ -543,6 +546,9 @@ partial struct BinarySize
     /// <returns>
     /// The result of dividing <paramref name="left"/> by <paramref name="right"/>.
     /// </returns>
+    /// <exception cref="DivideByZeroException">
+    /// <paramref name="right"/> is zero.
+    /// </exception>
     public static BinarySize operator /(long left, BinarySize right) => (BinarySize)(left / right.Value);
 
     #endregion
@@ -570,6 +576,9 @@ partial struct BinarySize
     /// <returns>
     /// The remainder after dividing <paramref name="left"/> by <paramref name="right"/>.
     /// </returns>
+    /// <exception cref="DivideByZeroException">
+    /// <paramref name="right"/> is zero.
+    /// </exception>
     public static BinarySize operator %(BinarySize left, long right) => (BinarySize)(left.Value % right);
 
     /// <summary>
@@ -580,6 +589,9 @@ partial struct BinarySize
     /// <returns>
     /// The remainder after dividing <paramref name="left"/> by <paramref name="right"/>.
     /// </returns>
+    /// <exception cref="DivideByZeroException">
+    /// <paramref name="right"/> is zero.
+    /// </exception>
     public static BinarySize operator %(long left, BinarySize right) => (BinarySize)(left % right.Value);
 
     #endregion
@@ -711,7 +723,7 @@ partial struct BinarySize
     public static BinarySize operator &(BinarySize left, long right) => (BinarySize)(left.Value & right);
 
     /// <summary>
-    /// Computes the bitwise-and of a <see cref="long"/> value by a <see cref="BinarySize"/>.
+    /// Computes the bitwise-and of a <see cref="long"/> value and a <see cref="BinarySize"/>.
     /// </summary>
     /// <param name="left">The value to <c>and</c> with <paramref name="right"/>.</param>
     /// <param name="right">The value to <c>and</c> with <paramref name="left"/>.</param>

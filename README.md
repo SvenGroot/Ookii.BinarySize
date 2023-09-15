@@ -4,14 +4,19 @@ Ookii.BinarySize is a modern library for parsing and displaying quantities of by
 human-readable representation.
 
 It provides functionality to [parse numeric values](#parsing) that end with a multiple-byte unit,
-such as B, KB, MiB, and so on, and to [format them for display](#formatting) in the same way. It can automatically
-choose the best unit, or you can choose the one you want, based on the format string.
+such as B, KB, MiB, kilobyte, mebibytes, and so on, and to [format them for display](#formatting) in
+the same way. It can automatically choose the best unit, or you can choose the one you want, based
+on the format string.
 
 - Supports units with SI prefixes ("KB", "MB", "GB", "TB", "PB", and "EB"), and IEC prefixes
   ("KiB", "MiB", "GiB", "TiB", "PiB", and "EiB"), with and without the "B".
+- Also supports unabbreviated units for both parsing and formatting: "byte", "kilobyte", "megabyte",
+  "gigabyte", "terabyte", "petabyte", and "exabyte", and their IEC equivalents "kibibyte",
+  "mebibyte", "gibibyte", "tebibyte", "pebibyte", and "exbibyte".
 - Interpret SI prefixes as either [powers of two or powers of ten](https://en.wikipedia.org/wiki/Byte#Multiple-byte_units).
 - Parse and store values up to approximately positive and negative 8 EiB, using [`Int64`][] (`long`)
   as the underlying storage.
+- Support for [localizing units and prefixes](#localization).
 - Provided as a library for [.Net Standard 2.0, .Net Standard 2.1, and .Net 6.0 and up](#requirements).
 - Implements arithmetic and binary operators, and supports .Net 7 generic math.
 - Trim-friendly.
@@ -50,9 +55,13 @@ multi-byte unit, to use default number formatting followed by that unit, or it c
 format string followed by a unit. Spaces around the unit are preserved. For example "KB", " MiB",
 "#.0 G", as well as simply "B", are all accepted format strings.
 
+To use unabbreviated units, end the format string with "byte". This will automatically expand the
+unit and pick between the singular and plural version of "byte" or "bytes". For example, "Mibyte".
+
 To automatically pick the largest unit where the value is a whole number, use "A" instead of an
 explicit size prefix, or use "S" to pick the largest prefix where the value is larger than 1, but
-may have a fractional component. The default format is equivalent to " AiB".
+may have a fractional component. This also works with long units; e.g. "Abyte" or "Sibyte". The
+default format is equivalent to " AiB".
 
 For example, the following displays a value using several different formats:
 
@@ -63,6 +72,7 @@ Console.WriteLine($"Default formatting: {value}");
 Console.WriteLine($"Automatic formatting: {value: AB}");
 Console.WriteLine($"Shortest formatting: {value:#.0 SiB}");
 Console.WriteLine($"Explicit formatting: {value:#,###Ki}");
+Console.WriteLine($"Unabbreviated formatting: {value:#.0 Sibyte}");
 ```
 
 This outputs the following:
@@ -73,6 +83,7 @@ Default formatting: 2560 MiB
 Automatic formatting: 2560 MB
 Shortest formatting: 2.5 GiB
 Explicit formatting: 2,621,440Ki
+Unabbreviated formatting: 2.5 gibibytes
 ```
 
 In the example above, the default format displays the value in MiB because it is not a whole number
@@ -85,13 +96,13 @@ MB is equal to 1 MiB, both equaling 1,048,576 bytes, and so on.
 If you wish to use the IEC standard where only IEC units are powers of two, and SI units are always
 powers of ten, this can be done by using a lower-case unit prefix in the format string, without
 including an 'i'. This applies to explicit units ("k", "m", "g", "t", "p" and "e"), as well as the
-automatic units "a" and "s".
+automatic units "a" and "s", and works with both abbreviated and unabbreviated units.
 
 With this option, 1 kB equals 1,000 bytes, 1 MB equals 1,000,000 bytes, and so on.
 
-The unit prefixes will always be output as uppercase, even if they are lowercase in the format
-string. The only exception is the decimal version of "kilo", which is a lowercase "k" to conform to
-the SI standard.
+The abbreviated unit prefixes will always be output as uppercase, even if they are lowercase in the
+format string. The only exception is the decimal version of "kilo", which is a lowercase "k" to
+conform to the SI standard.
 
 ```csharp
 var value = BinarySize.FromGibi(2.5);
@@ -99,6 +110,7 @@ Console.WriteLine($"{value: B} is equal to (decimal):");
 Console.WriteLine($"Automatic formatting: {value: aB}");
 Console.WriteLine($"Shortest formatting: {value:#.0 sB}");
 Console.WriteLine($"Explicit formatting: {value:#,###k}");
+Console.WriteLine($"Unabbreviated formatting: {value:#.0 sbyte}");
 Console.WriteLine();
 
 value = (BinarySize)2500000000;
@@ -106,6 +118,7 @@ Console.WriteLine($"And {value: B} is equal to (decimal):");
 Console.WriteLine($"Automatic formatting: {value: aB}");
 Console.WriteLine($"Shortest formatting: {value:#.0 sB}");
 Console.WriteLine($"Explicit formatting: {value:#,###k}");
+Console.WriteLine($"Unabbreviated formatting: {value:#.0 sbyte}");
 ```
 
 This outputs the following:
@@ -115,11 +128,13 @@ This outputs the following:
 Automatic formatting: 2684354560 B
 Shortest formatting: 2.7 GB
 Explicit formatting: 2,684,355k
+Unabbreviated formatting: 2.7 gigabytes
 
 And 2500000000 B is equal to (decimal):
 Automatic formatting: 2500 MB
 Shortest formatting: 2.5 GB
 Explicit formatting: 2,500,000k
+Unabbreviated formatting: 2.5 gigabytes
 ```
 
 Note that using "aB" formatted 2.5 GiB as plain bytes, since there is no higher decimal prefix that
@@ -160,14 +175,14 @@ Just as with formatting, the default behavior is to treat both SI and IEC units 
 can be seen by the values for "10 KB" and "5G".
 
 To use the IEC standard of interpreting SI units as powers of ten, we can use the
-[`BinarySizeOptions`][] enumeration.
+[`BinarySizeOptions.UseIecStandard`][] flag.
 
 ```csharp
 var values = new[] { "100", "100B", "10 KB", "2.5 MiB", "5G" };
 foreach (var value in values)
 {
     var size = BinarySize.Parse(value, BinarySizeOptions.UseIecStandard, NumberStyles.Number, CultureInfo.InvariantCulture);
-    Console.WriteLine($"'{value}' == {size.Value} bytes");
+    Console.WriteLine($"'{value}' == {size: byte}");
 }
 ```
 
@@ -187,6 +202,79 @@ If you want to always treat SI units as powers of ten when parsing, or do so in 
 cannot specify a [`BinarySizeOptions`][] value (such as a value that is being serialized), you can
 instead use the [`IecBinarySize`][] structure; this is a wrapper around [`BinarySize`][] which
 defaults to this parsing behavior.
+
+By default, parsing only accepts abbreviated units. To also allow parsing of full units (e.g.
+"kilobytes"), use the [`BinarySizeOptions.AllowLongUnits`][] flag. Use the
+[`BinarySizeOptions.AllowLongUnitsOnly`][] flag to disallow the use of abbreviated units, and accept
+only unabbreviated ones. Both singular and plural units will be accepted regardless of the actual
+value, and case is ignored.
+
+```csharp
+var values = new[] { "100 bytes", "10 Kilobytes", "2.5 mebibyte", "5giga" };
+foreach (var value in values)
+{
+    var size = BinarySize.Parse(value, BinarySizeOptions.AllowLongUnits, NumberStyles.Number, CultureInfo.InvariantCulture);
+    Console.WriteLine($"'{value}' == {size: byte}");
+}
+```
+
+Which gives this output.
+
+```text
+'100 bytes' == 100 bytes
+'10 Kilobytes' == 10240 bytes
+'2.5 mebibyte' == 2621440 bytes
+'5giga' == 5368709120 bytes
+```
+
+This can also be combined with the [`BinarySizeOptions.UseIecStandard`][] flag.
+
+## Localization
+
+By default, Ookii.BinarySize uses English-language units, regardless of the culture used for
+formatting or parsing. However, it's possible to create custom localized units using the
+[`BinaryUnitInfo`][] class.
+
+The [`BinaryUnitInfo`][] class defines the strings used for both the abbreviated (short) and
+unabbreviated (long) versions of base unit ("B" or "byte"), and the various SI and IEC prefixes.
+When using a custom [`BinaryUnitInfo`][], these strings will be used instead of the defaults for
+both parsing and formatting. The [`BinaryUnitInfo`][] class also allows you to add a separator in
+between the prefix and base unit, and to specify how string comparisons are performed when parsing.
+
+[`BinaryUnitInfo`][] implements the [`IFormatProvider`][] interface, so it can be used directly with
+the [`Parse()`][] and [`ToString()`][ToString()_0] methods. If this is done, the current culture is
+used for number formatting.
+
+To use an explicit culture in combination with a custom [`BinaryUnitInfo`][] object, you can use the
+[`WithBinaryUnitInfo()`][] extension method. This returns a new [`CultureInfo`][] object that wraps
+the original one, but also supports the provided [`BinaryUnitInfo`][] object.
+
+For example, the below creates a custom [`BinaryUnitInfo`][] using French units, and combines it
+with a French [`CultureInfo`][] to use the appropriate number formatting.
+
+```csharp
+var unitInfo = new BinaryUnitInfo()
+{
+    LongByte = "octet",
+    LongBytes = "octets",
+    LongConnector = "-",
+    LongMega = "méga",
+    LongMebi = "mébi",
+    LongTera = "téra",
+    LongTebi = "tébi",
+    LongPeta = "péta",
+    LongPebi = "pébi",
+    // For short (abbreviated) units, only "B" is replaced with "o" in French. The prefixes are the
+    // same.
+    ShortByte = "o",
+    ShortBytes = "o",
+};
+
+var culture = CultureInfo.GetCultureInfo("fr-FR").WithBinaryUnitInfo(unitInfo);
+var stringValue = binarySizeValue.ToString(" Sibyte", culture);
+```
+
+For a complete example, check out the [localization sample](src/Samples/Localization/).
 
 ## Other features
 
@@ -214,7 +302,7 @@ others, because they provide a [`TypeConverter`][], a [`JsonConverter`][], and i
 
 Ookii.BinarySize also supports modern .Net functionality. It supports parsing from a
 [`ReadOnlySpan<char>`][], and formatting with [`ISpanFormattable`][]. The .Net 7.0 version of the
-assembly also implements [`ISpanParsable<TSelf>`][], and supports the interfaces for
+library also implements [`ISpanParsable<TSelf>`][], and supports the interfaces for
 [generic math](https://learn.microsoft.com/dotnet/standard/generics/math).
 
 ## Requirements
@@ -252,39 +340,48 @@ The class library documentation is generated using [Sandcastle Help File Builder
 - [Class library documentation](https://www.ookii.org/Link/BinarySizeDoc)
 - [Samples](src/Samples)
 
-[`AsExbi`]: https://www.ookii.org/docs/binarysize-1.0/html/P_Ookii_BinarySize_AsExbi.htm
-[`AsGibi`]: https://www.ookii.org/docs/binarysize-1.0/html/P_Ookii_BinarySize_AsGibi.htm
-[`AsKibi`]: https://www.ookii.org/docs/binarysize-1.0/html/P_Ookii_BinarySize_AsKibi.htm
-[`AsMebi`]: https://www.ookii.org/docs/binarysize-1.0/html/P_Ookii_BinarySize_AsMebi.htm
-[`AsPebi`]: https://www.ookii.org/docs/binarysize-1.0/html/P_Ookii_BinarySize_AsPebi.htm
-[`AsTebi`]: https://www.ookii.org/docs/binarysize-1.0/html/P_Ookii_BinarySize_AsTebi.htm
-[`BinarySize.Parse()`]: https://www.ookii.org/docs/binarysize-1.0/html/Overload_Ookii_BinarySize_Parse.htm
-[`BinarySize.ToString()`]: https://www.ookii.org/docs/binarysize-1.0/html/M_Ookii_BinarySize_ToString_1.htm
-[`BinarySize.TryParse()`]: https://www.ookii.org/docs/binarysize-1.0/html/Overload_Ookii_BinarySize_TryParse.htm
-[`BinarySize`]: https://www.ookii.org/docs/binarysize-1.0/html/T_Ookii_BinarySize.htm
-[`BinarySizeOptions`]: https://www.ookii.org/docs/binarysize-1.0/html/T_Ookii_BinarySizeOptions.htm
-[`Exbi`]: https://www.ookii.org/docs/binarysize-1.0/html/F_Ookii_BinarySize_Exbi.htm
-[`FromExbi()`]: https://www.ookii.org/docs/binarysize-1.0/html/M_Ookii_BinarySize_FromExbi.htm
-[`FromGibi()`]: https://www.ookii.org/docs/binarysize-1.0/html/M_Ookii_BinarySize_FromGibi.htm
-[`FromKibi()`]: https://www.ookii.org/docs/binarysize-1.0/html/M_Ookii_BinarySize_FromKibi.htm
-[`FromMebi()`]: https://www.ookii.org/docs/binarysize-1.0/html/M_Ookii_BinarySize_FromMebi.htm
-[`FromPebi()`]: https://www.ookii.org/docs/binarysize-1.0/html/M_Ookii_BinarySize_FromPebi.htm
-[`FromTebi()`]: https://www.ookii.org/docs/binarysize-1.0/html/M_Ookii_BinarySize_FromTebi.htm
-[`GetHashCode()`]: https://www.ookii.org/docs/binarysize-1.0/html/M_Ookii_BinarySize_GetHashCode.htm
-[`Gibi`]: https://www.ookii.org/docs/binarysize-1.0/html/F_Ookii_BinarySize_Gibi.htm
+[`AsExbi`]: https://www.ookii.org/docs/binarysize-1.1/html/P_Ookii_BinarySize_AsExbi.htm
+[`AsGibi`]: https://www.ookii.org/docs/binarysize-1.1/html/P_Ookii_BinarySize_AsGibi.htm
+[`AsKibi`]: https://www.ookii.org/docs/binarysize-1.1/html/P_Ookii_BinarySize_AsKibi.htm
+[`AsMebi`]: https://www.ookii.org/docs/binarysize-1.1/html/P_Ookii_BinarySize_AsMebi.htm
+[`AsPebi`]: https://www.ookii.org/docs/binarysize-1.1/html/P_Ookii_BinarySize_AsPebi.htm
+[`AsTebi`]: https://www.ookii.org/docs/binarysize-1.1/html/P_Ookii_BinarySize_AsTebi.htm
+[`BinarySize.Parse()`]: https://www.ookii.org/docs/binarysize-1.1/html/Overload_Ookii_BinarySize_Parse.htm
+[`BinarySize.ToString()`]: https://www.ookii.org/docs/binarysize-1.1/html/M_Ookii_BinarySize_ToString_1.htm
+[`BinarySize.TryParse()`]: https://www.ookii.org/docs/binarysize-1.1/html/Overload_Ookii_BinarySize_TryParse.htm
+[`BinarySize`]: https://www.ookii.org/docs/binarysize-1.1/html/T_Ookii_BinarySize.htm
+[`BinarySizeOptions.AllowLongUnits`]: https://www.ookii.org/docs/binarysize-1.1/html/T_Ookii_BinarySizeOptions.htm
+[`BinarySizeOptions.AllowLongUnitsOnly`]: https://www.ookii.org/docs/binarysize-1.1/html/T_Ookii_BinarySizeOptions.htm
+[`BinarySizeOptions.UseIecStandard`]: https://www.ookii.org/docs/binarysize-1.1/html/T_Ookii_BinarySizeOptions.htm
+[`BinarySizeOptions`]: https://www.ookii.org/docs/binarysize-1.1/html/T_Ookii_BinarySizeOptions.htm
+[`BinaryUnitInfo`]: https://www.ookii.org/docs/binarysize-1.1/html/T_Ookii_BinaryUnitInfo.htm
+[`CultureInfo`]: https://learn.microsoft.com/dotnet/api/system.globalization.cultureinfo
+[`Exbi`]: https://www.ookii.org/docs/binarysize-1.1/html/F_Ookii_BinarySize_Exbi.htm
+[`FromExbi()`]: https://www.ookii.org/docs/binarysize-1.1/html/M_Ookii_BinarySize_FromExbi.htm
+[`FromGibi()`]: https://www.ookii.org/docs/binarysize-1.1/html/M_Ookii_BinarySize_FromGibi.htm
+[`FromKibi()`]: https://www.ookii.org/docs/binarysize-1.1/html/M_Ookii_BinarySize_FromKibi.htm
+[`FromMebi()`]: https://www.ookii.org/docs/binarysize-1.1/html/M_Ookii_BinarySize_FromMebi.htm
+[`FromPebi()`]: https://www.ookii.org/docs/binarysize-1.1/html/M_Ookii_BinarySize_FromPebi.htm
+[`FromTebi()`]: https://www.ookii.org/docs/binarysize-1.1/html/M_Ookii_BinarySize_FromTebi.htm
+[`GetHashCode()`]: https://www.ookii.org/docs/binarysize-1.1/html/M_Ookii_BinarySize_GetHashCode.htm
+[`Gibi`]: https://www.ookii.org/docs/binarysize-1.1/html/F_Ookii_BinarySize_Gibi.htm
 [`IAsyncEnumerable<T>`]: https://learn.microsoft.com/dotnet/api/system.collections.generic.iasyncenumerable-1
 [`IComparable<T>`]: https://learn.microsoft.com/dotnet/api/system.icomparable-1
-[`IecBinarySize`]: https://www.ookii.org/docs/binarysize-1.0/html/T_Ookii_IecBinarySize.htm
+[`IecBinarySize`]: https://www.ookii.org/docs/binarysize-1.1/html/T_Ookii_IecBinarySize.htm
 [`IEnumerable<T>`]: https://learn.microsoft.com/dotnet/api/system.collections.generic.ienumerable-1
 [`IEquatable<T>`]: https://learn.microsoft.com/dotnet/api/system.iequatable-1
+[`IFormatProvider`]: https://learn.microsoft.com/dotnet/api/system.iformatprovider
 [`Int64`]: https://learn.microsoft.com/dotnet/api/system.int64
 [`ISpanFormattable`]: https://learn.microsoft.com/dotnet/api/system.ispanformattable
 [`ISpanParsable<TSelf>`]: https://learn.microsoft.com/dotnet/api/system.ispanparsable-1
 [`IXmlSerializable`]: https://learn.microsoft.com/dotnet/api/system.xml.serialization.ixmlserializable
 [`JsonConverter`]: https://learn.microsoft.com/dotnet/api/system.text.json.serialization.jsonconverter
-[`Kibi`]: https://www.ookii.org/docs/binarysize-1.0/html/F_Ookii_BinarySize_Kibi.htm
-[`Mebi`]: https://www.ookii.org/docs/binarysize-1.0/html/F_Ookii_BinarySize_Mebi.htm
-[`Pebi`]: https://www.ookii.org/docs/binarysize-1.0/html/F_Ookii_BinarySize_Pebi.htm
+[`Kibi`]: https://www.ookii.org/docs/binarysize-1.1/html/F_Ookii_BinarySize_Kibi.htm
+[`Mebi`]: https://www.ookii.org/docs/binarysize-1.1/html/F_Ookii_BinarySize_Mebi.htm
+[`Parse()`]: https://www.ookii.org/docs/binarysize-1.1/html/Overload_Ookii_IecBinarySize_Parse.htm
+[`Pebi`]: https://www.ookii.org/docs/binarysize-1.1/html/F_Ookii_BinarySize_Pebi.htm
 [`ReadOnlySpan<char>`]: https://learn.microsoft.com/dotnet/api/system.readonlyspan-1
-[`Tebi`]: https://www.ookii.org/docs/binarysize-1.0/html/F_Ookii_BinarySize_Tebi.htm
+[`Tebi`]: https://www.ookii.org/docs/binarysize-1.1/html/F_Ookii_BinarySize_Tebi.htm
 [`TypeConverter`]: https://learn.microsoft.com/dotnet/api/system.componentmodel.typeconverter
+[`WithBinaryUnitInfo()`]: https://www.ookii.org/docs/binarysize-1.1/html/M_Ookii_CultureInfoExtensions_WithBinaryUnitInfo.htm
+[ToString()_0]: https://www.ookii.org/docs/binarysize-1.1/html/Overload_Ookii_BinarySize_ToString.htm
