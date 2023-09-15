@@ -5,6 +5,7 @@ namespace Ookii;
 /// <summary>
 /// Provides extension methods for the <see cref="CultureInfo"/> class.
 /// </summary>
+/// <threadsafety instance="false" static="true"/>
 public static class CultureInfoExtensions
 {
     /// <summary>

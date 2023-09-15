@@ -17,9 +17,9 @@ namespace Ookii;
 ///   with binary size suffixes.
 /// </para>
 /// <para>
-///   This converter uses the <see cref="IecBinarySize"/> structure, so when converting from JSON it
-///   will converter 1 kB to 1,000 bytes, and 1 KiB to 1,024 bytes, and so on. This is in contrast
-///   to the default <see cref="BinarySizeJsonConverter"/>, which would treat both as 1,024 bytes.
+///   When deserializing from JSON, this converter will interpret SI prefixes as based on powers of
+///   ten, so "1kB" equals 1,000 bytes, "1MB" equals 1,000,000 bytes, and so on. IEC prefixes are
+///   still based on powers of two.
 /// </para>
 /// </remarks>
 /// <threadsafety instance="true" static="true"/>

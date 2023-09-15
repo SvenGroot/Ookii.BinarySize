@@ -20,6 +20,7 @@ namespace Ookii;
 ///   method.
 /// </para>
 /// </remarks>
+/// <threadsafety instance="false" static="true"/>
 public class BinaryUnitInfo : ICloneable, IFormatProvider
 {
     private static readonly BinaryUnitInfo _invariantInfo = new() { IsReadOnly = true };
@@ -117,7 +118,7 @@ public class BinaryUnitInfo : ICloneable, IFormatProvider
     /// <para>
     ///   If the value is not exactly one, but is rounded to one by the number format used, the
     ///   <see cref="ShortBytes"/> property is still used. For example, a value of 1.01 kibibytes,
-    ///   when using a format string of "0.# SiB", would be formatted as "1 KB", using the plural
+    ///   when using a format string of "0.# SiB", would be formatted as "1 KiB", using the plural
     ///   version of the unit.
     /// </para>
     /// <para>
@@ -161,7 +162,7 @@ public class BinaryUnitInfo : ICloneable, IFormatProvider
     }
 
     /// <summary>
-    /// Gets or sets a string that can be used between an abbreviated prefix (e.g. <see cref="ShortKibi"/>
+    /// Gets or sets a string that can be used between an abbreviated prefix (e.g. <see cref="ShortKibi"/>)
     /// and a unit (e.g. <see cref="ShortByte"/>).
     /// </summary>
     /// <value>
@@ -226,7 +227,7 @@ public class BinaryUnitInfo : ICloneable, IFormatProvider
     /// Gets or sets the abbreviated version of the mebi prefix.
     /// </summary>
     /// <value>
-    /// The abbreviated prefix. The default value is "Me".
+    /// The abbreviated prefix. The default value is "Mi".
     /// </value>
     /// <exception cref="ArgumentNullException">
     /// <inheritdoc cref="ShortByte"/>
@@ -615,7 +616,7 @@ public class BinaryUnitInfo : ICloneable, IFormatProvider
     }
 
     /// <summary>
-    /// Gets or sets a string that can be used between a full prefix (e.g. <see cref="LongKibi"/>
+    /// Gets or sets a string that can be used between a full prefix (e.g. <see cref="LongKibi"/>)
     /// and a unit (e.g. <see cref="LongByte"/>).
     /// </summary>
     /// <value>
@@ -865,7 +866,7 @@ public class BinaryUnitInfo : ICloneable, IFormatProvider
     /// Gets or sets the full version of the giga prefix.
     /// </summary>
     /// <value>
-    /// The full prefix. The default value is "G".
+    /// The full prefix. The default value is "giga".
     /// </value>
     /// <exception cref="ArgumentNullException">
     /// <inheritdoc cref="ShortByte"/>

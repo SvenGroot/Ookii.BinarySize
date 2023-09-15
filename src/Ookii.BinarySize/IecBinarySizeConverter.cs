@@ -10,9 +10,8 @@ namespace Ookii;
 /// </summary>
 /// <remarks>
 /// <para>
-///   This is the default type converter for the <see cref="IecBinarySize"/> structure. It performs
-///   conversion using the <see cref="BinarySizeOptions.UseIecStandard" qualifyHint="true"/> flag.
-///   It supports the same conversions as the <see cref="BinarySizeConverter"/> class, but for the
+///   This is the default type converter for the <see cref="IecBinarySize"/> structure. It supports
+///   the same conversions as the <see cref="BinarySizeConverter"/> class, but for the
 ///   <see cref="IecBinarySize"/> structure.
 /// </para>
 /// <para>

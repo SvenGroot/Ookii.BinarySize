@@ -350,7 +350,10 @@ public readonly partial struct BinarySize : IEquatable<BinarySize>, IComparable<
     /// </para>
     /// <para>
     ///   The units listed above are the default, invariant units based on the English language.
-    ///   You can parse localized units by using the <see cref="BinaryUnitInfo"/> class.
+    ///   You can parse localized units by using the <see cref="BinaryUnitInfo"/> class with the
+    ///   <paramref name="provider"/> parameter, either directly or together with a <see cref="CultureInfo"/>
+    ///   object through the <see cref="CultureInfoExtensions.WithBinaryUnitInfo" qualifyHint="true"/>
+    ///   method.
     /// </para>
     /// <para>
     ///   The case of the units in <paramref name="s"/> is ignored by default. Use the
@@ -417,7 +420,10 @@ public readonly partial struct BinarySize : IEquatable<BinarySize>, IComparable<
     /// </para>
     /// <para>
     ///   The units listed above are the default, invariant units based on the English language.
-    ///   You can parse localized units by using the <see cref="BinaryUnitInfo"/> class.
+    ///   You can parse localized units by using the <see cref="BinaryUnitInfo"/> class with the
+    ///   <paramref name="provider"/> parameter, either directly or together with a <see cref="CultureInfo"/>
+    ///   object through the <see cref="CultureInfoExtensions.WithBinaryUnitInfo" qualifyHint="true"/>
+    ///   method.
     /// </para>
     /// <para>
     ///   The case of the units in <paramref name="s"/> is ignored by default. Use the
@@ -528,7 +534,10 @@ public readonly partial struct BinarySize : IEquatable<BinarySize>, IComparable<
     /// </para>
     /// <para>
     ///   The units listed above are the default, invariant units based on the English language.
-    ///   You can parse localized units by using the <see cref="BinaryUnitInfo"/> class.
+    ///   You can parse localized units by using the <see cref="BinaryUnitInfo"/> class with the
+    ///   <paramref name="provider"/> parameter, either directly or together with a <see cref="CultureInfo"/>
+    ///   object through the <see cref="CultureInfoExtensions.WithBinaryUnitInfo" qualifyHint="true"/>
+    ///   method.
     /// </para>
     /// <para>
     ///   The case of the units in <paramref name="s"/> is ignored by default. Use the
@@ -540,6 +549,29 @@ public readonly partial struct BinarySize : IEquatable<BinarySize>, IComparable<
         => TryParse(s, BinarySizeOptions.Default, NumberStyles.Number, provider, out result);
 
     /// <inheritdoc cref="TryParse(ReadOnlySpan{char}, IFormatProvider?, out BinarySize)"/>
+    /// <remarks>
+    /// <para>
+    ///   The input must contain a number, followed by one of the following units: "B", "KB", "KiB",
+    ///   "MB", "MiB", "GB", "GiB", "TB", "TiB", "PB", "PiB", "EB", or "EiB". The "B" may be
+    ///   omitted, and any surrounding whitespace is ignored.
+    /// </para>
+    /// <para>
+    ///   This method uses the definition that "1 KB" == 1024 bytes, identical to "1 KiB", and "1
+    ///   MB" == "1 MiB" == 1048576 bytes, and so on. To use the IEC standard where SI prefixes
+    ///   are treated as powers of ten, use the <see cref="TryParse(ReadOnlySpan{char}, BinarySizeOptions, NumberStyles, IFormatProvider?, out BinarySize)"/>
+    ///   method.
+    /// </para>
+    /// <para>
+    ///   The units listed above are the default, invariant units based on the English language.
+    ///   You can parse localized units by using the <see cref="BinaryUnitInfo"/> class with the
+    ///   <see cref="TryParse(ReadOnlySpan{char}, IFormatProvider?, out BinarySize)"/> method.
+    /// </para>
+    /// <para>
+    ///   The case of the units in <paramref name="s"/> is ignored by default. Use the
+    ///   <see cref="BinaryUnitInfo.CompareOptions" qualifyHint="true"/> property to customize how
+    ///   units are matched.
+    /// </para>
+    /// </remarks>
     public static bool TryParse(ReadOnlySpan<char> s, out BinarySize result)
         => TryParse(s, BinarySizeOptions.Default, NumberStyles.Number, null, out result);
 
@@ -617,7 +649,10 @@ public readonly partial struct BinarySize : IEquatable<BinarySize>, IComparable<
     /// </para>
     /// <para>
     ///   The units listed above are the default, invariant units based on the English language.
-    ///   You can parse localized units by using the <see cref="BinaryUnitInfo"/> class.
+    ///   You can parse localized units by using the <see cref="BinaryUnitInfo"/> class with the
+    ///   <paramref name="provider"/> parameter, either directly or together with a <see cref="CultureInfo"/>
+    ///   object through the <see cref="CultureInfoExtensions.WithBinaryUnitInfo" qualifyHint="true"/>
+    ///   method.
     /// </para>
     /// <para>
     ///   The case of the units in <paramref name="s"/> is ignored by default. Use the
@@ -633,6 +668,29 @@ public readonly partial struct BinarySize : IEquatable<BinarySize>, IComparable<
         => TryParse(s, BinarySizeOptions.Default, NumberStyles.Number, provider, out result);
 
     /// <inheritdoc cref="TryParse(string?, IFormatProvider?, out BinarySize)"/>
+    /// <remarks>
+    /// <para>
+    ///   The input must contain a number, followed by one of the following units: "B", "KB", "KiB",
+    ///   "MB", "MiB", "GB", "GiB", "TB", "TiB", "PB", "PiB", "EB", or "EiB". The "B" may be
+    ///   omitted, and any surrounding whitespace is ignored.
+    /// </para>
+    /// <para>
+    ///   This method uses the definition that "1 KB" == 1024 bytes, identical to "1 KiB", and "1
+    ///   MB" == "1 MiB" == 1048576 bytes, and so on. To use the IEC standard where SI prefixes
+    ///   are treated as powers of ten, use the <see cref="TryParse(ReadOnlySpan{char}, BinarySizeOptions, NumberStyles, IFormatProvider?, out BinarySize)"/>
+    ///   method.
+    /// </para>
+    /// <para>
+    ///   The units listed above are the default, invariant units based on the English language.
+    ///   You can parse localized units by using the <see cref="BinaryUnitInfo"/> class with the
+    ///   <see cref="TryParse(string, IFormatProvider?, out BinarySize)"/> method.
+    /// </para>
+    /// <para>
+    ///   The case of the units in <paramref name="s"/> is ignored by default. Use the
+    ///   <see cref="BinaryUnitInfo.CompareOptions" qualifyHint="true"/> property to customize how
+    ///   units are matched.
+    /// </para>
+    /// </remarks>
 #if NET6_0_OR_GREATER
     public static bool TryParse([NotNullWhen(true)] string? s, out BinarySize result)
 #else
@@ -697,7 +755,10 @@ public readonly partial struct BinarySize : IEquatable<BinarySize>, IComparable<
     /// </para>
     /// <para>
     ///   The units listed above are the default, invariant units based on the English language.
-    ///   You can parse localized units by using the <see cref="BinaryUnitInfo"/> class.
+    ///   You can parse localized units by using the <see cref="BinaryUnitInfo"/> class with the
+    ///   <paramref name="provider"/> parameter, either directly or together with a <see cref="CultureInfo"/>
+    ///   object through the <see cref="CultureInfoExtensions.WithBinaryUnitInfo" qualifyHint="true"/>
+    ///   method.
     /// </para>
     /// <para>
     ///   The case of the units in <paramref name="s"/> is ignored by default. Use the
@@ -810,9 +871,10 @@ public readonly partial struct BinarySize : IEquatable<BinarySize>, IComparable<
     ///     <term>K[i][B], M[i][B], G[i][B], T[i][B], P[i][B], E[i][B]</term>
     ///     <description>
     ///       The output will be formatted as kibibytes, mebibytes, gibibytes, tebibytes, pebibytes,
-    ///       or exibytes respectively, with an optional 'i' for IEC units, and an optional 'B'. For
-    ///       these units, SI prefixes without the 'i' character are treated as binary prefixes, so
-    ///       1 KB equals 1 KiB equals 1,024 bytes, and so on. For example, "1.5KiB", or "2Mi" or "42TB".
+    ///       or exbibytes respectively, with an optional 'i' for IEC units, and an optional 'B'.
+    ///       For these units, SI prefixes without the 'i' character are treated as binary prefixes,
+    ///       so 1 KB equals 1 KiB equals 1,024 bytes, and so on. For example, "1.5KiB", or "2Mi" or
+    ///       "42TB".
     ///     </description>
     ///   </item>
     ///   <item>
@@ -822,17 +884,16 @@ public readonly partial struct BinarySize : IEquatable<BinarySize>, IComparable<
     ///       megabytes, gigabytes, terabytes, petabytes, or exabytes respectively, followed by an
     ///       optional 'B'. In this case, 1 kB equals 1,000 bytes, 1 MB equals 1,000,000 bytes, and
     ///       so on. The unit prefix will be capitalized in the output, except for "k" which should
-    ///       be lower case as an SI prefix. For example, "1.5kB", or "2M" or "42T".
+    ///       be lower case as an SI prefix. For example, "1.5kB", or "2M" or "42TB".
     ///     </description>
     ///   </item>
     ///   <item>
     ///     <term>A[i][B]</term>
     ///     <description>
     ///       Automatically select the largest prefix in which the value can be represented without
-    ///       fractions, optionally followed by an 'i' and/or a 'B'. The former variant uses binary
-    ///       units, while the latter uses decimal. For example, 1,572,864 bytes would be formatted
-    ///       as "1536KiB", "1536Ki", "1536KB", or "1536K"; if using decimal it would be "1572864B",
-    ///       since there is no higher factor.
+    ///       fractions, optionally followed by an 'i' and/or a 'B'. For example, 1,572,864 bytes
+    ///       would be formatted as "1536KiB" ("AiB"), "1536Ki" ("Ai"), "1536KB" ("AB"), or "1536K"
+    ///       ("A").
     ///     </description>
     ///   </item>
     ///   <item>
@@ -840,7 +901,7 @@ public readonly partial struct BinarySize : IEquatable<BinarySize>, IComparable<
     ///     <description>
     ///       Automatically select the largest decimal prefix in which the value can be represented without
     ///       fractions, optionally followed by a 'B'. For example, 1,500,000 bytes would be formatted
-    ///       as "1500kB", or "1500k".
+    ///       as "1500kB" ("aB"), or "1500k" ("a").
     ///     </description>
     ///   </item>
     ///   <item>
@@ -848,7 +909,8 @@ public readonly partial struct BinarySize : IEquatable<BinarySize>, IComparable<
     ///     <description>
     ///       Automatically select the largest prefix where the value is at least 1, allowing the
     ///       use of fractional values, optionally followed by an 'i' and/or a 'B'. For example,
-    ///       1,572,864 bytes would be formatted as "1.5MiB", "1.5Mi", "1.5MB" or "1.5M".
+    ///       1,572,864 bytes would be formatted as "1.5MiB" ("SiB"), "1.5Mi" ("Si"), "1.5MB" ("SB")
+    ///       or "1.5M" ("S").
     ///     </description>
     ///   </item>
     ///   <item>
@@ -856,7 +918,7 @@ public readonly partial struct BinarySize : IEquatable<BinarySize>, IComparable<
     ///     <description>
     ///       Automatically select the largest decimal prefix where the value is at least 1,
     ///       allowing the use of fractional values, optionally followed by a 'B'. For
-    ///       example, 1,500,000 bytes would be formatted as "1.5MB", or "1.5M".
+    ///       example, 1,500,000 bytes would be formatted as "1.5MB" (sB), or "1.5M" (s).
     ///     </description>
     ///   </item>
     ///   <item>
@@ -909,8 +971,11 @@ public readonly partial struct BinarySize : IEquatable<BinarySize>, IComparable<
     /// <para>
     ///   The <see cref="BinaryUnitInfo.ShortByte" qualifyHint="true"/> and <see cref="BinaryUnitInfo.LongByte" qualifyHint="true"/>
     ///   property are only used if the value, when scaled to the prefix, is exactly one. For
-    ///   example, 1 B, 1 KiB, 1 PB, etc. Otherwise, the <see cref="BinaryUnitInfo.LongByte" qualifyHint="true"/>
-    ///   and <see cref="BinaryUnitInfo.LongBytes" qualifyHint="true"/> properties are used.
+    ///   example, 1 B, 1 KiB, 1 PB, etc. Otherwise, the <see cref="BinaryUnitInfo.ShortBytes" qualifyHint="true"/>
+    ///   and <see cref="BinaryUnitInfo.LongBytes" qualifyHint="true"/> properties are used, which
+    ///   provide the plural versions. For the abbreviated units in the default, English-language
+    ///   version, these values are the same (both "B"), but for the full units they are different
+    ///   ("byte" and "bytes").
     /// </para>
     /// <para>
     ///   If the value is not exactly one, but is rounded to one by the number format used, the
