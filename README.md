@@ -317,7 +317,7 @@ Assemblies are provided targeting the following:
 
 ## Building and testing
 
-To build Ookii.CommandLine, make sure you have the following installed:
+To build Ookii.BinarySize, make sure you have the following installed:
 
 - [Microsoft .Net 8.0 SDK](https://dotnet.microsoft.com/download) or later
 
@@ -325,7 +325,7 @@ To build the library, tests and samples, simply use the `dotnet build` command i
 directory. You can run the unit tests using `dotnet test`. The tests should pass on all platforms
 (Windows and Linux have been tested).
 
-The tests are built and run for .Net 8,.0, .Net 7.0, .Net 6.0, and .Net Framework 4.8. Running the
+The tests are built and run for .Net 8.0, .Net 7.0, .Net 6.0, and .Net Framework 4.8. Running the
 .Net Framework tests on a non-Windows platform may require the use of
 [Mono](https://www.mono-project.com/).
 
