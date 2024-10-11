@@ -1,4 +1,5 @@
-﻿using System.ComponentModel;
+﻿using Ookii.Common;
+using System.ComponentModel;
 using System.Diagnostics.CodeAnalysis;
 using System.Globalization;
 using System.Numerics;
@@ -63,20 +64,21 @@ public readonly partial struct BinarySize : IEquatable<BinarySize>, IComparable<
 
     private ref struct FactorInfo
     {
-        private ReadOnlySpan<char> _value;
-
-        public ReadOnlySpan<char> Value
-        {
-            get => _value;
-            set => _value = value;
-        }
-
+        public ReadOnlySpan<char> Value { get; set; }
         public long Factor { get; set; }
-        public CompareInfo CompareInfo { get; set; }
+        public CultureInfo Culture { get; set; }
         public CompareOptions CompareOptions { get; set; }
 
         public bool TrimSuffix(string suffix)
-            => SpanExtensions.TrimSuffix(ref _value, suffix, CompareInfo, CompareOptions);
+        {
+            if (Value.StripSuffix(suffix.AsSpan(), Culture, CompareOptions).TryGetValue(out var result))
+            {
+                Value = result;
+                return true;
+            }
+
+            return false;
+        }
 
         public bool CheckUnitPrefix(string unit, long factor)
         {
@@ -1113,7 +1115,7 @@ public readonly partial struct BinarySize : IEquatable<BinarySize>, IComparable<
         {
             Value = value.TrimEnd(),
             Factor = 1,
-            CompareInfo = provider is CultureInfo culture ? culture.CompareInfo : CultureInfo.CurrentCulture.CompareInfo,
+            Culture = (provider as CultureInfo) ?? CultureInfo.CurrentCulture,
             CompareOptions = unitInfo.CompareOptions,
         };
 
@@ -1188,17 +1190,6 @@ public readonly partial struct BinarySize : IEquatable<BinarySize>, IComparable<
         return factor.Factor;
     }
 
-    private static bool CheckUnitPrefix(ref ReadOnlySpan<char> value, string unit, CompareInfo info, CompareOptions compareOptions, long factor, ref long factorResult)
-    {
-        if (SpanExtensions.TrimSuffix(ref value, unit, info, compareOptions))
-        {
-            factorResult = factor;
-            return true;
-        }
-
-        return false;
-    }
-
     private static SuffixInfo TrimFormatSuffix(ReadOnlySpan<char> value)
     {
         SuffixInfo result = new()
@@ -1214,13 +1205,15 @@ public readonly partial struct BinarySize : IEquatable<BinarySize>, IComparable<
         }
 
         // Suffix can use "byte" to indicate long units.
-        if (SpanExtensions.TrimSuffix(ref trimmed, "byte", StringComparison.OrdinalIgnoreCase))
+        if (trimmed.StripSuffix("byte".AsSpan(), StringComparison.OrdinalIgnoreCase).TryGetValue(out var newValue))
         {
+            trimmed = newValue;
             result.HasByteChar = true;
             result.IsLong = true;
         }
-        else if (SpanExtensions.TrimSuffix(ref trimmed, "b", StringComparison.OrdinalIgnoreCase))
+        else if (trimmed.StripSuffix("b".AsSpan(), StringComparison.OrdinalIgnoreCase).TryGetValue(out newValue))
         {
+            trimmed = newValue;
             result.HasByteChar = true;
         }
 
