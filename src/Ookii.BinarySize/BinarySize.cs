@@ -1,6 +1,7 @@
 ﻿using Ookii.Common;
 using System.ComponentModel;
 using System.Diagnostics.CodeAnalysis;
+using System.Drawing;
 using System.Globalization;
 using System.Numerics;
 using System.Runtime.CompilerServices;
@@ -48,52 +49,6 @@ public readonly partial struct BinarySize : IEquatable<BinarySize>, IComparable<
     , ISpanParsable<BinarySize>
 #endif
 {
-    #region Nested types
-
-    private ref struct SuffixInfo
-    {
-        public ReadOnlySpan<char> Trimmed { get; set; }
-        public ReadOnlySpan<char> Whitespace { get; set; }
-        public ReadOnlySpan<char> Trailing { get; set; }
-        public long Factor { get; set; }
-        public bool HasIecChar { get; set; }
-        public bool HasByteChar { get; set; }
-        public bool UseDecimal { get; set; }
-        public bool IsLong { get; set; }
-    }
-
-    private ref struct FactorInfo
-    {
-        public ReadOnlySpan<char> Value { get; set; }
-        public long Factor { get; set; }
-        public CultureInfo Culture { get; set; }
-        public CompareOptions CompareOptions { get; set; }
-
-        public bool TrimSuffix(string suffix)
-        {
-            if (Value.StripSuffix(suffix.AsSpan(), Culture, CompareOptions).TryGetValue(out var result))
-            {
-                Value = result;
-                return true;
-            }
-
-            return false;
-        }
-
-        public bool CheckUnitPrefix(string unit, long factor)
-        {
-            if (TrimSuffix(unit))
-            {
-                Factor = factor;
-                return true;
-            }
-
-            return false;
-        }
-    }
-
-    #endregion
-
     /// <summary>
     /// The size of a kibibyte (binary kilobyte); 1,024 bytes.
     /// </summary>
@@ -123,24 +78,6 @@ public readonly partial struct BinarySize : IEquatable<BinarySize>, IComparable<
     /// The size of an exbibyte (binary exabyte); 1,152,921,504,606,846,976 bytes.
     /// </summary>
     public const long Exbi = 1024L * Pebi;
-
-    // Decimal factors used internally.
-    private const long Kilo = 1000;
-    private const long Mega = 1000 * Kilo;
-    private const long Giga = 1000 * Mega;
-    private const long Tera = 1000 * Giga;
-    private const long Peta = 1000 * Tera;
-    private const long Exa = 1000 * Peta;
-
-    private const long AutoFactor = -1;
-    private const long ShortestFactor = -2;
-    private const long DecimalAutoFactor = -3;
-    private const long DecimalShortestFactor = -4;
-
-    private static readonly char[] _scalingChars = new[] { 'E',  'P',  'T',  'G',  'M',  'K',
-                                                             'e',  'p',  't',  'g',  'm',  'k', 'A', 'S', 'a', 's' };
-    private static readonly long[] _scalingFactors = new[] { Exbi, Pebi, Tebi, Gibi, Mebi, Kibi,
-                                                             Exa,  Peta, Tera, Giga, Mega, Kilo, AutoFactor, ShortestFactor, DecimalAutoFactor, DecimalShortestFactor };
 
     /// <summary>
     /// Initializes a new instance of the <see cref="BinarySize"/> structure with the specified
@@ -383,22 +320,7 @@ public readonly partial struct BinarySize : IEquatable<BinarySize>, IComparable<
     /// </para>
     /// </remarks>
     public static BinarySize Parse(ReadOnlySpan<char> s, BinarySizeOptions options = BinarySizeOptions.Default, NumberStyles style = NumberStyles.Number, IFormatProvider? provider = null)
-    {
-        ValidateOptions(options);
-        if (s.IsEmpty)
-        {
-            return Zero;
-        }
-
-        var factor = ParseUnit(ref s, provider, options);
-#if NET6_0_OR_GREATER
-        var size = decimal.Parse(s, style, provider);
-#else
-        var size = decimal.Parse(s.ToString(), style, provider);
-#endif
-
-        return new BinarySize(checked((long)(size * factor)));
-    }
+        => new(checked((long)FormatHelper.Parse(s, options, style, provider)));
 
     /// <summary>
     /// Parses a span of characters into a <see cref="BinarySize"/> structure.
@@ -474,37 +396,15 @@ public readonly partial struct BinarySize : IEquatable<BinarySize>, IComparable<
     /// </remarks>
     public static bool TryParse(ReadOnlySpan<char> s, BinarySizeOptions options, NumberStyles style, IFormatProvider? provider, out BinarySize result)
     {
-        ValidateOptions(options);
-        if (s.IsEmpty)
-        {
-            result = Zero;
-            return true;
-        }
-
-        var factor = ParseUnit(ref s, provider, options);
-#if NET6_0_OR_GREATER
-        var success = decimal.TryParse(s, style, provider, out var size);
-#else
-        var success = decimal.TryParse(s.ToString(), style, provider, out var size);
-#endif
-
-        if (!success)
+        var success = FormatHelper.TryParse(s, options, style, provider, out var value);
+        if (value is > long.MaxValue or < long.MinValue)
         {
             result = default;
             return false;
         }
 
-        try
-        {
-            result = new BinarySize(checked((long)(size * factor)));
-            return true;
-        }
-        catch (OverflowException)
-        {
-            // I couldn't find a good way to handle overflow without exceptions.
-            result = default;
-            return false;
-        }
+        result = new BinarySize(unchecked((long)value));
+        return success;
     }
 
     /// <summary>
@@ -779,50 +679,7 @@ public readonly partial struct BinarySize : IEquatable<BinarySize>, IComparable<
     /// <paramref name="format"/>.
     /// </remarks>
     public bool TryFormat(Span<char> destination, out int charsWritten, ReadOnlySpan<char> format, IFormatProvider? provider)
-    {
-        var suffix = ParseFormat(format, out var scaledValue);
-        if (!scaledValue.TryFormat(destination, out charsWritten, suffix.Trimmed, provider))
-        {
-            return false;
-        }
-
-        var unitInfo = GetUnitInfo(provider);
-        var scale = GetUnitScale(suffix, unitInfo);
-
-        if (!destination.TryAppend(ref charsWritten, suffix.Whitespace))
-        {
-            return false;
-        }
-
-        if (scale != null)
-        {
-            if (!destination.TryAppend(ref charsWritten, scale.AsSpan()))
-            {
-                return false;
-            }
-
-            var connector = suffix.IsLong ? unitInfo.LongConnector : unitInfo.ShortConnector;
-            if (suffix.HasByteChar && !destination.TryAppend(ref charsWritten, connector))
-            {
-                return false;
-            }
-        }
-
-        string unit;
-        if (suffix.IsLong)
-        {
-            unit = scaledValue == 1 ? unitInfo.LongByte : unitInfo.LongBytes;
-        }
-        else
-        {
-            unit = scaledValue == 1 ? unitInfo.ShortByte : unitInfo.ShortBytes;
-        }
-
-        // Note: this does not account for the possibility that a not-exactly-one value is
-        // rounded to 1 by the number format.
-        return (!suffix.HasByteChar || destination.TryAppend(ref charsWritten, unit)) &&
-            destination.TryAppend(ref charsWritten, suffix.Trailing);
-    }
+        => FormatHelper.TryFormat((ulong)Math.Abs(Value), Value, destination, out charsWritten, format, provider);
 
 #endif
 
@@ -988,39 +845,7 @@ public readonly partial struct BinarySize : IEquatable<BinarySize>, IComparable<
     /// </para>
     /// </remarks>
     public string ToString(string? format, IFormatProvider? formatProvider = null)
-    {
-        var suffix = ParseFormat(format.AsSpan(), out var scaledValue);
-        var result = new StringBuilder((format?.Length ?? 0) + 16);
-        result.Append(scaledValue.ToString(suffix.Trimmed.ToString(), formatProvider));
-        result.Append(suffix.Whitespace);
-        var unitInfo = GetUnitInfo(formatProvider);
-        var scale = GetUnitScale(suffix, unitInfo);
-        if (scale != null)
-        {
-            result.Append(scale);
-            if (suffix.HasByteChar)
-            {
-                result.Append(suffix.IsLong ? unitInfo.LongConnector : unitInfo.ShortConnector);
-            }
-        }
-
-        if (suffix.HasByteChar)
-        {
-            // Note: this does not account for the possibility that a not-exactly-one value is
-            // rounded to 1 by the number format.
-            if (suffix.IsLong)
-            {
-                result.Append(scaledValue == 1 ? unitInfo.LongByte : unitInfo.LongBytes);
-            }
-            else
-            {
-                result.Append(scaledValue == 1 ? unitInfo.ShortByte : unitInfo.ShortBytes);
-            }
-        }
-
-        result.Append(suffix.Trailing);
-        return result.ToString();
-    }
+        => FormatHelper.GetString((ulong)Math.Abs(Value), Value, format, formatProvider);
 
     /// <summary>
     /// Returns a string representation of the current value, using default formatting.
@@ -1108,221 +933,6 @@ public readonly partial struct BinarySize : IEquatable<BinarySize>, IComparable<
         writer.WriteString(ToString(null, CultureInfo.InvariantCulture));
     }
 
-    private static long ParseUnit(ref ReadOnlySpan<char> value, IFormatProvider? provider, BinarySizeOptions options)
-    {
-        var unitInfo = GetUnitInfo(provider);
-        var factor = new FactorInfo()
-        {
-            Value = value.TrimEnd(),
-            Factor = 1,
-            Culture = (provider as CultureInfo) ?? CultureInfo.CurrentCulture,
-            CompareOptions = unitInfo.CompareOptions,
-        };
-
-        var unitFound = false;
-        var withConnector = factor.Value;
-        if (options.HasFlag(BinarySizeOptions.AllowLongUnits) || options.HasFlag(BinarySizeOptions.AllowLongUnitsOnly))
-        {
-            unitFound = factor.TrimSuffix(unitInfo.LongBytes) || factor.TrimSuffix(unitInfo.LongByte);
-            if (unitFound)
-            {
-                withConnector = factor.Value;
-                factor.TrimSuffix(unitInfo.LongConnector);
-            }
-        }
-
-        if (!unitFound && !options.HasFlag(BinarySizeOptions.AllowLongUnitsOnly))
-        {
-            if (factor.TrimSuffix(unitInfo.ShortBytes) || factor.TrimSuffix(unitInfo.ShortByte))
-            {
-                withConnector = factor.Value;
-                factor.TrimSuffix(unitInfo.ShortConnector);
-            }
-        }
-
-        var prefixFound = false;
-        var useDecimal = options.HasFlag(BinarySizeOptions.UseIecStandard);
-        if (options.HasFlag(BinarySizeOptions.AllowLongUnits) || options.HasFlag(BinarySizeOptions.AllowLongUnitsOnly))
-        {
-            prefixFound = factor.CheckUnitPrefix(unitInfo.LongKibi, Kibi)
-                || factor.CheckUnitPrefix(unitInfo.LongMebi, Mebi)
-                || factor.CheckUnitPrefix(unitInfo.LongGibi, Gibi)
-                || factor.CheckUnitPrefix(unitInfo.LongTebi, Tebi)
-                || factor.CheckUnitPrefix(unitInfo.LongPebi, Pebi)
-                || factor.CheckUnitPrefix(unitInfo.LongExbi, Exbi)
-                || factor.CheckUnitPrefix(unitInfo.LongKilo, useDecimal ? Kilo : Kibi)
-                || factor.CheckUnitPrefix(unitInfo.LongMega, useDecimal ? Mega : Mebi)
-                || factor.CheckUnitPrefix(unitInfo.LongMega, useDecimal ? Mega : Mebi)
-                || factor.CheckUnitPrefix(unitInfo.LongGiga, useDecimal ? Giga : Gibi)
-                || factor.CheckUnitPrefix(unitInfo.LongTera, useDecimal ? Tera : Tebi)
-                || factor.CheckUnitPrefix(unitInfo.LongPeta, useDecimal ? Peta : Pebi)
-                || factor.CheckUnitPrefix(unitInfo.LongExa, useDecimal ? Exa : Exbi);
-        }
-
-        if (!prefixFound && !options.HasFlag(BinarySizeOptions.AllowLongUnitsOnly))
-        {
-            prefixFound = factor.CheckUnitPrefix(unitInfo.ShortKibi, Kibi)
-                || factor.CheckUnitPrefix(unitInfo.ShortMebi, Mebi)
-                || factor.CheckUnitPrefix(unitInfo.ShortGibi, Gibi)
-                || factor.CheckUnitPrefix(unitInfo.ShortTebi, Tebi)
-                || factor.CheckUnitPrefix(unitInfo.ShortPebi, Pebi)
-                || factor.CheckUnitPrefix(unitInfo.ShortExbi, Exbi)
-                || factor.CheckUnitPrefix(unitInfo.ShortKilo, useDecimal ? Kilo : Kibi)
-                || factor.CheckUnitPrefix(unitInfo.ShortMega, useDecimal ? Mega : Mebi)
-                || factor.CheckUnitPrefix(unitInfo.ShortMega, useDecimal ? Mega : Mebi)
-                || factor.CheckUnitPrefix(unitInfo.ShortGiga, useDecimal ? Giga : Gibi)
-                || factor.CheckUnitPrefix(unitInfo.ShortTera, useDecimal ? Tera : Tebi)
-                || factor.CheckUnitPrefix(unitInfo.ShortPeta, useDecimal ? Peta : Pebi)
-                || factor.CheckUnitPrefix(unitInfo.ShortExa, useDecimal ? Exa : Exbi)
-                || factor.CheckUnitPrefix(unitInfo.ShortDecimalKilo, useDecimal ? Kilo : Kibi);
-        }
-
-        if (prefixFound)
-        {
-            value = factor.Value;
-        }
-        else
-        {
-            // Don't remove the connector if there was no recognized prefix before it.
-            value = withConnector;
-        }
-
-        return factor.Factor;
-    }
-
-    private static SuffixInfo TrimFormatSuffix(ReadOnlySpan<char> value)
-    {
-        SuffixInfo result = new()
-        {
-            Factor = 1,
-        };
-
-        var trimmed = value.TrimEnd();
-        result.Trailing = value.Slice(trimmed.Length);
-        if (trimmed.Length == 0)
-        {
-            return result;
-        }
-
-        // Suffix can use "byte" to indicate long units.
-        if (trimmed.StripSuffix("byte".AsSpan(), StringComparison.OrdinalIgnoreCase).TryGetValue(out var newValue))
-        {
-            trimmed = newValue;
-            result.HasByteChar = true;
-            result.IsLong = true;
-        }
-        else if (trimmed.StripSuffix("b".AsSpan(), StringComparison.OrdinalIgnoreCase).TryGetValue(out newValue))
-        {
-            trimmed = newValue;
-            result.HasByteChar = true;
-        }
-
-        if (trimmed.Length == 0)
-        {
-            return result;
-        }
-
-        var index = trimmed.Length - 1;
-        var ch = trimmed[index];
-
-        // The 'i' is only counted as an IEC char if there's a valid scale prefix before it.
-        if (trimmed.Length > 1 && ch is 'I' or 'i')
-        {
-            result.HasIecChar = true;
-            --index;
-        }
-
-        ch = trimmed[index];
-        var prefixes = _scalingChars.AsSpan();
-        if (result.HasIecChar)
-        {
-            // Force the use of binary regardless of case if 'i' is present.
-            ch = char.ToUpperInvariant(ch);
-        }
-
-        var scaleIndex = prefixes.IndexOf(ch);
-        if (scaleIndex < 0)
-        {
-            // No scale prefix before the 'i', so don't count it as an IEC char.
-            result.HasIecChar = false;
-        }
-        else
-        {
-            trimmed = trimmed.Slice(0, index);
-            result.Factor = _scalingFactors[scaleIndex];
-        }
-
-        // Remove any whitespace between the number and the unit.
-        result.Trimmed = trimmed.TrimEnd();
-        result.Whitespace = trimmed.Slice(result.Trimmed.Length);
-        return result;
-    }
-
-    private long DetermineAutomaticScalingFactor(long autoFactor)
-    {
-        // Check all factors except the automatic ones.
-        var (allowRounding, useDecimal) = autoFactor switch
-        {
-            AutoFactor => (false, false),
-            ShortestFactor => (true, false),
-            DecimalAutoFactor => (false, true),
-            DecimalShortestFactor => (true, true),
-            _ => throw new ArgumentException(null, nameof(autoFactor)), // Should never be reached
-        };
-
-        var factors = _scalingFactors.AsSpan(0, _scalingChars.Length - 4);
-        if (useDecimal)
-        {
-            factors = factors.Slice(factors.Length / 2);
-        }
-        else
-        {
-            factors = factors.Slice(0, factors.Length / 2);
-        }
-
-        // Use the absolute value to select the correct unit for negative numbers.
-        var value = Math.Abs(Value);
-        for (int index = 0; index < factors.Length; ++index)
-        {
-            var factor = factors[index];
-            if (value >= factor && (allowRounding || value % factor == 0))
-            {
-                return factor;
-            }
-        }
-
-        return 1;
-    }
-
-    private SuffixInfo ParseFormat(ReadOnlySpan<char> format, out decimal scaledValue)
-    {
-        SuffixInfo suffix;
-        if (format.IsEmpty || format == "G".AsSpan())
-        {
-            suffix = new()
-            {
-                Factor = AutoFactor,
-                Whitespace = " ".AsSpan(),
-                HasIecChar = true,
-                HasByteChar = true,
-            };
-        }
-        else
-        {
-            suffix = TrimFormatSuffix(format);
-        }
-
-        if (suffix.Factor < 0)
-        {
-            suffix.Factor = DetermineAutomaticScalingFactor(suffix.Factor);
-        }
-
-        // Don't include the 'i' if there's no scale prefix.
-        suffix.HasIecChar = suffix.HasIecChar && suffix.Factor > 1;
-        scaledValue = Value / (decimal)suffix.Factor;
-        return suffix;
-    }
-
     private static BinarySize FromScale(double value, long scale)
     {
         if (double.IsNaN(value))
@@ -1331,81 +941,5 @@ public readonly partial struct BinarySize : IEquatable<BinarySize>, IComparable<
         }
 
         return (BinarySize)checked((long)(value * scale));
-    }
-
-    private static void ValidateOptions(BinarySizeOptions options)
-    {
-        const BinarySizeOptions invalid = 
-            ~(BinarySizeOptions.UseIecStandard | BinarySizeOptions.AllowLongUnits | BinarySizeOptions.AllowLongUnitsOnly);
-
-        if ((options & invalid) != 0) 
-        {
-            throw new ArgumentException(Properties.Resources.InvalidOptions, nameof(options));
-        }
-    }
-
-    private static BinaryUnitInfo GetUnitInfo(IFormatProvider? provider)
-    {
-        // Only check current culture if provider was not specified. If it was but has no unit info,
-        // we always use the invariant info.
-        provider ??= CultureInfo.CurrentCulture;
-        return (BinaryUnitInfo?)provider.GetFormat(typeof(BinaryUnitInfo)) ?? BinaryUnitInfo.InvariantInfo;
-    }
-
-    private static string? GetUnitScale(SuffixInfo suffix, BinaryUnitInfo unitInfo)
-    {
-        if (suffix.IsLong)
-        {
-            if (suffix.HasIecChar)
-            {
-                return suffix.Factor switch
-                {
-                    Kilo or Kibi => unitInfo.LongKibi,
-                    Mega or Mebi => unitInfo.LongMebi,
-                    Giga or Gibi => unitInfo.LongGibi,
-                    Tera or Tebi => unitInfo.LongTebi,
-                    Peta or Pebi => unitInfo.LongPebi,
-                    Exa or Exbi => unitInfo.LongExbi,
-                    _ => null,
-                };
-            }
-
-            return suffix.Factor switch
-            {
-                Kilo or Kibi => unitInfo.LongKilo,
-                Mega or Mebi => unitInfo.LongMega,
-                Giga or Gibi => unitInfo.LongGiga,
-                Tera or Tebi => unitInfo.LongTera,
-                Peta or Pebi => unitInfo.LongPeta,
-                Exa or Exbi => unitInfo.LongExa,
-                _ => null,
-            };
-        }
-
-        if (suffix.HasIecChar)
-        {
-            return suffix.Factor switch
-            {
-                Kilo or Kibi => unitInfo.ShortKibi,
-                Mega or Mebi => unitInfo.ShortMebi,
-                Giga or Gibi => unitInfo.ShortGibi,
-                Tera or Tebi => unitInfo.ShortTebi,
-                Peta or Pebi => unitInfo.ShortPebi,
-                Exa or Exbi => unitInfo.ShortExbi,
-                _ => null,
-            };
-        }
-
-        return suffix.Factor switch
-        {
-            Kilo => unitInfo.ShortDecimalKilo,
-            Kibi => unitInfo.ShortKilo,
-            Mega or Mebi => unitInfo.ShortMega,
-            Giga or Gibi => unitInfo.ShortGiga,
-            Tera or Tebi => unitInfo.ShortTera,
-            Peta or Pebi => unitInfo.ShortPeta,
-            Exa or Exbi => unitInfo.ShortExa,
-            _ => null,
-        };
     }
 }

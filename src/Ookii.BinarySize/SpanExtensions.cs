@@ -14,16 +14,4 @@ static class SpanExtensions
         index += source.Length;
         return true;
     }
-
-    public static bool TryAppend(this Span<char> destination, ref int index, char source)
-    {
-        if (destination.Length <= index)
-        {
-            return false;
-        }
-
-        destination[index] = source;
-        ++index;
-        return true;
-    }
 }
