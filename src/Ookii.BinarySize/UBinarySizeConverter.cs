@@ -5,34 +5,34 @@ using System.Globalization;
 namespace Ookii;
 
 /// <summary>
-/// Converts a <see cref="BinarySize"/> object from one data type to another. Access this class
+/// Converts a <see cref="UBinarySize"/> object from one data type to another. Access this class
 /// through the <see cref="TypeDescriptor"/> class.
 /// </summary>
 /// <remarks>
 /// <para>
 ///   This <see cref="TypeConverter"/> is able to convert from a <see cref="string"/> to a
-///   <see cref="BinarySize"/>, using the same rules as the
-///   <see cref="BinarySize.Parse(string, IFormatProvider?)" qualifyHint="true"/> method.
+///   <see cref="UBinarySize"/>, using the same rules as the
+///   <see cref="UBinarySize.Parse(string, IFormatProvider?)" qualifyHint="true"/> method.
 /// </para>
 /// <para>
-///   It can also convert from a <see cref="BinarySize"/> to a <see cref="string"/> using the
-///   default format used by the <see cref="BinarySize.ToString(string?, IFormatProvider?)" qualifyHint="true"/>
-///   method. It also supports conversion from a <see cref="BinarySize"/> to any primitive type,
-///   and between <see cref="BinarySize"/> and <see cref="IecBinarySize"/>.
+///   It can also convert from a <see cref="UBinarySize"/> to a <see cref="string"/> using the
+///   default format used by the <see cref="UBinarySize.ToString(string?, IFormatProvider?)" qualifyHint="true"/>
+///   method. It also supports conversion from a <see cref="UBinarySize"/> to any primitive type,
+///   and between <see cref="UBinarySize"/> and <see cref="UIecBinarySize"/>.
 /// </para>
 /// </remarks>
 /// <threadsafety instance="true" static="true"/>
-public class BinarySizeConverter : TypeConverter
+public class UBinarySizeConverter : TypeConverter
 {
     /// <summary>
-    /// Initializes a new instance of the <see cref="BinarySizeConverter"/> class.
+    /// Initializes a new instance of the <see cref="UBinarySizeConverter"/> class.
     /// </summary>
-    public BinarySizeConverter()
+    public UBinarySizeConverter()
     { 
     }
 
     /// <summary>
-    /// Initializes a new instance of the <see cref="BinarySizeConverter"/> class with the specified
+    /// Initializes a new instance of the <see cref="UBinarySizeConverter"/> class with the specified
     /// options.
     /// </summary>
     /// <param name="options">
@@ -42,11 +42,11 @@ public class BinarySizeConverter : TypeConverter
     /// <remarks>
     /// <para>
     ///   When converting from a string, the <paramref name="options"/> will be passed to the
-    ///   <see cref="BinarySize.Parse(ReadOnlySpan{char}, BinarySizeOptions, NumberStyles, IFormatProvider?)" qualifyHint="true"/>
+    ///   <see cref="UBinarySize.Parse(ReadOnlySpan{char}, BinarySizeOptions, NumberStyles, IFormatProvider?)" qualifyHint="true"/>
     ///   method.
     /// </para>
     /// </remarks>
-    public BinarySizeConverter(BinarySizeOptions options)
+    public UBinarySizeConverter(BinarySizeOptions options)
     {
         Options = options;
     }
@@ -61,13 +61,13 @@ public class BinarySizeConverter : TypeConverter
 
     /// <inheritdoc/>
     public override bool CanConvertFrom(ITypeDescriptorContext? context, Type sourceType)
-        => sourceType == typeof(string) || sourceType == typeof(IecBinarySize) || sourceType == typeof(UBinarySize)
-            || sourceType == typeof(UIecBinarySize) || base.CanConvertFrom(context, sourceType);
+        => sourceType == typeof(string) || sourceType == typeof(UIecBinarySize) || sourceType == typeof(BinarySize)
+        || sourceType == typeof(IecBinarySize) || base.CanConvertFrom(context, sourceType);
 
     /// <inheritdoc/>
     public override bool CanConvertTo(ITypeDescriptorContext? context, Type? destinationType)
-        => (destinationType != null && destinationType.IsPrimitive) || destinationType == typeof(IecBinarySize)
-            || destinationType == typeof(UBinarySize) || destinationType == typeof(UIecBinarySize)
+        => (destinationType != null && destinationType.IsPrimitive) || destinationType == typeof(UIecBinarySize)
+            || destinationType == typeof(IecBinarySize) || destinationType == typeof(BinarySize)
             || base.CanConvertTo(context, destinationType);
 
     /// <inheritdoc/>
@@ -75,10 +75,10 @@ public class BinarySizeConverter : TypeConverter
     {
         return value switch
         {
-            string stringValue => BinarySize.Parse(stringValue, Options, provider: culture),
-            IecBinarySize sizeValue => sizeValue.Value,
-            UBinarySize usizeValue => new BinarySize((long)usizeValue.Value),
-            UIecBinarySize uiecSizeValue => new BinarySize((long)uiecSizeValue.Value.Value),
+            string stringValue => UBinarySize.Parse(stringValue, Options, provider: culture),
+            UIecBinarySize sizeValue => sizeValue.Value,
+            BinarySize sizeValue => new UBinarySize((ulong)sizeValue.Value),
+            IecBinarySize sizeValue => new UBinarySize((ulong)sizeValue.Value.Value),
             _ => base.ConvertFrom(context, culture, value)
         };
     }
@@ -86,31 +86,31 @@ public class BinarySizeConverter : TypeConverter
     /// <inheritdoc/>
     public override object? ConvertTo(ITypeDescriptorContext? context, CultureInfo? culture, object? value, Type destinationType)
     {
-        if (value is BinarySize size)
+        if (value is UBinarySize size)
         {
             if (destinationType == typeof(string))
             {
                 return size.ToString(null, culture);
             }
 
-            if (destinationType == typeof(IecBinarySize))
+            if (destinationType == typeof(UIecBinarySize))
             {
-                return new IecBinarySize(size);
+                return new UIecBinarySize(size);
             }
 
-            if (destinationType == typeof(long))
+            if (destinationType == typeof(ulong))
             {
                 return size.Value;
             }
 
-            if (destinationType == typeof(UBinarySize))
+            if (destinationType == typeof(BinarySize))
             {
-                return new UBinarySize((ulong)size.Value);
+                return new BinarySize((long)size.Value);
             }
 
-            if (destinationType == typeof(UIecBinarySize))
+            if (destinationType == typeof(IecBinarySize))
             {
-                return new UIecBinarySize((ulong)size.Value);
+                return new IecBinarySize((long)size.Value);
             }
 
             if (destinationType.IsPrimitive)
