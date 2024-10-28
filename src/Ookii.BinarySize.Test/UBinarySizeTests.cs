@@ -839,29 +839,29 @@ public class UBinarySizeTests
         Assert.AreEqual(UBinarySize.Zero, new[] { (UBinarySize?)null }.Sum());
     }
 
-    //[TestMethod]
-    //public async Task TestSumAsync()
-    //{
-    //    var values = new[] { (UBinarySize)5, (UBinarySize)6, (UBinarySize)7, (UBinarySize)8 }.ToAsyncEnumerable();
-    //    var sum = await values.SumAsync();
-    //    Assert.AreEqual((UBinarySize)26, sum);
+    [TestMethod]
+    public async Task TestSumAsync()
+    {
+        var values = new[] { (UBinarySize)5, (UBinarySize)6, (UBinarySize)7, (UBinarySize)8 }.ToAsyncEnumerable();
+        var sum = await values.SumAsync();
+        Assert.AreEqual((UBinarySize)26, sum);
 
-    //    var values2 = new UBinarySize?[] { (UBinarySize)5, (UBinarySize)6, null, (UBinarySize)7, (UBinarySize)8 }.ToAsyncEnumerable();
-    //    var sum2 = await values2.SumAsync();
-    //    Assert.AreEqual((UBinarySize)26, sum2);
+        var values2 = new UBinarySize?[] { (UBinarySize)5, (UBinarySize)6, null, (UBinarySize)7, (UBinarySize)8 }.ToAsyncEnumerable();
+        var sum2 = await values2.SumAsync();
+        Assert.AreEqual((UBinarySize)26, sum2);
 
-    //    var values3 = new[] { "5", "6", "7", "8" }.ToAsyncEnumerable();
-    //    var sum3 = await values3.SumAsync(v => UBinarySize.Parse(v));
-    //    Assert.AreEqual((UBinarySize)26, sum3);
+        var values3 = new[] { "5", "6", "7", "8" }.ToAsyncEnumerable();
+        var sum3 = await values3.SumAsync(v => UBinarySize.Parse(v));
+        Assert.AreEqual((UBinarySize)26, sum3);
 
-    //    var converter = TypeDescriptor.GetConverter(typeof(UBinarySize?));
-    //    var values4 = new[] { "5", "6", "", "7", "8" }.ToAsyncEnumerable();
-    //    var sum4 = await values4.SumAsync(v => (UBinarySize?)converter.ConvertFromInvariantString(v));
-    //    Assert.AreEqual((UBinarySize)26, sum4);
+        var converter = TypeDescriptor.GetConverter(typeof(UBinarySize?));
+        var values4 = new[] { "5", "6", "", "7", "8" }.ToAsyncEnumerable();
+        var sum4 = await values4.SumAsync(v => (UBinarySize?)converter.ConvertFromInvariantString(v));
+        Assert.AreEqual((UBinarySize)26, sum4);
 
-    //    Assert.AreEqual(UBinarySize.Zero, await AsyncEnumerable.Empty<UBinarySize>().SumAsync());
-    //    Assert.AreEqual(UBinarySize.Zero, await new[] { (UBinarySize?)null }.ToAsyncEnumerable().SumAsync());
-    //}
+        Assert.AreEqual(UBinarySize.Zero, await AsyncEnumerable.Empty<UBinarySize>().SumAsync());
+        Assert.AreEqual(UBinarySize.Zero, await new[] { (UBinarySize?)null }.ToAsyncEnumerable().SumAsync());
+    }
 
     [TestMethod]
     public void TestAverage()
@@ -888,30 +888,30 @@ public class UBinarySizeTests
         Assert.IsNull(new[] { (UBinarySize?)null }.Average());
     }
 
-    //[TestMethod]
-    //public async Task TestAverageAsync()
-    //{
-    //    // Average truncates, so the result is 6.
-    //    var values = new[] { (UBinarySize)5, (UBinarySize)6, (UBinarySize)7, (UBinarySize)8 }.ToAsyncEnumerable();
-    //    var average = await values.AverageAsync();
-    //    Assert.AreEqual((UBinarySize)6, average);
+    [TestMethod]
+    public async Task TestAverageAsync()
+    {
+        // Average truncates, so the result is 6.
+        var values = new[] { (UBinarySize)5, (UBinarySize)6, (UBinarySize)7, (UBinarySize)8 }.ToAsyncEnumerable();
+        var average = await values.AverageAsync();
+        Assert.AreEqual((UBinarySize)6, average);
 
-    //    var values2 = new UBinarySize?[] { (UBinarySize)5, (UBinarySize)6, null, (UBinarySize)7, (UBinarySize)8 }.ToAsyncEnumerable();
-    //    var average2 = await values2.AverageAsync();
-    //    Assert.AreEqual((UBinarySize)6, average2);
+        var values2 = new UBinarySize?[] { (UBinarySize)5, (UBinarySize)6, null, (UBinarySize)7, (UBinarySize)8 }.ToAsyncEnumerable();
+        var average2 = await values2.AverageAsync();
+        Assert.AreEqual((UBinarySize)6, average2);
 
-    //    var values3 = new[] { "5", "6", "7", "8" }.ToAsyncEnumerable();
-    //    var average3 = await values3.AverageAsync(v => UBinarySize.Parse(v));
-    //    Assert.AreEqual((UBinarySize)6, average3);
+        var values3 = new[] { "5", "6", "7", "8" }.ToAsyncEnumerable();
+        var average3 = await values3.AverageAsync(v => UBinarySize.Parse(v));
+        Assert.AreEqual((UBinarySize)6, average3);
 
-    //    var converter = TypeDescriptor.GetConverter(typeof(UBinarySize?));
-    //    var values4 = new[] { "5", "6", "", "7", "8" }.ToAsyncEnumerable();
-    //    var average4 = await values4.AverageAsync(v => (UBinarySize?)converter.ConvertFromInvariantString(v));
-    //    Assert.AreEqual((UBinarySize)6, average4);
+        var converter = TypeDescriptor.GetConverter(typeof(UBinarySize?));
+        var values4 = new[] { "5", "6", "", "7", "8" }.ToAsyncEnumerable();
+        var average4 = await values4.AverageAsync(v => (UBinarySize?)converter.ConvertFromInvariantString(v));
+        Assert.AreEqual((UBinarySize)6, average4);
 
-    //    Assert.IsNull(await AsyncEnumerable.Empty<UBinarySize?>().AverageAsync());
-    //    Assert.IsNull(await new[] { (UBinarySize?)null }.ToAsyncEnumerable().AverageAsync());
-    //}
+        Assert.IsNull(await AsyncEnumerable.Empty<UBinarySize?>().AverageAsync());
+        Assert.IsNull(await new[] { (UBinarySize?)null }.ToAsyncEnumerable().AverageAsync());
+    }
 
     [TestMethod]
     public void TestXmlSerialization()
