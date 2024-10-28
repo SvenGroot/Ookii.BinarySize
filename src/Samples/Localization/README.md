@@ -34,5 +34,5 @@ Abbreviated unit (IEC): 128.5 MiB
 
 For more information, see the [Localization documentation](../../../README.md#localization).
 
-[`BinarySize`]: https://www.ookii.org/docs/binarysize-1.1/html/T_Ookii_BinarySize.htm
-[`BinaryUnitInfo`]: https://www.ookii.org/docs/binarysize-1.1/html/T_Ookii_BinaryUnitInfo.htm
+[`BinarySize`]: https://www.ookii.org/docs/binarysize-1.2/html/T_Ookii_BinarySize.htm
+[`BinaryUnitInfo`]: https://www.ookii.org/docs/binarysize-1.2/html/T_Ookii_BinaryUnitInfo.htm

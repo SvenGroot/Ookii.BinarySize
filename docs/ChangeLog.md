@@ -2,7 +2,7 @@
 
 ## Ookii.BinarySize 1.2 (TBD)
 
-- Add an unsigned `UBinarySize` version.
+- Add an unsigned [`UBinarySize`][] version.
 
 ## Ookii.BinarySize 1.1 (2023-09-15)
 
@@ -15,4 +15,6 @@
 
 - This is the first release of Ookii.BinarySize.
 
-[`BinaryUnitInfo`]: https://www.ookii.org/docs/binarysize-1.1/html/T_Ookii_BinaryUnitInfo.htm
+
+[`BinaryUnitInfo`]: https://www.ookii.org/docs/binarysize-1.2/html/T_Ookii_BinaryUnitInfo.htm
+[`UBinarySize`]: https://www.ookii.org/docs/binarysize-1.2/html/T_Ookii_UBinarySize.htm

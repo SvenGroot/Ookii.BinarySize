@@ -17,7 +17,7 @@ on the format string.
 - Parse and store values up to approximately positive and negative 8 EiB, using [`Int64`][] (`long`)
   as the underlying storage.
 - Provides an unsigned version that can parse and store values up to approximately 16 EiB, using
-  `UInt64` (`ulong`) as the underlying storage.
+  [`UInt64`][] (`ulong`) as the underlying storage.
 - Support for [localizing units and prefixes](#localization).
 - Provided as a library for [.Net Standard 2.0, .Net Standard 2.1, and .Net 6.0 and up](#requirements).
 - Implements arithmetic and binary operators, and supports .Net 7 generic math.
@@ -41,7 +41,7 @@ on [.Net Fiddle](https://dotnetfiddle.net/zYiUV7).
 
 To use the library, store your size values as a [`BinarySize`][] structure, which supports
 formatting and parsing, along with overloaded operators and other operations provided for
-convenience. To use the unsigned version, store your values using `UBinarySize`.
+convenience. To use the unsigned version, store your values using [`UBinarySize`][].
 
 ## Formatting
 
@@ -143,7 +143,7 @@ Note that using "aB" formatted 2.5 GiB as plain bytes, since there is no higher 
 could be used while keeping a whole number.
 
 See [`BinarySize.ToString()`][] for full documentation on the format string. All of the provided
-information also applies to `UBinarySize`.
+information also applies to [`UBinarySize`][].
 
 ## Parsing
 
@@ -232,8 +232,8 @@ Which gives this output.
 
 This can also be combined with the [`BinarySizeOptions.UseIecStandard`][] flag.
 
-The same parsing options also apply to `UBinarySize`; the only difference is that negative values
-are not accepted in this case. A `UIecBinarySize` wrapper is also available.
+The same parsing options also apply to [`UBinarySize`][]; the only difference is that negative values
+are not accepted in this case. A [`UIecBinarySize`][] wrapper is also available.
 
 ## Localization
 
@@ -301,7 +301,7 @@ possible, and offers several features for that purpose.
   [Ookii.BinarySize.Async](https://www.nuget.org/packages/Ookii.BinarySize.Async) package, also for
   [`IAsyncEnumerable<T>`][].
 
-The [`BinarySize`][], [`IecBinarySize`][], `UBinarySize`, and `UIecBinarySize` structures can be
+The [`BinarySize`][], [`IecBinarySize`][], [`UBinarySize`][], and [`UIecBinarySize`][] structures can be
 used in contexts where they are automatically serialized, such as configuration files, serialized
 XML or JSON data, XAML, and others, because they provide a [`TypeConverter`][], a
 [`JsonConverter`][], and implement [`IXmlSerializable`][].
@@ -348,34 +348,35 @@ The class library documentation is generated using [Sandcastle Help File Builder
 - [Class library documentation](https://www.ookii.org/Link/BinarySizeDoc)
 - [Samples](src/Samples)
 
-[`AsExbi`]: https://www.ookii.org/docs/binarysize-1.1/html/P_Ookii_BinarySize_AsExbi.htm
-[`AsGibi`]: https://www.ookii.org/docs/binarysize-1.1/html/P_Ookii_BinarySize_AsGibi.htm
-[`AsKibi`]: https://www.ookii.org/docs/binarysize-1.1/html/P_Ookii_BinarySize_AsKibi.htm
-[`AsMebi`]: https://www.ookii.org/docs/binarysize-1.1/html/P_Ookii_BinarySize_AsMebi.htm
-[`AsPebi`]: https://www.ookii.org/docs/binarysize-1.1/html/P_Ookii_BinarySize_AsPebi.htm
-[`AsTebi`]: https://www.ookii.org/docs/binarysize-1.1/html/P_Ookii_BinarySize_AsTebi.htm
-[`BinarySize.Parse()`]: https://www.ookii.org/docs/binarysize-1.1/html/Overload_Ookii_BinarySize_Parse.htm
-[`BinarySize.ToString()`]: https://www.ookii.org/docs/binarysize-1.1/html/M_Ookii_BinarySize_ToString_1.htm
-[`BinarySize.TryParse()`]: https://www.ookii.org/docs/binarysize-1.1/html/Overload_Ookii_BinarySize_TryParse.htm
-[`BinarySize`]: https://www.ookii.org/docs/binarysize-1.1/html/T_Ookii_BinarySize.htm
-[`BinarySizeOptions.AllowLongUnits`]: https://www.ookii.org/docs/binarysize-1.1/html/T_Ookii_BinarySizeOptions.htm
-[`BinarySizeOptions.AllowLongUnitsOnly`]: https://www.ookii.org/docs/binarysize-1.1/html/T_Ookii_BinarySizeOptions.htm
-[`BinarySizeOptions.UseIecStandard`]: https://www.ookii.org/docs/binarysize-1.1/html/T_Ookii_BinarySizeOptions.htm
-[`BinarySizeOptions`]: https://www.ookii.org/docs/binarysize-1.1/html/T_Ookii_BinarySizeOptions.htm
-[`BinaryUnitInfo`]: https://www.ookii.org/docs/binarysize-1.1/html/T_Ookii_BinaryUnitInfo.htm
+
+[`AsExbi`]: https://www.ookii.org/docs/binarysize-1.2/html/P_Ookii_BinarySize_AsExbi.htm
+[`AsGibi`]: https://www.ookii.org/docs/binarysize-1.2/html/P_Ookii_BinarySize_AsGibi.htm
+[`AsKibi`]: https://www.ookii.org/docs/binarysize-1.2/html/P_Ookii_BinarySize_AsKibi.htm
+[`AsMebi`]: https://www.ookii.org/docs/binarysize-1.2/html/P_Ookii_BinarySize_AsMebi.htm
+[`AsPebi`]: https://www.ookii.org/docs/binarysize-1.2/html/P_Ookii_BinarySize_AsPebi.htm
+[`AsTebi`]: https://www.ookii.org/docs/binarysize-1.2/html/P_Ookii_BinarySize_AsTebi.htm
+[`BinarySize.Parse()`]: https://www.ookii.org/docs/binarysize-1.2/html/Overload_Ookii_BinarySize_Parse.htm
+[`BinarySize.ToString()`]: https://www.ookii.org/docs/binarysize-1.2/html/M_Ookii_BinarySize_ToString_1.htm
+[`BinarySize.TryParse()`]: https://www.ookii.org/docs/binarysize-1.2/html/Overload_Ookii_BinarySize_TryParse.htm
+[`BinarySize`]: https://www.ookii.org/docs/binarysize-1.2/html/T_Ookii_BinarySize.htm
+[`BinarySizeOptions.AllowLongUnits`]: https://www.ookii.org/docs/binarysize-1.2/html/T_Ookii_BinarySizeOptions.htm
+[`BinarySizeOptions.AllowLongUnitsOnly`]: https://www.ookii.org/docs/binarysize-1.2/html/T_Ookii_BinarySizeOptions.htm
+[`BinarySizeOptions.UseIecStandard`]: https://www.ookii.org/docs/binarysize-1.2/html/T_Ookii_BinarySizeOptions.htm
+[`BinarySizeOptions`]: https://www.ookii.org/docs/binarysize-1.2/html/T_Ookii_BinarySizeOptions.htm
+[`BinaryUnitInfo`]: https://www.ookii.org/docs/binarysize-1.2/html/T_Ookii_BinaryUnitInfo.htm
 [`CultureInfo`]: https://learn.microsoft.com/dotnet/api/system.globalization.cultureinfo
-[`Exbi`]: https://www.ookii.org/docs/binarysize-1.1/html/F_Ookii_BinarySize_Exbi.htm
-[`FromExbi()`]: https://www.ookii.org/docs/binarysize-1.1/html/M_Ookii_BinarySize_FromExbi.htm
-[`FromGibi()`]: https://www.ookii.org/docs/binarysize-1.1/html/M_Ookii_BinarySize_FromGibi.htm
-[`FromKibi()`]: https://www.ookii.org/docs/binarysize-1.1/html/M_Ookii_BinarySize_FromKibi.htm
-[`FromMebi()`]: https://www.ookii.org/docs/binarysize-1.1/html/M_Ookii_BinarySize_FromMebi.htm
-[`FromPebi()`]: https://www.ookii.org/docs/binarysize-1.1/html/M_Ookii_BinarySize_FromPebi.htm
-[`FromTebi()`]: https://www.ookii.org/docs/binarysize-1.1/html/M_Ookii_BinarySize_FromTebi.htm
-[`GetHashCode()`]: https://www.ookii.org/docs/binarysize-1.1/html/M_Ookii_BinarySize_GetHashCode.htm
-[`Gibi`]: https://www.ookii.org/docs/binarysize-1.1/html/F_Ookii_BinarySize_Gibi.htm
+[`Exbi`]: https://www.ookii.org/docs/binarysize-1.2/html/F_Ookii_BinarySize_Exbi.htm
+[`FromExbi()`]: https://www.ookii.org/docs/binarysize-1.2/html/M_Ookii_BinarySize_FromExbi.htm
+[`FromGibi()`]: https://www.ookii.org/docs/binarysize-1.2/html/M_Ookii_BinarySize_FromGibi.htm
+[`FromKibi()`]: https://www.ookii.org/docs/binarysize-1.2/html/M_Ookii_BinarySize_FromKibi.htm
+[`FromMebi()`]: https://www.ookii.org/docs/binarysize-1.2/html/M_Ookii_BinarySize_FromMebi.htm
+[`FromPebi()`]: https://www.ookii.org/docs/binarysize-1.2/html/M_Ookii_BinarySize_FromPebi.htm
+[`FromTebi()`]: https://www.ookii.org/docs/binarysize-1.2/html/M_Ookii_BinarySize_FromTebi.htm
+[`GetHashCode()`]: https://www.ookii.org/docs/binarysize-1.2/html/M_Ookii_BinarySize_GetHashCode.htm
+[`Gibi`]: https://www.ookii.org/docs/binarysize-1.2/html/F_Ookii_BinarySize_Gibi.htm
 [`IAsyncEnumerable<T>`]: https://learn.microsoft.com/dotnet/api/system.collections.generic.iasyncenumerable-1
 [`IComparable<T>`]: https://learn.microsoft.com/dotnet/api/system.icomparable-1
-[`IecBinarySize`]: https://www.ookii.org/docs/binarysize-1.1/html/T_Ookii_IecBinarySize.htm
+[`IecBinarySize`]: https://www.ookii.org/docs/binarysize-1.2/html/T_Ookii_IecBinarySize.htm
 [`IEnumerable<T>`]: https://learn.microsoft.com/dotnet/api/system.collections.generic.ienumerable-1
 [`IEquatable<T>`]: https://learn.microsoft.com/dotnet/api/system.iequatable-1
 [`IFormatProvider`]: https://learn.microsoft.com/dotnet/api/system.iformatprovider
@@ -384,12 +385,15 @@ The class library documentation is generated using [Sandcastle Help File Builder
 [`ISpanParsable<TSelf>`]: https://learn.microsoft.com/dotnet/api/system.ispanparsable-1
 [`IXmlSerializable`]: https://learn.microsoft.com/dotnet/api/system.xml.serialization.ixmlserializable
 [`JsonConverter`]: https://learn.microsoft.com/dotnet/api/system.text.json.serialization.jsonconverter
-[`Kibi`]: https://www.ookii.org/docs/binarysize-1.1/html/F_Ookii_BinarySize_Kibi.htm
-[`Mebi`]: https://www.ookii.org/docs/binarysize-1.1/html/F_Ookii_BinarySize_Mebi.htm
-[`Parse()`]: https://www.ookii.org/docs/binarysize-1.1/html/Overload_Ookii_IecBinarySize_Parse.htm
-[`Pebi`]: https://www.ookii.org/docs/binarysize-1.1/html/F_Ookii_BinarySize_Pebi.htm
+[`Kibi`]: https://www.ookii.org/docs/binarysize-1.2/html/F_Ookii_BinarySize_Kibi.htm
+[`Mebi`]: https://www.ookii.org/docs/binarysize-1.2/html/F_Ookii_BinarySize_Mebi.htm
+[`Parse()`]: https://www.ookii.org/docs/binarysize-1.2/html/Overload_Ookii_IecBinarySize_Parse.htm
+[`Pebi`]: https://www.ookii.org/docs/binarysize-1.2/html/F_Ookii_BinarySize_Pebi.htm
 [`ReadOnlySpan<char>`]: https://learn.microsoft.com/dotnet/api/system.readonlyspan-1
-[`Tebi`]: https://www.ookii.org/docs/binarysize-1.1/html/F_Ookii_BinarySize_Tebi.htm
+[`Tebi`]: https://www.ookii.org/docs/binarysize-1.2/html/F_Ookii_BinarySize_Tebi.htm
 [`TypeConverter`]: https://learn.microsoft.com/dotnet/api/system.componentmodel.typeconverter
-[`WithBinaryUnitInfo()`]: https://www.ookii.org/docs/binarysize-1.1/html/M_Ookii_CultureInfoExtensions_WithBinaryUnitInfo.htm
-[ToString()_0]: https://www.ookii.org/docs/binarysize-1.1/html/Overload_Ookii_BinarySize_ToString.htm
+[`UBinarySize`]: https://www.ookii.org/docs/binarysize-1.2/html/T_Ookii_UBinarySize.htm
+[`UIecBinarySize`]: https://www.ookii.org/docs/binarysize-1.2/html/T_Ookii_UIecBinarySize.htm
+[`UInt64`]: https://learn.microsoft.com/dotnet/api/system.uint64
+[`WithBinaryUnitInfo()`]: https://www.ookii.org/docs/binarysize-1.2/html/M_Ookii_CultureInfoExtensions_WithBinaryUnitInfo.htm
+[ToString()_0]: https://www.ookii.org/docs/binarysize-1.2/html/Overload_Ookii_BinarySize_ToString.htm

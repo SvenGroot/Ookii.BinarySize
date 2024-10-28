@@ -82,4 +82,4 @@ Which outputs:
 
 See the [GitHub project](https://www.github.com/SvenGroot/Ookii.BinarySize) for more information.
 
-[`BinarySize.ToString()`]: https://www.ookii.org/docs/binarysize-1.1/html/M_Ookii_BinarySize_ToString_1.htm
+[`BinarySize.ToString()`]: https://www.ookii.org/docs/binarysize-1.2/html/M_Ookii_BinarySize_ToString_1.htm
