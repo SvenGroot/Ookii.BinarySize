@@ -386,7 +386,6 @@ static class FormatHelper
         for (int index = 0; index < factors.Length; ++index)
         {
             var factor = factors[index];
-            // TODO: Should _scalingFactors be ulong?
             if (absoluteValue >= (ulong)factor && (allowRounding || absoluteValue % (ulong)factor == 0))
             {
                 return factor;

@@ -16,6 +16,8 @@ on the format string.
 - Interpret SI prefixes as either [powers of two or powers of ten](https://en.wikipedia.org/wiki/Byte#Multiple-byte_units).
 - Parse and store values up to approximately positive and negative 8 EiB, using [`Int64`][] (`long`)
   as the underlying storage.
+- Provides an unsigned version that can parse and store values up to approximately 16 EiB, using
+  `UInt64` (`ulong`) as the underlying storage.
 - Support for [localizing units and prefixes](#localization).
 - Provided as a library for [.Net Standard 2.0, .Net Standard 2.1, and .Net 6.0 and up](#requirements).
 - Implements arithmetic and binary operators, and supports .Net 7 generic math.
@@ -39,7 +41,7 @@ on [.Net Fiddle](https://dotnetfiddle.net/zYiUV7).
 
 To use the library, store your size values as a [`BinarySize`][] structure, which supports
 formatting and parsing, along with overloaded operators and other operations provided for
-convenience.
+convenience. To use the unsigned version, store your values using `UBinarySize`.
 
 ## Formatting
 
@@ -140,7 +142,8 @@ Unabbreviated formatting: 2.5 gigabytes
 Note that using "aB" formatted 2.5 GiB as plain bytes, since there is no higher decimal prefix that
 could be used while keeping a whole number.
 
-See [`BinarySize.ToString()`][] for full documentation on the format string.
+See [`BinarySize.ToString()`][] for full documentation on the format string. All of the provided
+information also applies to `UBinarySize`.
 
 ## Parsing
 
@@ -229,6 +232,9 @@ Which gives this output.
 
 This can also be combined with the [`BinarySizeOptions.UseIecStandard`][] flag.
 
+The same parsing options also apply to `UBinarySize`; the only difference is that negative values
+are not accepted in this case. A `UIecBinarySize` wrapper is also available.
+
 ## Localization
 
 By default, Ookii.BinarySize uses English-language units, regardless of the culture used for
@@ -295,14 +301,14 @@ possible, and offers several features for that purpose.
   [Ookii.BinarySize.Async](https://www.nuget.org/packages/Ookii.BinarySize.Async) package, also for
   [`IAsyncEnumerable<T>`][].
 
-The [`BinarySize`][] and [`IecBinarySize`][] structures can be used in contexts where they are
-automatically serialized, such as configuration files, serialized XML or JSON data, XAML, and
-others, because they provide a [`TypeConverter`][], a [`JsonConverter`][], and implement
-[`IXmlSerializable`][].
+The [`BinarySize`][], [`IecBinarySize`][], `UBinarySize`, and `UIecBinarySize` structures can be
+used in contexts where they are automatically serialized, such as configuration files, serialized
+XML or JSON data, XAML, and others, because they provide a [`TypeConverter`][], a
+[`JsonConverter`][], and implement [`IXmlSerializable`][].
 
 Ookii.BinarySize also supports modern .Net functionality. It supports parsing from a
-[`ReadOnlySpan<char>`][], and formatting with [`ISpanFormattable`][]. The .Net 7.0 version of the
-library also implements [`ISpanParsable<TSelf>`][], and supports the interfaces for
+[`ReadOnlySpan<char>`][], and formatting with [`ISpanFormattable`][]. When using .Net 7 and later,
+the library also implements [`ISpanParsable<TSelf>`][], and supports the interfaces for
 [generic math](https://learn.microsoft.com/dotnet/standard/generics/math).
 
 ## Requirements
@@ -313,7 +319,8 @@ Assemblies are provided targeting the following:
 - .Net Standard 2.0
 - .Net Standard 2.1
 - .Net 6.0
-- .Net 7.0 and later
+- .Net 7.0
+- .Net 8.0 and later
 
 ## Building and testing
 

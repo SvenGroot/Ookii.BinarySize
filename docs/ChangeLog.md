@@ -1,5 +1,9 @@
 # What's new in Ookii.BinarySize
 
+## Ookii.BinarySize 1.2 (TBD)
+
+- Add an unsigned `UBinarySize` version.
+
 ## Ookii.BinarySize 1.1 (2023-09-15)
 
 - Support the use of unabbreviated units (kilobyte, mebibyte, and so on) for both parsing and
