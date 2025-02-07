@@ -2,7 +2,7 @@
 
 /// <summary>
 /// Provides extension methods for <see cref="IEnumerable{T}"/> for use with the <see cref="BinarySize"/>
-/// type.
+/// and <see cref="UBinarySize"/> types.
 /// </summary>
 /// <threadsafety instance="false" static="true"/>
 public static class EnumerableExtensions

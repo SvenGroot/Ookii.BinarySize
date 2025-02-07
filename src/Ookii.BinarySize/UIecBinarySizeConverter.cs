@@ -10,7 +10,7 @@ namespace Ookii;
 /// <remarks>
 /// <para>
 ///   This is the default type converter for the <see cref="UIecBinarySize"/> structure. It supports
-///   the same conversions as the <see cref="BinarySizeConverter"/> class, but for the
+///   the same conversions as the <see cref="UBinarySizeConverter"/> class, but for the
 ///   <see cref="UIecBinarySize"/> structure.
 /// </para>
 /// <para>

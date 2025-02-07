@@ -26,9 +26,9 @@ namespace Ookii;
 /// <para>
 ///   By default, this structure uses the definition that "1 KB" == 1024 bytes, identical to "1
 ///   KiB", and "1 MB" == "1 MiB" == 1048576 bytes, and so on. This behavior can be changed using
-///   the see <see cref="BinarySizeOptions"/> enumeration, and formatting strings used with the
-///   <see cref="ToString(string?, IFormatProvider?)"/> method. The <see cref="UIecBinarySize"/>
-///   structure provides a wrapper that defaults to the behavior of the
+///   the <see cref="BinarySizeOptions"/> enumeration, and by using certain formatting strings used
+///   with the <see cref="ToString(string?, IFormatProvider?)"/> method. The
+///   <see cref="UIecBinarySize"/> structure provides a wrapper that defaults to the behavior of the
 ///   <see cref="BinarySizeOptions.UseIecStandard" qualifyHint="true"/> flag.
 /// </para>
 /// </remarks>
