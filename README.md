@@ -28,8 +28,8 @@ use human-readable byte sizes in places such as configuration files, serialized 
 JSON, and [command line arguments](src/Samples/ListDirectory).
 
 Ookii.BinarySize comes in two packages; the core functionality is in Ookii.BinarySize, and
-additional extension methods for [`IAsyncEnumerable<T>`][] are available in the Ookii.BinarySize.Async
-package. Both are available on NuGet.
+additional extension methods for [`IAsyncEnumerable<T>`][] are available in the
+Ookii.BinarySize.Async package. Both are available on NuGet.
 
 Package                | Version
 -----------------------|--------------------------------------------------------------------------------------------------------------------------
@@ -46,7 +46,8 @@ convenience. To use the unsigned version, store your values using [`UBinarySize`
 ## Formatting
 
 To create a string from a [`BinarySize`][] value, use the [`BinarySize.ToString()`][] method, or use
-the value directly in a compound formatting string.
+the value directly in a compound formatting string. For unsigned values, use
+[`UBinarySize.ToString()`][UBinarySize.ToString()_2].
 
 The default format for [`BinarySize`][] will automatically use the largest unit where the value is a
 whole number, using IEC units and a "B" suffix, and a space between the number and the unit. For
@@ -148,7 +149,8 @@ information also applies to [`UBinarySize`][].
 ## Parsing
 
 To parse a string value into a [`BinarySize`][], use the [`BinarySize.Parse()`][] and
-[`BinarySize.TryParse()`][] methods. The input can be a number, optionally followed by an SI or IEC
+[`BinarySize.TryParse()`][] methods, or [`UBinarySize.Parse()`][UBinarySize.Parse()_4] and [`UBinarySize.TryParse()`][UBinarySize.TryParse()_6] to parse
+into an unsigned [`UBinarySize`][]. The input can be a number, optionally followed by an SI or IEC
 multi-byte unit, and optionally ending with a 'B' character. The case of the unit, and any spacing
 surrounding it, will be ignored.
 
@@ -348,7 +350,6 @@ The class library documentation is generated using [Sandcastle Help File Builder
 - [Class library documentation](https://www.ookii.org/Link/BinarySizeDoc)
 - [Samples](src/Samples)
 
-
 [`AsExbi`]: https://www.ookii.org/docs/binarysize-1.2/html/P_Ookii_BinarySize_AsExbi.htm
 [`AsGibi`]: https://www.ookii.org/docs/binarysize-1.2/html/P_Ookii_BinarySize_AsGibi.htm
 [`AsKibi`]: https://www.ookii.org/docs/binarysize-1.2/html/P_Ookii_BinarySize_AsKibi.htm
@@ -397,3 +398,6 @@ The class library documentation is generated using [Sandcastle Help File Builder
 [`UInt64`]: https://learn.microsoft.com/dotnet/api/system.uint64
 [`WithBinaryUnitInfo()`]: https://www.ookii.org/docs/binarysize-1.2/html/M_Ookii_CultureInfoExtensions_WithBinaryUnitInfo.htm
 [ToString()_0]: https://www.ookii.org/docs/binarysize-1.2/html/Overload_Ookii_BinarySize_ToString.htm
+[UBinarySize.Parse()_4]: https://www.ookii.org/docs/binarysize-1.2/html/Overload_Ookii_UBinarySize_Parse.htm
+[UBinarySize.ToString()_2]: https://www.ookii.org/docs/binarysize-1.2/html/Overload_Ookii_UBinarySize_ToString.htm
+[UBinarySize.TryParse()_6]: https://www.ookii.org/docs/binarysize-1.2/html/Overload_Ookii_UBinarySize_TryParse.htm

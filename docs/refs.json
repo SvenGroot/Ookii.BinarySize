@@ -55,6 +55,27 @@
   ],
   "TypeConverter": "#system.componentmodel.typeconverter",
   "UBinarySize": "T_Ookii_UBinarySize",
+  "UBinarySize.Parse()": [
+    "M_Ookii_UBinarySize_Parse_1",
+    "M_Ookii_UBinarySize_Parse_2",
+    "M_Ookii_UBinarySize_Parse_3",
+    "M_Ookii_UBinarySize_Parse",
+    "Overload_Ookii_UBinarySize_Parse"
+  ],
+  "UBinarySize.ToString()": [
+    "M_Ookii_UBinarySize_ToString_1",
+    "M_Ookii_UBinarySize_ToString",
+    "Overload_Ookii_UBinarySize_ToString"
+  ],
+  "UBinarySize.TryParse()": [
+    "M_Ookii_UBinarySize_TryParse_1",
+    "M_Ookii_UBinarySize_TryParse_2",
+    "M_Ookii_UBinarySize_TryParse_3",
+    "M_Ookii_UBinarySize_TryParse_4",
+    "M_Ookii_UBinarySize_TryParse_5",
+    "M_Ookii_UBinarySize_TryParse",
+    "Overload_Ookii_UBinarySize_TryParse"
+  ],
   "UIecBinarySize": "T_Ookii_UIecBinarySize",
   "UInt64": "#system.uint64",
   "WithBinaryUnitInfo()": "M_Ookii_CultureInfoExtensions_WithBinaryUnitInfo",
