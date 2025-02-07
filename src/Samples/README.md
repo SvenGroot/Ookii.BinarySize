@@ -9,5 +9,5 @@ Ookii.BinarySize comes with a few samples to help you get familiar with it.
 - The [**localization sample**](Localization) shows how to use [`BinaryUnitInfo`][] to localize the
   units used for formatting and parsing.
 
-[`BinarySize`]: https://www.ookii.org/docs/binarysize-1.1/html/T_Ookii_BinarySize.htm
-[`BinaryUnitInfo`]: https://www.ookii.org/docs/binarysize-1.1/html/T_Ookii_BinaryUnitInfo.htm
+[`BinarySize`]: https://www.ookii.org/docs/binarysize-1.2/html/T_Ookii_BinarySize.htm
+[`BinaryUnitInfo`]: https://www.ookii.org/docs/binarysize-1.2/html/T_Ookii_BinaryUnitInfo.htm

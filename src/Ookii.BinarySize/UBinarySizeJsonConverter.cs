@@ -5,30 +5,31 @@ using System.Text.Json.Serialization;
 namespace Ookii;
 
 /// <summary>
-/// Converts the <see cref="BinarySize"/> structure to or from JSON.
+/// Converts the <see cref="UBinarySize"/> structure to or from JSON.
 /// </summary>
 /// <remarks>
 /// <para>
-///   This class is used to serialize <see cref="BinarySize"/> values when using the
+///   This class is used to serialize <see cref="UBinarySize"/> values when using the
 ///   <see cref="JsonSerializer"/> class.
 /// </para>
 /// <para>
-///   <see cref="BinarySize"/> values are serialized to JSON as strings, allowing the use of values
+///   <see cref="UBinarySize"/> values are serialized to JSON as strings, allowing the use of values
 ///   with binary size suffixes.
 /// </para>
 /// </remarks>
 /// <threadsafety instance="true" static="true"/>
-public class BinarySizeJsonConverter : JsonConverter<BinarySize>
+[CLSCompliant(false)]
+public class UBinarySizeJsonConverter : JsonConverter<UBinarySize>
 {
     /// <summary>
-    /// Initializes a new instance of the <see cref="BinarySizeJsonConverter"/> class.
+    /// Initializes a new instance of the <see cref="UBinarySizeJsonConverter"/> class.
     /// </summary>
-    public BinarySizeJsonConverter()
+    public UBinarySizeJsonConverter()
     {
     }
 
     /// <summary>
-    /// Initializes a new instance of the <see cref="BinarySizeJsonConverter"/> class with the specified
+    /// Initializes a new instance of the <see cref="UBinarySizeJsonConverter"/> class with the specified
     /// options.
     /// </summary>
     /// <param name="options">
@@ -38,11 +39,11 @@ public class BinarySizeJsonConverter : JsonConverter<BinarySize>
     /// <remarks>
     /// <para>
     ///   When converting from JSON, the <paramref name="options"/> will be passed to the
-    ///   <see cref="BinarySize.Parse(ReadOnlySpan{char}, BinarySizeOptions, NumberStyles, IFormatProvider?)" qualifyHint="true"/>
+    ///   <see cref="UBinarySize.Parse(ReadOnlySpan{char}, BinarySizeOptions, NumberStyles, IFormatProvider?)" qualifyHint="true"/>
     ///   method.
     /// </para>
     /// </remarks>
-    public BinarySizeJsonConverter(BinarySizeOptions options)
+    public UBinarySizeJsonConverter(BinarySizeOptions options)
     {
         Options = options;
     }
@@ -56,7 +57,7 @@ public class BinarySizeJsonConverter : JsonConverter<BinarySize>
     public BinarySizeOptions Options { get; }
 
     /// <inheritdoc/>
-    public override BinarySize Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
+    public override UBinarySize Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
     {
         var stringValue = reader.GetString();
         if (stringValue == null)
@@ -66,7 +67,7 @@ public class BinarySizeJsonConverter : JsonConverter<BinarySize>
 
         try
         {
-            return BinarySize.Parse(stringValue, Options, NumberStyles.Number, CultureInfo.InvariantCulture);
+            return UBinarySize.Parse(stringValue, Options, NumberStyles.Number, CultureInfo.InvariantCulture);
         }
         catch (FormatException ex)
         {
@@ -79,6 +80,6 @@ public class BinarySizeJsonConverter : JsonConverter<BinarySize>
     }
 
     /// <inheritdoc/>
-    public override void Write(Utf8JsonWriter writer, BinarySize value, JsonSerializerOptions options)
+    public override void Write(Utf8JsonWriter writer, UBinarySize value, JsonSerializerOptions options)
         => writer.WriteStringValue(value.ToString(null, CultureInfo.InvariantCulture));
 }

@@ -1,10 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Diagnostics.CodeAnalysis;
+﻿using System.Diagnostics.CodeAnalysis;
 using System.Globalization;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Ookii;
 
@@ -49,10 +44,10 @@ internal class CultureInfoWrapper : CultureInfo
 
     public override string NativeName => _culture.NativeName;
 
-    public override NumberFormatInfo NumberFormat 
+    public override NumberFormatInfo NumberFormat
     {
         get => _culture.NumberFormat;
-        set => _culture.NumberFormat = value; 
+        set => _culture.NumberFormat = value;
     }
 
     public override Calendar[] OptionalCalendars => _culture.OptionalCalendars;

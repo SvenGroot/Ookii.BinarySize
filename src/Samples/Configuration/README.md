@@ -26,9 +26,9 @@ This makes it easy to use [`BinarySize`][] to configure buffer sizes, cache size
 size you want to be configurable, allowing users to use human-readable values to alter the
 configuration.
 
-[`BinarySize`]: https://www.ookii.org/docs/binarysize-1.1/html/T_Ookii_BinarySize.htm
+[`BinarySize`]: https://www.ookii.org/docs/binarysize-1.2/html/T_Ookii_BinarySize.htm
 [`ConfigurationBuilder`]: https://learn.microsoft.com/dotnet/api/microsoft.extensions.configuration.configurationbuilder
 [`DataContractSerializer`]: https://learn.microsoft.com/dotnet/api/system.runtime.serialization.datacontractserializer
-[`IecBinarySize`]: https://www.ookii.org/docs/binarysize-1.1/html/T_Ookii_IecBinarySize.htm
+[`IecBinarySize`]: https://www.ookii.org/docs/binarysize-1.2/html/T_Ookii_IecBinarySize.htm
 [`JsonSerializer`]: https://learn.microsoft.com/dotnet/api/system.text.json.jsonserializer
 [`XmlSerializer`]: https://learn.microsoft.com/dotnet/api/system.xml.serialization.xmlserializer

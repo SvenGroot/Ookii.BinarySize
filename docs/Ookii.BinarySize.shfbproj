@@ -56,56 +56,7 @@
     <IndentHtml>False</IndentHtml>
     <BuildAssemblerVerbosity>OnlyWarningsAndErrors</BuildAssemblerVerbosity>
     <SaveComponentCacheCapacity>100</SaveComponentCacheCapacity>
-    <!-- ApiFilter to work around https://github.com/EWSoftware/SHFB/issues/1010 -->
-    <ApiFilter>
-      <Filter entryType="Namespace" fullName="Ookii" isExposed="True">
-        <Filter entryType="Structure" fullName="Ookii.BinarySize" filterName="BinarySize" isExposed="True">
-          <Filter entryType="Property" fullName="Ookii.BinarySize.One" filterName="System.Numerics.INumberBase&lt;Ookii.BinarySize&gt;.One" isExposed="False" />
-          <Filter entryType="Property" fullName="Ookii.BinarySize.Radix" filterName="System.Numerics.INumberBase&lt;Ookii.BinarySize&gt;.Radix" isExposed="False" />
-          <Filter entryType="Property" fullName="Ookii.BinarySize.Zero" filterName="System.Numerics.INumberBase&lt;Ookii.BinarySize&gt;.Zero" isExposed="False" />
-          <Filter entryType="Property" fullName="Ookii.BinarySize.NegativeOne" filterName="System.Numerics.ISignedNumber&lt;Ookii.BinarySize&gt;.NegativeOne" isExposed="False" />
-          <Filter entryType="Method" fullName="Ookii.BinarySize.Abs" filterName="System.Numerics.INumberBase&lt;Ookii.BinarySize&gt;.Abs" isExposed="False" />
-          <Filter entryType="Method" fullName="Ookii.BinarySize.IsCanonical" filterName="System.Numerics.INumberBase&lt;Ookii.BinarySize&gt;.IsCanonical" isExposed="False" />
-          <Filter entryType="Method" fullName="Ookii.BinarySize.IsComplexNumber" filterName="System.Numerics.INumberBase&lt;Ookii.BinarySize&gt;.IsComplexNumber" isExposed="False" />
-          <Filter entryType="Method" fullName="Ookii.BinarySize.IsEvenInteger" filterName="System.Numerics.INumberBase&lt;Ookii.BinarySize&gt;.IsEvenInteger" isExposed="False" />
-          <Filter entryType="Method" fullName="Ookii.BinarySize.IsFinite" filterName="System.Numerics.INumberBase&lt;Ookii.BinarySize&gt;.IsFinite" isExposed="False" />
-          <Filter entryType="Method" fullName="Ookii.BinarySize.IsImaginaryNumber" filterName="System.Numerics.INumberBase&lt;Ookii.BinarySize&gt;.IsImaginaryNumber" isExposed="False" />
-          <Filter entryType="Method" fullName="Ookii.BinarySize.IsInfinity" filterName="System.Numerics.INumberBase&lt;Ookii.BinarySize&gt;.IsInfinity" isExposed="False" />
-          <Filter entryType="Method" fullName="Ookii.BinarySize.IsInteger" filterName="System.Numerics.INumberBase&lt;Ookii.BinarySize&gt;.IsInteger" isExposed="False" />
-          <Filter entryType="Method" fullName="Ookii.BinarySize.IsNaN" filterName="System.Numerics.INumberBase&lt;Ookii.BinarySize&gt;.IsNaN" isExposed="False" />
-          <Filter entryType="Method" fullName="Ookii.BinarySize.IsNegative" filterName="System.Numerics.INumberBase&lt;Ookii.BinarySize&gt;.IsNegative" isExposed="False" />
-          <Filter entryType="Method" fullName="Ookii.BinarySize.IsNegativeInfinity" filterName="System.Numerics.INumberBase&lt;Ookii.BinarySize&gt;.IsNegativeInfinity" isExposed="False" />
-          <Filter entryType="Method" fullName="Ookii.BinarySize.IsNormal" filterName="System.Numerics.INumberBase&lt;Ookii.BinarySize&gt;.IsNormal" isExposed="False" />
-          <Filter entryType="Method" fullName="Ookii.BinarySize.IsOddInteger" filterName="System.Numerics.INumberBase&lt;Ookii.BinarySize&gt;.IsOddInteger" isExposed="False" />
-          <Filter entryType="Method" fullName="Ookii.BinarySize.IsPositive" filterName="System.Numerics.INumberBase&lt;Ookii.BinarySize&gt;.IsPositive" isExposed="False" />
-          <Filter entryType="Method" fullName="Ookii.BinarySize.IsPositiveInfinity" filterName="System.Numerics.INumberBase&lt;Ookii.BinarySize&gt;.IsPositiveInfinity" isExposed="False" />
-          <Filter entryType="Method" fullName="Ookii.BinarySize.IsPow2" filterName="System.Numerics.IBinaryNumber&lt;Ookii.BinarySize&gt;.IsPow2" isExposed="False" />
-          <Filter entryType="Method" fullName="Ookii.BinarySize.IsRealNumber" filterName="System.Numerics.INumberBase&lt;Ookii.BinarySize&gt;.IsRealNumber" isExposed="False" />
-          <Filter entryType="Method" fullName="Ookii.BinarySize.IsSubnormal" filterName="System.Numerics.INumberBase&lt;Ookii.BinarySize&gt;.IsSubnormal" isExposed="False" />
-          <Filter entryType="Method" fullName="Ookii.BinarySize.IsZero" filterName="System.Numerics.INumberBase&lt;Ookii.BinarySize&gt;.IsZero" isExposed="False" />
-          <Filter entryType="Method" fullName="Ookii.BinarySize.Log2" filterName="System.Numerics.IBinaryNumber&lt;Ookii.BinarySize&gt;.Log2" isExposed="False" />
-          <Filter entryType="Method" fullName="Ookii.BinarySize.MaxMagnitude" filterName="System.Numerics.INumberBase&lt;Ookii.BinarySize&gt;.MaxMagnitude" isExposed="False" />
-          <Filter entryType="Method" fullName="Ookii.BinarySize.MaxMagnitudeNumber" filterName="System.Numerics.INumberBase&lt;Ookii.BinarySize&gt;.MaxMagnitudeNumber" isExposed="False" />
-          <Filter entryType="Method" fullName="Ookii.BinarySize.MinMagnitude" filterName="System.Numerics.INumberBase&lt;Ookii.BinarySize&gt;.MinMagnitude" isExposed="False" />
-          <Filter entryType="Method" fullName="Ookii.BinarySize.MinMagnitudeNumber" filterName="System.Numerics.INumberBase&lt;Ookii.BinarySize&gt;.MinMagnitudeNumber" isExposed="False" />
-          <Filter entryType="Method" fullName="Ookii.BinarySize.Parse" filterName="System.Numerics.INumberBase&lt;Ookii.BinarySize&gt;.Parse" isExposed="False" />
-          <Filter entryType="Method" fullName="Ookii.BinarySize.Parse" filterName="System.Numerics.INumberBase&lt;Ookii.BinarySize&gt;.Parse" isExposed="False" />
-          <Filter entryType="Method" fullName="Ookii.BinarySize.TryConvertFromChecked" filterName="System.Numerics.INumberBase&lt;Ookii.BinarySize&gt;.TryConvertFromChecked" isExposed="False" />
-          <Filter entryType="Method" fullName="Ookii.BinarySize.TryConvertFromSaturating" filterName="System.Numerics.INumberBase&lt;Ookii.BinarySize&gt;.TryConvertFromSaturating" isExposed="False" />
-          <Filter entryType="Method" fullName="Ookii.BinarySize.TryConvertFromTruncating" filterName="System.Numerics.INumberBase&lt;Ookii.BinarySize&gt;.TryConvertFromTruncating" isExposed="False" />
-          <Filter entryType="Method" fullName="Ookii.BinarySize.TryConvertToChecked" filterName="System.Numerics.INumberBase&lt;Ookii.BinarySize&gt;.TryConvertToChecked" isExposed="False" />
-          <Filter entryType="Method" fullName="Ookii.BinarySize.TryConvertToSaturating" filterName="System.Numerics.INumberBase&lt;Ookii.BinarySize&gt;.TryConvertToSaturating" isExposed="False" />
-          <Filter entryType="Method" fullName="Ookii.BinarySize.TryConvertToTruncating" filterName="System.Numerics.INumberBase&lt;Ookii.BinarySize&gt;.TryConvertToTruncating" isExposed="False" />
-          <Filter entryType="Method" fullName="Ookii.BinarySize.TryParse" filterName="System.Numerics.INumberBase&lt;Ookii.BinarySize&gt;.TryParse" isExposed="False" />
-          <Filter entryType="Method" fullName="Ookii.BinarySize.TryParse" filterName="System.Numerics.INumberBase&lt;Ookii.BinarySize&gt;.TryParse" isExposed="False" />
-          <Filter entryType="Property" fullName="Ookii.BinarySize.MaxValue" filterName="System.Numerics.IMinMaxValue&lt;Ookii.BinarySize&gt;.MaxValue" isExposed="False" />
-          <Filter entryType="Property" fullName="Ookii.BinarySize.MinValue" filterName="System.Numerics.IMinMaxValue&lt;Ookii.BinarySize&gt;.MinValue" isExposed="False" />
-          <Filter entryType="Property" fullName="Ookii.BinarySize.AdditiveIdentity" filterName="System.Numerics.IAdditiveIdentity&lt;Ookii.BinarySize,Ookii.BinarySize&gt;.AdditiveIdentity" isExposed="False" />
-          <Filter entryType="Property" fullName="Ookii.BinarySize.MultiplicativeIdentity" filterName="System.Numerics.IMultiplicativeIdentity&lt;Ookii.BinarySize,Ookii.BinarySize&gt;.MultiplicativeIdentity" isExposed="False" />
-        </Filter>
-      </Filter>
-    </ApiFilter>
-    <HelpTitle>Ookii.BinarySize 1.1 documentation</HelpTitle>
+    <HelpTitle>Ookii.BinarySize 1.2 documentation</HelpTitle>
     <HelpFileVersion>1.0.0.0</HelpFileVersion>
     <NamingMethod>MemberName</NamingMethod>
     <ContentPlacement>AboveNamespaces</ContentPlacement>
@@ -116,14 +67,8 @@
     <CopyrightHref>https://github.com/SvenGroot/Ookii.BinarySize</CopyrightHref>
     <CopyrightText>Copyright &amp;#169%3b Sven Groot %28Ookii.org%29</CopyrightText>
     <SdkLinkTarget>Blank</SdkLinkTarget>
-    <ProjectSummary>&amp;lt%3bpara&amp;gt%3b
-  Ookii.BinarySize provides parsing and formatting of quantities of bytes using human-readable representation, with binary prefixes such as &amp;quot%3bMB&amp;quot%3b, &amp;quot%3bGiB&amp;quot%3b, and so forth.
-&amp;lt%3b/para&amp;gt%3b
-&amp;lt%3bpara&amp;gt%3b
-  The &amp;lt%3bsee cref=&amp;quot%3bT:Ookii.BinarySize&amp;quot%3b/&amp;gt%3b structure provides most of the library&amp;#39%3bs functionality. The &amp;lt%3bsee cref=&amp;quot%3bT:Ookii.IecBinarySize&amp;quot%3b/&amp;gt%3b structure is a wrapper
-  that parses SI prefixes as powers of ten.
-&amp;lt%3b/para&amp;gt%3b
-&amp;lt%3bseealso href=&amp;quot%3bhttps://github.com/SvenGroot/Ookii.BinarySize&amp;quot%3b&amp;gt%3bOokii.BinarySize on GitHub&amp;lt%3b/seealso&amp;gt%3b</ProjectSummary>
+    <ProjectSummary>
+    </ProjectSummary>
     <NamespaceSummaries>
       <NamespaceSummaryItem name="Ookii" isDocumented="True">&lt;para&gt;
   Ookii.BinarySize provides parsing and formatting of quantities of bytes using human-readable representation, with binary prefixes such as "MB", "GiB", and so forth.
@@ -131,6 +76,9 @@
 &lt;para&gt;
   The &lt;see cref="T:Ookii.BinarySize"/&gt; structure provides most of the library's functionality. The &lt;see cref="T:Ookii.IecBinarySize"/&gt; structure is a wrapper
   that parses SI prefixes as powers of ten.
+&lt;/para&gt;
+&lt;para&gt;
+  The &lt;see cref="T:Ookii.UBinarySize"/&gt; and &lt;see cref="T:Ookii.UIecBinarySize"/&gt; structures provide unsigned versions of the same functionality.
 &lt;/para&gt;
 &lt;seealso href="https://github.com/SvenGroot/Ookii.BinarySize"&gt;Ookii.BinarySize on GitHub&lt;/seealso&gt;</NamespaceSummaryItem>
     </NamespaceSummaries>

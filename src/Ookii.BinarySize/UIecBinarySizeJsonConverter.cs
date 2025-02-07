@@ -5,16 +5,16 @@ using System.Text.Json.Serialization;
 namespace Ookii;
 
 /// <summary>
-/// Converts the <see cref="IecBinarySize"/> structure to or from JSON.
+/// Converts the <see cref="UIecBinarySize"/> structure to or from JSON.
 /// </summary>
 /// <remarks>
 /// <para>
-///   This class is used to serialize <see cref="IecBinarySize"/> values when using the
+///   This class is used to serialize <see cref="UIecBinarySize"/> values when using the
 ///   <see cref="JsonSerializer"/> class.
 /// </para>
 /// <para>
-///   <see cref="IecBinarySize"/> values are serialized to JSON as strings, allowing the use of values
-///   with binary size suffixes.
+///   <see cref="UIecBinarySize"/> values are serialized to JSON as strings, allowing the use of
+///   values with binary size suffixes.
 /// </para>
 /// <para>
 ///   When deserializing from JSON, this converter will interpret SI prefixes as based on powers of
@@ -23,17 +23,18 @@ namespace Ookii;
 /// </para>
 /// </remarks>
 /// <threadsafety instance="true" static="true"/>
-public class IecBinarySizeJsonConverter : JsonConverter<IecBinarySize>
+[CLSCompliant(false)]
+public class UIecBinarySizeJsonConverter : JsonConverter<UIecBinarySize>
 {
     /// <summary>
     /// Initializes a new instance of the <see cref="BinarySizeJsonConverter"/> class.
     /// </summary>
-    public IecBinarySizeJsonConverter()
+    public UIecBinarySizeJsonConverter()
     {
     }
 
     /// <inheritdoc/>
-    public override IecBinarySize Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
+    public override UIecBinarySize Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
     {
         var stringValue = reader.GetString();
         if (stringValue == null)
@@ -43,7 +44,7 @@ public class IecBinarySizeJsonConverter : JsonConverter<IecBinarySize>
 
         try
         {
-            return IecBinarySize.Parse(stringValue, CultureInfo.InvariantCulture);
+            return UIecBinarySize.Parse(stringValue, CultureInfo.InvariantCulture);
         }
         catch (FormatException ex)
         {
@@ -56,6 +57,6 @@ public class IecBinarySizeJsonConverter : JsonConverter<IecBinarySize>
     }
 
     /// <inheritdoc/>
-    public override void Write(Utf8JsonWriter writer, IecBinarySize value, JsonSerializerOptions options)
+    public override void Write(Utf8JsonWriter writer, UIecBinarySize value, JsonSerializerOptions options)
         => writer.WriteStringValue(value.ToString(null, CultureInfo.InvariantCulture));
 }

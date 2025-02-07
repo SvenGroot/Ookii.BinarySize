@@ -15,6 +15,8 @@ automatically choose the best unit, or you can choose the one you want, based on
 - Interpret SI prefixes as either [powers of two or powers of ten](https://en.wikipedia.org/wiki/Byte#Multiple-byte_units).
 - Parse and store values up to approximately positive and negative 8 EiB, using `Int64` (`long`)
   as the underlying storage.
+- Provides an unsigned version that can parse and store values up to approximately 16 EiB, using
+  `UInt64` (`ulong`) as the underlying storage.
 - Support for localizing units and prefixes.
 - Implements arithmetic and binary operators, and supports .Net 7 generic math.
 - Trim-friendly.
@@ -80,4 +82,4 @@ Which outputs:
 
 See the [GitHub project](https://www.github.com/SvenGroot/Ookii.BinarySize) for more information.
 
-[`BinarySize.ToString()`]: https://www.ookii.org/docs/binarysize-1.1/html/M_Ookii_BinarySize_ToString_1.htm
+[`BinarySize.ToString()`]: https://www.ookii.org/docs/binarysize-1.2/html/M_Ookii_BinarySize_ToString_1.htm
