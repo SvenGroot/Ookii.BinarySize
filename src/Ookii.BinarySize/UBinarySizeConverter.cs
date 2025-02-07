@@ -1,5 +1,4 @@
-﻿using System;
-using System.ComponentModel;
+﻿using System.ComponentModel;
 using System.Globalization;
 
 namespace Ookii;
@@ -28,7 +27,7 @@ public class UBinarySizeConverter : TypeConverter
     /// Initializes a new instance of the <see cref="UBinarySizeConverter"/> class.
     /// </summary>
     public UBinarySizeConverter()
-    { 
+    {
     }
 
     /// <summary>

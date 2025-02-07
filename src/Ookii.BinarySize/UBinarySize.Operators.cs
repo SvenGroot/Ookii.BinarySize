@@ -1,11 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Numerics;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace Ookii;
+﻿namespace Ookii;
 
 partial struct UBinarySize
 {
@@ -421,7 +414,7 @@ partial struct UBinarySize
     /// <returns>
     /// The result of subtracting <paramref name="right"/> from <paramref name="left"/>.
     /// </returns>
-    public static UBinarySize operator checked  -(UBinarySize left, ulong right) => (UBinarySize)checked(left.Value - right);
+    public static UBinarySize operator checked -(UBinarySize left, ulong right) => (UBinarySize)checked(left.Value - right);
 
     /// <summary>
     /// Subtracts a <see cref="UBinarySize"/> value from a <see cref="ulong"/> in a checked context.
@@ -489,7 +482,7 @@ partial struct UBinarySize
     /// <returns>
     /// The result of multiplying <paramref name="left"/> and <paramref name="right"/>.
     /// </returns>
-    public static UBinarySize operator checked  *(UBinarySize left, ulong right) => (UBinarySize)checked(left.Value * right);
+    public static UBinarySize operator checked *(UBinarySize left, ulong right) => (UBinarySize)checked(left.Value * right);
 
     /// <summary>
     /// Multiplies a <see cref="ulong"/> value by a <see cref="UBinarySize"/> in a checked context.
@@ -499,7 +492,7 @@ partial struct UBinarySize
     /// <returns>
     /// The result of multiplying <paramref name="left"/> and <paramref name="right"/>.
     /// </returns>
-    public static UBinarySize operator checked  *(ulong left, UBinarySize right) => (UBinarySize)checked(left * right.Value);
+    public static UBinarySize operator checked *(ulong left, UBinarySize right) => (UBinarySize)checked(left * right.Value);
 
     #endregion
 

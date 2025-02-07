@@ -1,11 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Numerics;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace Ookii;
+﻿namespace Ookii;
 
 partial struct BinarySize
 {
@@ -428,7 +421,7 @@ partial struct BinarySize
     /// <returns>
     /// The result of subtracting <paramref name="right"/> from <paramref name="left"/>.
     /// </returns>
-    public static BinarySize operator checked  -(BinarySize left, long right) => (BinarySize)checked(left.Value - right);
+    public static BinarySize operator checked -(BinarySize left, long right) => (BinarySize)checked(left.Value - right);
 
     /// <summary>
     /// Subtracts a <see cref="BinarySize"/> value from a <see cref="long"/> in a checked context.
@@ -496,7 +489,7 @@ partial struct BinarySize
     /// <returns>
     /// The result of multiplying <paramref name="left"/> and <paramref name="right"/>.
     /// </returns>
-    public static BinarySize operator checked  *(BinarySize left, long right) => (BinarySize)checked(left.Value * right);
+    public static BinarySize operator checked *(BinarySize left, long right) => (BinarySize)checked(left.Value * right);
 
     /// <summary>
     /// Multiplies a <see cref="long"/> value by a <see cref="BinarySize"/> in a checked context.
@@ -506,7 +499,7 @@ partial struct BinarySize
     /// <returns>
     /// The result of multiplying <paramref name="left"/> and <paramref name="right"/>.
     /// </returns>
-    public static BinarySize operator checked  *(long left, BinarySize right) => (BinarySize)checked(left * right.Value);
+    public static BinarySize operator checked *(long left, BinarySize right) => (BinarySize)checked(left * right.Value);
 
     #endregion
 

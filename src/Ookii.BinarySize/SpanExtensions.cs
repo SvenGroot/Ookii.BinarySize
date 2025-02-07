@@ -1,6 +1,4 @@
-﻿using System.Globalization;
-
-namespace Ookii;
+﻿namespace Ookii;
 
 static class SpanExtensions
 {

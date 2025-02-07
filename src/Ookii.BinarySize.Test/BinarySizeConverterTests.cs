@@ -1,5 +1,4 @@
-﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
-using System.ComponentModel;
+﻿using System.ComponentModel;
 using System.Globalization;
 
 namespace Ookii.Test;
@@ -7,7 +6,7 @@ namespace Ookii.Test;
 [TestClass]
 public class BinarySizeConverterTests
 {
-    private static readonly Type[] PrimitiveTypes = { typeof(long), typeof(ulong), typeof(int), typeof(uint), typeof(short),
+    private static readonly Type[] _primitiveTypes = { typeof(long), typeof(ulong), typeof(int), typeof(uint), typeof(short),
         typeof(ushort), typeof(sbyte), typeof(byte), typeof(double), typeof(float) };
 
     [TestMethod]
@@ -22,7 +21,7 @@ public class BinarySizeConverterTests
         Assert.IsTrue(converter.CanConvertTo(typeof(IecBinarySize)));
         Assert.IsTrue(converter.CanConvertTo(typeof(UBinarySize)));
         Assert.IsTrue(converter.CanConvertTo(typeof(UIecBinarySize)));
-        foreach (var type in PrimitiveTypes)
+        foreach (var type in _primitiveTypes)
         {
             Assert.IsTrue(converter.CanConvertTo(type));
         }
@@ -36,7 +35,7 @@ public class BinarySizeConverterTests
         Assert.IsTrue(converter.CanConvertTo(typeof(BinarySize)));
         Assert.IsTrue(converter.CanConvertTo(typeof(UBinarySize)));
         Assert.IsTrue(converter.CanConvertTo(typeof(UIecBinarySize)));
-        foreach (var type in PrimitiveTypes)
+        foreach (var type in _primitiveTypes)
         {
             Assert.IsTrue(converter.CanConvertTo(type));
         }

@@ -25,7 +25,7 @@ public class UBinarySizeJsonConverter : JsonConverter<UBinarySize>
     /// Initializes a new instance of the <see cref="UBinarySizeJsonConverter"/> class.
     /// </summary>
     public UBinarySizeJsonConverter()
-    { 
+    {
     }
 
     /// <summary>

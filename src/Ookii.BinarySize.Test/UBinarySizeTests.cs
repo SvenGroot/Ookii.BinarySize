@@ -1,10 +1,6 @@
-﻿using Microsoft.VisualStudio.TestPlatform.Common.Utilities;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
-using System;
-using System.ComponentModel;
+﻿using System.ComponentModel;
 using System.Globalization;
 using System.Runtime.Serialization;
-using System.Runtime.Serialization.Formatters.Binary;
 using System.Text.Json;
 using System.Xml;
 using System.Xml.Serialization;
@@ -216,7 +212,7 @@ public class UBinarySizeTests
 
     [TestMethod]
     public void TestParseDecimal()
-    { 
+    {
         Assert.AreEqual(new UBinarySize(123), UBinarySize.Parse("123", BinarySizeOptions.UseIecStandard, NumberStyles.Number, CultureInfo.InvariantCulture));
         Assert.AreEqual(new UBinarySize(123), UBinarySize.Parse("123B", BinarySizeOptions.UseIecStandard, NumberStyles.Number, CultureInfo.InvariantCulture));
         Assert.AreEqual(new UBinarySize(123000), UBinarySize.Parse("123KB", BinarySizeOptions.UseIecStandard, NumberStyles.Number, CultureInfo.InvariantCulture));

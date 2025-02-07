@@ -499,5 +499,4 @@ static class FormatHelper
             _ => null,
         };
     }
-
 }

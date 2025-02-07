@@ -29,7 +29,7 @@ public class IecBinarySizeJsonConverter : JsonConverter<IecBinarySize>
     /// Initializes a new instance of the <see cref="BinarySizeJsonConverter"/> class.
     /// </summary>
     public IecBinarySizeJsonConverter()
-    { 
+    {
     }
 
     /// <inheritdoc/>

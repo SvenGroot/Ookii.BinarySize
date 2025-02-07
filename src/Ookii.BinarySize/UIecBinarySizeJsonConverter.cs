@@ -30,7 +30,7 @@ public class UIecBinarySizeJsonConverter : JsonConverter<UIecBinarySize>
     /// Initializes a new instance of the <see cref="BinarySizeJsonConverter"/> class.
     /// </summary>
     public UIecBinarySizeJsonConverter()
-    { 
+    {
     }
 
     /// <inheritdoc/>

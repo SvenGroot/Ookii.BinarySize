@@ -584,5 +584,4 @@ public static class AsyncEnumerableExtensions
         var result = await source.AverageAsync(s => (decimal?)selector(s)?.Value, cancellationToken);
         return (UBinarySize?)(ulong?)result;
     }
-
 }

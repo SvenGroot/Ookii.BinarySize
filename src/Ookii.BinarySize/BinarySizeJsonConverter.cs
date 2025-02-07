@@ -24,7 +24,7 @@ public class BinarySizeJsonConverter : JsonConverter<BinarySize>
     /// Initializes a new instance of the <see cref="BinarySizeJsonConverter"/> class.
     /// </summary>
     public BinarySizeJsonConverter()
-    { 
+    {
     }
 
     /// <summary>
