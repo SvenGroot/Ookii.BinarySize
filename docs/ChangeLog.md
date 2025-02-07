@@ -1,6 +1,6 @@
 # What's new in Ookii.BinarySize
 
-## Ookii.BinarySize 1.2 (TBD)
+## Ookii.BinarySize 1.2 (2025-02-07)
 
 - Add the [`UBinarySize`][] structure to support unsigned values.
 
