@@ -107,7 +107,7 @@ public class BinarySizeTests
         Assert.AreEqual((BinarySize)2000, BinarySize.Parse("2 lc", BinarySizeOptions.UseIecStandard, provider: CultureInfo.InvariantCulture.WithBinaryUnitInfo(unitInfo)));
         Assert.AreEqual((BinarySize)2, BinarySize.Parse("2 C", BinarySizeOptions.UseIecStandard, provider: CultureInfo.InvariantCulture.WithBinaryUnitInfo(unitInfo)));
         Assert.AreEqual((BinarySize)2, BinarySize.Parse("2 cs", BinarySizeOptions.UseIecStandard, provider: CultureInfo.InvariantCulture.WithBinaryUnitInfo(unitInfo)));
-        Assert.ThrowsException<FormatException>(() => BinarySize.Parse("2 :cs", BinarySizeOptions.UseIecStandard, provider: CultureInfo.InvariantCulture.WithBinaryUnitInfo(unitInfo)));
+        Assert.Throws<FormatException>(() => BinarySize.Parse("2 :cs", BinarySizeOptions.UseIecStandard, provider: CultureInfo.InvariantCulture.WithBinaryUnitInfo(unitInfo)));
     }
 
     [TestMethod]
@@ -279,13 +279,13 @@ public class BinarySizeTests
         Assert.AreEqual(BinarySize.FromKibi(2), BinarySize.Parse("2 barbits", BinarySizeOptions.UseIecStandard | BinarySizeOptions.AllowLongUnits, provider: CultureInfo.InvariantCulture.WithBinaryUnitInfo(unitInfo)));
         Assert.AreEqual((BinarySize)2, BinarySize.Parse("2 bits", BinarySizeOptions.UseIecStandard | BinarySizeOptions.AllowLongUnits, provider: CultureInfo.InvariantCulture.WithBinaryUnitInfo(unitInfo)));
         Assert.AreEqual((BinarySize)2, BinarySize.Parse("2 bit", BinarySizeOptions.UseIecStandard | BinarySizeOptions.AllowLongUnits, provider: CultureInfo.InvariantCulture.WithBinaryUnitInfo(unitInfo)));
-        Assert.ThrowsException<FormatException>(() => BinarySize.Parse("2 :bits", BinarySizeOptions.UseIecStandard | BinarySizeOptions.AllowLongUnits, provider: CultureInfo.InvariantCulture.WithBinaryUnitInfo(unitInfo)));
+        Assert.Throws<FormatException>(() => BinarySize.Parse("2 :bits", BinarySizeOptions.UseIecStandard | BinarySizeOptions.AllowLongUnits, provider: CultureInfo.InvariantCulture.WithBinaryUnitInfo(unitInfo)));
 
         // Test flags.
         Assert.AreEqual(new BinarySize(125952), BinarySize.Parse("123kilobytes", BinarySizeOptions.AllowLongUnitsOnly, NumberStyles.Number, CultureInfo.InvariantCulture));
         Assert.AreEqual(new BinarySize(125952), BinarySize.Parse("123kb", BinarySizeOptions.AllowLongUnits, NumberStyles.Number, CultureInfo.InvariantCulture));
-        Assert.ThrowsException<FormatException>(() => BinarySize.Parse("2 kilobytes", CultureInfo.InvariantCulture));
-        Assert.ThrowsException<FormatException>(() => BinarySize.Parse("123kb", BinarySizeOptions.AllowLongUnitsOnly, NumberStyles.Number, CultureInfo.InvariantCulture));
+        Assert.Throws<FormatException>(() => BinarySize.Parse("2 kilobytes", CultureInfo.InvariantCulture));
+        Assert.Throws<FormatException>(() => BinarySize.Parse("123kb", BinarySizeOptions.AllowLongUnitsOnly, NumberStyles.Number, CultureInfo.InvariantCulture));
     }
 
     [TestMethod]
@@ -326,10 +326,10 @@ public class BinarySizeTests
         var culture = CultureInfo.InvariantCulture.WithBinaryUnitInfo(unitInfo);
         Assert.AreEqual(new BinarySize(125952), BinarySize.Parse("123KB", culture));
         Assert.AreEqual(new BinarySize(125952), BinarySize.Parse("123kB", culture)); // Allowed because of short decimal kilo
-        Assert.ThrowsException<FormatException>(() => BinarySize.Parse("123Kb", culture));
+        Assert.Throws<FormatException>(() => BinarySize.Parse("123Kb", culture));
         Assert.AreEqual(new BinarySize(125952), BinarySize.Parse("123kilobytes", BinarySizeOptions.AllowLongUnits, NumberStyles.Number, culture));
-        Assert.ThrowsException<FormatException>(() => BinarySize.Parse("123Kilobytes", BinarySizeOptions.AllowLongUnits, NumberStyles.Number, culture));
-        Assert.ThrowsException<FormatException>(() => BinarySize.Parse("123kiloBytes", BinarySizeOptions.AllowLongUnits, NumberStyles.Number, culture));
+        Assert.Throws<FormatException>(() => BinarySize.Parse("123Kilobytes", BinarySizeOptions.AllowLongUnits, NumberStyles.Number, culture));
+        Assert.Throws<FormatException>(() => BinarySize.Parse("123kiloBytes", BinarySizeOptions.AllowLongUnits, NumberStyles.Number, culture));
 
         Assert.IsTrue(BinarySize.TryParse("123KB", culture, out BinarySize result));
         Assert.IsTrue(BinarySize.TryParse("123kB", culture, out result));
@@ -772,19 +772,19 @@ public class BinarySizeTests
             Assert.AreEqual((BinarySize)(-value2), -size2);
             Assert.AreEqual((BinarySize)(+value2), +size2);
 
-            Assert.ThrowsException<OverflowException>(() => BinarySize.MaxValue + BinarySize.MaxValue);
-            Assert.ThrowsException<OverflowException>(() => long.MaxValue + BinarySize.MaxValue);
-            Assert.ThrowsException<OverflowException>(() => BinarySize.MaxValue + long.MaxValue);
-            Assert.ThrowsException<OverflowException>(() => BinarySize.MinValue - BinarySize.MaxValue);
-            Assert.ThrowsException<OverflowException>(() => long.MinValue - BinarySize.MaxValue);
-            Assert.ThrowsException<OverflowException>(() => BinarySize.MinValue - long.MaxValue);
-            Assert.ThrowsException<OverflowException>(() => BinarySize.MaxValue * BinarySize.MaxValue);
-            Assert.ThrowsException<OverflowException>(() => long.MaxValue * BinarySize.MaxValue);
-            Assert.ThrowsException<OverflowException>(() => BinarySize.MaxValue * long.MaxValue);
+            Assert.Throws<OverflowException>(() => BinarySize.MaxValue + BinarySize.MaxValue);
+            Assert.Throws<OverflowException>(() => long.MaxValue + BinarySize.MaxValue);
+            Assert.Throws<OverflowException>(() => BinarySize.MaxValue + long.MaxValue);
+            Assert.Throws<OverflowException>(() => BinarySize.MinValue - BinarySize.MaxValue);
+            Assert.Throws<OverflowException>(() => long.MinValue - BinarySize.MaxValue);
+            Assert.Throws<OverflowException>(() => BinarySize.MinValue - long.MaxValue);
+            Assert.Throws<OverflowException>(() => BinarySize.MaxValue * BinarySize.MaxValue);
+            Assert.Throws<OverflowException>(() => long.MaxValue * BinarySize.MaxValue);
+            Assert.Throws<OverflowException>(() => BinarySize.MaxValue * long.MaxValue);
             size1 = BinarySize.MaxValue;
-            Assert.ThrowsException<OverflowException>(() => size1++);
+            Assert.Throws<OverflowException>(() => size1++);
             size1 = BinarySize.MinValue;
-            Assert.ThrowsException<OverflowException>(() => size1--);
+            Assert.Throws<OverflowException>(() => size1--);
         }
     }
 
