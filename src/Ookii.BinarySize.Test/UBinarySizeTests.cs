@@ -49,12 +49,12 @@ public class UBinarySizeTests
     [TestMethod]
     public void TestFromNegative()
     {
-        Assert.ThrowsException<OverflowException>(() => UBinarySize.FromKibi(-1));
-        Assert.ThrowsException<OverflowException>(() => UBinarySize.FromMebi(-1));
-        Assert.ThrowsException<OverflowException>(() => UBinarySize.FromGibi(-1));
-        Assert.ThrowsException<OverflowException>(() => UBinarySize.FromTebi(-1));
-        Assert.ThrowsException<OverflowException>(() => UBinarySize.FromPebi(-1));
-        Assert.ThrowsException<OverflowException>(() => UBinarySize.FromExbi(-1));
+        Assert.Throws<OverflowException>(() => UBinarySize.FromKibi(-1));
+        Assert.Throws<OverflowException>(() => UBinarySize.FromMebi(-1));
+        Assert.Throws<OverflowException>(() => UBinarySize.FromGibi(-1));
+        Assert.Throws<OverflowException>(() => UBinarySize.FromTebi(-1));
+        Assert.Throws<OverflowException>(() => UBinarySize.FromPebi(-1));
+        Assert.Throws<OverflowException>(() => UBinarySize.FromExbi(-1));
     }
 
     [TestMethod]
@@ -85,7 +85,7 @@ public class UBinarySizeTests
         Assert.AreEqual(new UBinarySize(6341068275337658368), UBinarySize.Parse("5.5 EB ", CultureInfo.InvariantCulture)); // with some spaces.
 
         // Negative
-        Assert.ThrowsException<OverflowException>(() => UBinarySize.Parse("-123.5KB", CultureInfo.InvariantCulture));
+        Assert.Throws<OverflowException>(() => UBinarySize.Parse("-123.5KB", CultureInfo.InvariantCulture));
 
         // Explicit culture test:
         Assert.AreEqual(new UBinarySize(126464), UBinarySize.Parse("123.5KB", CultureInfo.InvariantCulture));
@@ -118,7 +118,7 @@ public class UBinarySizeTests
         Assert.AreEqual((UBinarySize)2000, UBinarySize.Parse("2 lc", BinarySizeOptions.UseIecStandard, provider: CultureInfo.InvariantCulture.WithBinaryUnitInfo(unitInfo)));
         Assert.AreEqual((UBinarySize)2, UBinarySize.Parse("2 C", BinarySizeOptions.UseIecStandard, provider: CultureInfo.InvariantCulture.WithBinaryUnitInfo(unitInfo)));
         Assert.AreEqual((UBinarySize)2, UBinarySize.Parse("2 cs", BinarySizeOptions.UseIecStandard, provider: CultureInfo.InvariantCulture.WithBinaryUnitInfo(unitInfo)));
-        Assert.ThrowsException<FormatException>(() => UBinarySize.Parse("2 :cs", BinarySizeOptions.UseIecStandard, provider: CultureInfo.InvariantCulture.WithBinaryUnitInfo(unitInfo)));
+        Assert.Throws<FormatException>(() => UBinarySize.Parse("2 :cs", BinarySizeOptions.UseIecStandard, provider: CultureInfo.InvariantCulture.WithBinaryUnitInfo(unitInfo)));
     }
 
     [TestMethod]
@@ -265,7 +265,7 @@ public class UBinarySizeTests
         Assert.AreEqual(new UBinarySize(6341068275337658368), UBinarySize.Parse("5.5exa", BinarySizeOptions.AllowLongUnits, NumberStyles.Number, CultureInfo.InvariantCulture));
 
         // Negative
-        Assert.ThrowsException<OverflowException>(() => UBinarySize.Parse("-123.5kilobytes", BinarySizeOptions.AllowLongUnits, NumberStyles.Number, CultureInfo.InvariantCulture));
+        Assert.Throws<OverflowException>(() => UBinarySize.Parse("-123.5kilobytes", BinarySizeOptions.AllowLongUnits, NumberStyles.Number, CultureInfo.InvariantCulture));
 
         var unitInfo = new BinaryUnitInfo()
         {
@@ -289,13 +289,13 @@ public class UBinarySizeTests
         Assert.AreEqual(UBinarySize.FromKibi(2), UBinarySize.Parse("2 barbits", BinarySizeOptions.UseIecStandard | BinarySizeOptions.AllowLongUnits, provider: CultureInfo.InvariantCulture.WithBinaryUnitInfo(unitInfo)));
         Assert.AreEqual((UBinarySize)2, UBinarySize.Parse("2 bits", BinarySizeOptions.UseIecStandard | BinarySizeOptions.AllowLongUnits, provider: CultureInfo.InvariantCulture.WithBinaryUnitInfo(unitInfo)));
         Assert.AreEqual((UBinarySize)2, UBinarySize.Parse("2 bit", BinarySizeOptions.UseIecStandard | BinarySizeOptions.AllowLongUnits, provider: CultureInfo.InvariantCulture.WithBinaryUnitInfo(unitInfo)));
-        Assert.ThrowsException<FormatException>(() => UBinarySize.Parse("2 :bits", BinarySizeOptions.UseIecStandard | BinarySizeOptions.AllowLongUnits, provider: CultureInfo.InvariantCulture.WithBinaryUnitInfo(unitInfo)));
+        Assert.Throws<FormatException>(() => UBinarySize.Parse("2 :bits", BinarySizeOptions.UseIecStandard | BinarySizeOptions.AllowLongUnits, provider: CultureInfo.InvariantCulture.WithBinaryUnitInfo(unitInfo)));
 
         // Test flags.
         Assert.AreEqual(new UBinarySize(125952), UBinarySize.Parse("123kilobytes", BinarySizeOptions.AllowLongUnitsOnly, NumberStyles.Number, CultureInfo.InvariantCulture));
         Assert.AreEqual(new UBinarySize(125952), UBinarySize.Parse("123kb", BinarySizeOptions.AllowLongUnits, NumberStyles.Number, CultureInfo.InvariantCulture));
-        Assert.ThrowsException<FormatException>(() => UBinarySize.Parse("2 kilobytes", CultureInfo.InvariantCulture));
-        Assert.ThrowsException<FormatException>(() => UBinarySize.Parse("123kb", BinarySizeOptions.AllowLongUnitsOnly, NumberStyles.Number, CultureInfo.InvariantCulture));
+        Assert.Throws<FormatException>(() => UBinarySize.Parse("2 kilobytes", CultureInfo.InvariantCulture));
+        Assert.Throws<FormatException>(() => UBinarySize.Parse("123kb", BinarySizeOptions.AllowLongUnitsOnly, NumberStyles.Number, CultureInfo.InvariantCulture));
     }
 
     [TestMethod]
@@ -336,10 +336,10 @@ public class UBinarySizeTests
         var culture = CultureInfo.InvariantCulture.WithBinaryUnitInfo(unitInfo);
         Assert.AreEqual(new UBinarySize(125952), UBinarySize.Parse("123KB", culture));
         Assert.AreEqual(new UBinarySize(125952), UBinarySize.Parse("123kB", culture)); // Allowed because of short decimal kilo
-        Assert.ThrowsException<FormatException>(() => UBinarySize.Parse("123Kb", culture));
+        Assert.Throws<FormatException>(() => UBinarySize.Parse("123Kb", culture));
         Assert.AreEqual(new UBinarySize(125952), UBinarySize.Parse("123kilobytes", BinarySizeOptions.AllowLongUnits, NumberStyles.Number, culture));
-        Assert.ThrowsException<FormatException>(() => UBinarySize.Parse("123Kilobytes", BinarySizeOptions.AllowLongUnits, NumberStyles.Number, culture));
-        Assert.ThrowsException<FormatException>(() => UBinarySize.Parse("123kiloBytes", BinarySizeOptions.AllowLongUnits, NumberStyles.Number, culture));
+        Assert.Throws<FormatException>(() => UBinarySize.Parse("123Kilobytes", BinarySizeOptions.AllowLongUnits, NumberStyles.Number, culture));
+        Assert.Throws<FormatException>(() => UBinarySize.Parse("123kiloBytes", BinarySizeOptions.AllowLongUnits, NumberStyles.Number, culture));
 
         Assert.IsTrue(UBinarySize.TryParse("123KB", culture, out UBinarySize result));
         Assert.IsTrue(UBinarySize.TryParse("123kB", culture, out result));
@@ -772,20 +772,20 @@ public class UBinarySizeTests
             Assert.AreEqual((UBinarySize)(--value2), --size2);
             Assert.AreEqual((UBinarySize)(+value2), +size2);
 
-            Assert.ThrowsException<OverflowException>(() => size1 - size2);
-            Assert.ThrowsException<OverflowException>(() => UBinarySize.MaxValue + UBinarySize.MaxValue);
-            Assert.ThrowsException<OverflowException>(() => ulong.MaxValue + UBinarySize.MaxValue);
-            Assert.ThrowsException<OverflowException>(() => UBinarySize.MaxValue + ulong.MaxValue);
-            Assert.ThrowsException<OverflowException>(() => UBinarySize.MinValue - UBinarySize.MaxValue);
-            Assert.ThrowsException<OverflowException>(() => ulong.MinValue - UBinarySize.MaxValue);
-            Assert.ThrowsException<OverflowException>(() => UBinarySize.MinValue - ulong.MaxValue);
-            Assert.ThrowsException<OverflowException>(() => UBinarySize.MaxValue * UBinarySize.MaxValue);
-            Assert.ThrowsException<OverflowException>(() => ulong.MaxValue * UBinarySize.MaxValue);
-            Assert.ThrowsException<OverflowException>(() => UBinarySize.MaxValue * ulong.MaxValue);
+            Assert.Throws<OverflowException>(() => size1 - size2);
+            Assert.Throws<OverflowException>(() => UBinarySize.MaxValue + UBinarySize.MaxValue);
+            Assert.Throws<OverflowException>(() => ulong.MaxValue + UBinarySize.MaxValue);
+            Assert.Throws<OverflowException>(() => UBinarySize.MaxValue + ulong.MaxValue);
+            Assert.Throws<OverflowException>(() => UBinarySize.MinValue - UBinarySize.MaxValue);
+            Assert.Throws<OverflowException>(() => ulong.MinValue - UBinarySize.MaxValue);
+            Assert.Throws<OverflowException>(() => UBinarySize.MinValue - ulong.MaxValue);
+            Assert.Throws<OverflowException>(() => UBinarySize.MaxValue * UBinarySize.MaxValue);
+            Assert.Throws<OverflowException>(() => ulong.MaxValue * UBinarySize.MaxValue);
+            Assert.Throws<OverflowException>(() => UBinarySize.MaxValue * ulong.MaxValue);
             size1 = UBinarySize.MaxValue;
-            Assert.ThrowsException<OverflowException>(() => size1++);
+            Assert.Throws<OverflowException>(() => size1++);
             size1 = UBinarySize.MinValue;
-            Assert.ThrowsException<OverflowException>(() => size1--);
+            Assert.Throws<OverflowException>(() => size1--);
         }
     }
 
